@@ -44,7 +44,7 @@ const Wrapper = styled.div`
     align-items: center;
     gap: 12px;
     width: 100%;
-    padding: 16px 20px;
+    padding: 16px 20px 31px 20px;
 
     overflow-x: auto;        
     overflow-y: hidden;
