@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import SearchBar from '../components/SearchBar';
 import Category from '../components/Category';
 import StoreCard from '../components/mainPage/StoreCard';
+import Divider from '../components/Divider';
 
 const Home = () => {
     const [selectedId, setSelectedId] = useState(1);
@@ -14,12 +15,13 @@ const Home = () => {
     <>
         <Layout overlapHeader>
             <ImageSlider />
-
             <SearchBar />
-
             <Category selectedId={selectedId} onSelect={setSelectedId}/>
-
             <StoreCard />
+
+            <Divider />
+
+
         </Layout>
         {/* <Link to="/receipt">영수증 페이지로 이동</Link> */}
     </>
