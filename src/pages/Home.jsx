@@ -7,6 +7,7 @@ import SearchBar from '../components/SearchBar';
 import Category from '../components/Category';
 import StoreCard from '../components/mainPage/StoreCard';
 import Divider from '../components/Divider';
+import MarketInfo from '../components/mainPage/MarketInfo';
 
 const Home = () => {
     const [selectedId, setSelectedId] = useState(1);
@@ -21,6 +22,7 @@ const Home = () => {
 
             <Divider />
 
+            <MarketInfo />
 
         </Layout>
         {/* <Link to="/receipt">영수증 페이지로 이동</Link> */}
