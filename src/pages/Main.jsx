@@ -1,10 +1,10 @@
 import React, { useRef, useState } from 'react'
 import { Link } from 'react-router-dom';
 import Layout from '../components/Layout';
-import ImageSlider from '../components/ImageSlider';
+import ImageSlider from '../components/mainPage/ImageSlider';
 import styled from 'styled-components';
-import SearchBar from '../components/SearchBar';
-import Category from '../components/Category';
+import SearchBar from '../components/mainPage/SearchBar';
+import Category from '../components/mainPage/Category';
 import StoreCard from '../components/mainPage/StoreCard';
 import Divider from '../components/Divider';
 import MarketInfo from '../components/mainPage/MarketInfo';

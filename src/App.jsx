@@ -1,8 +1,8 @@
 import { useRef, useState } from 'react'
 import './App.css'
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import Home from './pages/Home';
-import Receipt from './pages/Receipt';
+import Main from './pages/Main';
+// import Receipt from './pages/Receipt';
 
 function App() {
 
@@ -10,8 +10,8 @@ function App() {
     <>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/receipt" element={<Receipt />} />
+          <Route path="/" element={<Main />} />
+          {/* <Route path="/receipt" element={<Receipt />} /> */}
         </Routes>
       </BrowserRouter>
     </>
