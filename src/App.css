@@ -1,0 +1,8 @@
+:root {
+  --header-h: 56px;      /* 헤더 높이(나중에 헤더에 들어가는거에 맞게 수정하면됨) */
+}
+
+html, body, #root {
+  height: 100%;
+}
+body { margin: 0; background: #0b1016; } 
