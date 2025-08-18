@@ -1,7 +1,7 @@
 import React from 'react'
-import PinIcon from "../assets/icons/main_pin.png"
+import PinIcon from "../../assets/icons/main_pin.png"
 import styled from 'styled-components'
-import HorizontalScroll from './common/HorizontalScroll'
+import HorizontalScroll from '../common/HorizontalScroll'
 
 const Category = ( { selectedId, onSelect }) => {
     const categories = [

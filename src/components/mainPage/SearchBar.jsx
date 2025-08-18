@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components';
-import SearchIcon from '../assets/icons/main_search.png';
+import SearchIcon from '../../assets/icons/main_search.png';
 
 const SearchBar = () => {
   return (
@@ -21,7 +21,7 @@ const SearchContainer = styled.div`
   align-items: center;
   border-radius: 8px;
   background: #EAEAEA;
-  margin: 30px auto 0;
+  margin: 30px 20px 0;
 `;
 
 
