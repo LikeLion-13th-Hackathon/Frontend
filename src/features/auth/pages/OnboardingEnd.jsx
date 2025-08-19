@@ -8,8 +8,17 @@ import Layout from "../../../components/common/Layout";
 export default function OnboardingEnd() {
   const nav = useNavigate();
   const { state } = useLocation();
-  // 이전 단계에서 받은 값들 (username, fullName 등)
+
+  console.log("[OnboardingEnd state]", state);
+
+  // 이전 단계에서 받은 값들 (username, profile_image 등)
   const username = state?.username || "guest";
+  const avatar =
+      state?.profile_image ||
+      localStorage.getItem('profile_image') ||
+      "https://via.placeholder.com/120.png?text=Avatar";
+
+   console.log('[OnboardingEnd] username:', username, 'avatar:', avatar);
 
   const onStart = () => {
     // 메인으로 이동
@@ -21,7 +30,15 @@ export default function OnboardingEnd() {
       <Header>logo</Header>
 
       <Hero>
-        <LogoBadge />
+      <Avatar
+        src={avatar}
+        alt="profile"
+        onError={(e) => {
+          // via.placeholder.com이 막히거나 깨질 때 대체
+          e.currentTarget.src = "https://placehold.co/120x120?text=Avatar";
+        }}
+      />
+
         <Brand>logo</Brand>
       </Hero>
 
@@ -41,16 +58,6 @@ export default function OnboardingEnd() {
 }
 
 /* ---------------- styled-components ---------------- */
-
-const Wrap = styled.div`
-  min-height: 100vh;
-  background: #fff;
-  display: grid;
-  grid-template-rows: 56px auto 1fr auto;
-  gap: 12px;
-  padding: 0 16px 24px;
-  font-family: Pretendard, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-`;
 
 const Header = styled.header`
   display: grid;
@@ -72,6 +79,13 @@ const LogoBadge = styled.div`
   height: 120px;
   border-radius: 12px;
   background: #d9d9d9;
+`;
+
+const Avatar = styled.img`
+  width: 120px;
+  height: 120px;
+  border-radius: 12px;
+  object-fit: cover;
 `;
 
 const Brand = styled.div`

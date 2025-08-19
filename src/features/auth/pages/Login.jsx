@@ -1,24 +1,58 @@
 // Login.jsx
 import React, { useState } from 'react';
 import { FiUser, FiLock, FiEye, FiEyeOff } from 'react-icons/fi';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import styled, { createGlobalStyle } from 'styled-components';
 import CommonButton from '../../../components/common/CommonButton';
 import Layout from '../../../components/common/Layout';
+import { loginRequest } from '@/shared/api/auth';
 
 function Login() {
+  const nav = useNavigate();
+
   const [email, setEmail] = useState('');
   const [pw, setPw] = useState('');
   const [showPw, setShowPw] = useState(false);
   const [touched, setTouched] = useState({ email: false, pw: false });
 
-  const isValidEmail = (v) => /^\S+@\S+\.\S+$/.test(v);
-  const disabled = !email || !pw || !isValidEmail(email);
+  // 추가: 로딩/에러 상태
+  const [loading, setLoading] = useState(false);
+  const [errMsg, setErrMsg] = useState('');
 
-  const onSubmit = (e) => {
+  const isValidEmail = (v) => /^\S+@\S+\.\S+$/.test(v);
+  const disabled = !email || !pw || !isValidEmail(email) || loading;
+
+  const onSubmit = async (e) => {
     e.preventDefault();
     if (disabled) return;
-    console.log('로그인 요청:', { email, pw });
+
+    try {
+      setLoading(true);
+      setErrMsg('');
+
+      // 로그인 API 호출
+      const { user, token } = await loginRequest({ email, password: pw });
+
+      // 토큰 저장
+      if (token?.access_token) localStorage.setItem('access_token', token.access_token);
+      if (token?.refresh_token) localStorage.setItem('refresh_token', token.refresh_token);
+
+      const avatar = user?.profile_image || "https://via.placeholder.com/120?text=Avatar";
+      localStorage.setItem('profile_image', avatar);
+
+      // 성공 이동
+      nav('/onboarding-end', {
+        state: {
+              username: user?.username || 'guest',
+              profile_image: avatar,
+            },
+        replace: true,
+      });
+    } catch (err) {
+      setErrMsg(err.message || '로그인에 실패했어요.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -47,7 +81,7 @@ function Login() {
               />
             </Field>
             {touched.email && !isValidEmail(email) && (
-              <Help>올바른 이메일 형식을 입력해 주세요.</Help>
+              <Help role="alert">올바른 이메일 형식을 입력해 주세요.</Help>
             )}
 
             <Label htmlFor="password">Password</Label>
@@ -71,9 +105,12 @@ function Login() {
               </IconRightBtn>
             </Field>
 
-            {/* ✅ 공통 버튼으로 교체 */}
+            {/* 에러 메시지 */}
+            {errMsg && <Help role="alert">{errMsg}</Help>}
+
+            {/* 공통 버튼 */}
             <CommonButton type="submit" disabled={disabled}>
-              Login
+              {loading ? 'Logging in…' : 'Login'}
             </CommonButton>
           </Form>
 
@@ -85,6 +122,13 @@ function Login() {
     </Layout>
   );
 }
+
+export default Login;
+
+/* ---------------------- styled-components 아래는 네 파일 그대로 유지 ---------------------- */
+// GlobalStyle, Wrap, Header, Card, LogoBox, LogoText, Form, Label, Field,
+// IconLeft, IconRightBtn, Help, Signup ...
+
 
 /* ---------------------- styled-components ---------------------- */
 const GlobalStyle = createGlobalStyle`
@@ -224,4 +268,4 @@ const Signup = styled.p`
   }
 `;
 
-export default Login;
+
