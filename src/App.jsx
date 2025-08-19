@@ -38,7 +38,7 @@ export default function App() {
         <Route path="/signup/profile" element={<SignUpProfile />} />
         <Route path="/signup/profile-sub" element={<SignUpProfileSub />} />
         <Route path="/signup/complete" element={<SignUpComplete />} />
-        <Route path="/signup/end" element={<OnboardingEnd />} />
+        <Route path="/onboarding-end" element={<OnboardingEnd />} />
 
         {/* AI 챗 시뮬레이터 */}
         <Route path="/chat/simulator" element={<AIChatSimulatorChat />} />
