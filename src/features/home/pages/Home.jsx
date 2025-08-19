@@ -2,12 +2,12 @@
 import { useState } from 'react';
 
 // 별칭(@) 기반 경로
-import Layout from '@/features/home/components/Layout';
+import Layout from '@/components/common/Layout';
 import ImageSlider from '@/features/home/components/ImageSlider';
 import SearchBar from '@/features/home/components/SearchBar';
 import Category from '@/features/home/components/Category';
 import StoreCard from '@/features/home/components/StoreCard';
-import Divider from '@/features/home/components/Divider';
+import Divider from '@/components/common/Divider';
 import MarketInfo from '@/features/home/components/MarketInfo';
 
 export default function Home() {

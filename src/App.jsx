@@ -14,13 +14,13 @@ import SignUpComplete from '@/features/auth/pages/SignUpComplete';
 import OnboardingEnd from '@/features/auth/pages/OnboardingEnd';
 
 // 기타
-import Receipt from '@/features/auth/pages/Receipt';
+import Receipt from '@/features/receipt/pages/Receipt';
 
 // AI 챗 시뮬레이터
 import AIChatSimulatorChat from '@/features/chat/pages/ChatSimulator';
 
 // 마켓(이번 브랜치에서 추가된 상세 페이지)
-import MarketDetail from '@/pages/MarketDetail';
+import MarketDetail from '@/features/market/pages/MarketDetail';
 
 export default function App() {
   return (

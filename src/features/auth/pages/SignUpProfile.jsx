@@ -2,6 +2,7 @@ import React, { useMemo, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import CommonButton from "../../../components/common/CommonButton";
+import Layout from "../../../components/common/Layout";
 
 export default function SignUpProfile() {
   const nav = useNavigate();
@@ -29,7 +30,7 @@ export default function SignUpProfile() {
   };
 
   return (
-    <Wrap>
+    <Layout>
       <Header>logo</Header>
 
       <Card>
@@ -77,7 +78,7 @@ export default function SignUpProfile() {
           </Actions>
         </Form>
       </Card>
-    </Wrap>
+    </Layout>
   );
 }
 

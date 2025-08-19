@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import ReviewIcon from '../../assets/icons/review.png'
+import ReviewIcon from '@/assets/icons/review.png'
 
 const StoreItem = ({ store }) => {
     const primary = store?.menus?.[0];

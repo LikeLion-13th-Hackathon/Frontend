@@ -3,6 +3,7 @@ import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import CommonButton from "../../../components/common/CommonButton";
+import Layout from "../../../components/common/Layout";
 
 export default function OnboardingEnd() {
   const nav = useNavigate();
@@ -16,7 +17,7 @@ export default function OnboardingEnd() {
   };
 
   return (
-    <Wrap>
+    <Layout>
       <Header>logo</Header>
 
       <Hero>
@@ -35,7 +36,7 @@ export default function OnboardingEnd() {
       <CTA>
         <CommonButton onClick={onStart}>Get Started</CommonButton>
       </CTA>
-    </Wrap>
+    </Layout>
   );
 }
 

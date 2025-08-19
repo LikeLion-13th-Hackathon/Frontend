@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
-import DropDwonIcon from '../../assets/icons/dropdown.png';
+import DropDwonIcon from '@/assets/icons/dropdown.png';
 
 const MarketInfo = () => {
 

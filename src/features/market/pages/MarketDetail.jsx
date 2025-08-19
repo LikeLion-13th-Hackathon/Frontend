@@ -1,11 +1,10 @@
 import React from 'react'
-import Layout from "@/features/home/components/Layout.jsx";
 import styled from 'styled-components'
 import BackImg from "@/assets/icons/header_back.png";
-import SeachImg from '../../src/assets/icons/header_search.png';
-import MarketInfo from '../components/marketPage/MarketInfo';
-import StoreList from '../components/marketPage/StoreList';
-import SortButtons from '../components/marketPage/SortButtons';
+import SeachImg from '@/assets/icons/header_search.png';
+import StoreList from '../components/StoreList';
+import MarketInfo from '../components/MarketInfo';
+import Layout from '@/components/common/Layout';
 
 const MarketDetail = () => {
   return (

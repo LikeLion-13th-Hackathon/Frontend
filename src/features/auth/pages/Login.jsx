@@ -4,6 +4,7 @@ import { FiUser, FiLock, FiEye, FiEyeOff } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 import styled, { createGlobalStyle } from 'styled-components';
 import CommonButton from '../../../components/common/CommonButton';
+import Layout from '../../../components/common/Layout';
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -21,7 +22,7 @@ function Login() {
   };
 
   return (
-    <>
+    <Layout>
       <GlobalStyle />
       <Wrap>
         <Header>logo</Header>
@@ -81,7 +82,7 @@ function Login() {
           </Signup>
         </Card>
       </Wrap>
-    </>
+    </Layout>
   );
 }
 

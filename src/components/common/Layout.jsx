@@ -14,7 +14,7 @@ const Layout = ({ children, overlapHeader = false }) => {
           <AppContent $overlap={overlapHeader}>{children}</AppContent>
         </Inner>
       </Outer>
-      <TabBar />
+      {/* <TabBar /> */}
     </>
   )
 }

@@ -2,6 +2,7 @@ import React, { useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import CommonButton from "../../../components/common/CommonButton";
+import Layout from "../../../components/common/Layout";
 
 const COUNTRIES = [
   { code: "KR", label: "KR - 대한민국" },
@@ -37,7 +38,7 @@ export default function SignUpProfileSub() {
   };
 
   return (
-    <Wrap>
+    <Layout>
       <Header>logo</Header>
 
       <Card>
@@ -107,7 +108,7 @@ export default function SignUpProfileSub() {
           </Actions>
         </Form>
       </Card>
-    </Wrap>
+    </Layout>
   );
 }
 

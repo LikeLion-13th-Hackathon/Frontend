@@ -3,6 +3,7 @@ import React, { useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import CommonButton from "../../../components/common/CommonButton";
+import Layout from "../../../components/common/Layout";
 
 /* 국가코드 → 국기 이모지 변환 */
 function flagEmoji(cc = "KR") {
@@ -81,7 +82,7 @@ export default function SignUpComplete() {
   };
 
   return (
-    <Wrap>
+    <Layout>
       <Header>logo</Header>
 
       <Card as="form" onSubmit={onSubmit} noValidate>
@@ -133,7 +134,7 @@ export default function SignUpComplete() {
           </CommonButton>
         </Actions>
       </Card>
-    </Wrap>
+    </Layout>
   );
 }
 

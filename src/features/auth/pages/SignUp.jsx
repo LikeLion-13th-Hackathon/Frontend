@@ -4,6 +4,7 @@ import { FiUser, FiLock, FiEye, FiEyeOff } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import CommonButton from "../../../components/common/CommonButton";
+import Layout from "../../../components/common/Layout";
 
 export default function SignUp() {
   const navigate = useNavigate();
@@ -34,7 +35,7 @@ export default function SignUp() {
   };
 
   return (
-    <Wrap>
+    <Layout>
       <Header>logo</Header>
 
       <Card>
@@ -103,7 +104,7 @@ export default function SignUp() {
           </CommonButton>
         </Form>
       </Card>
-    </Wrap>
+    </Layout>
   );
 }
 
