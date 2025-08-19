@@ -8,6 +8,7 @@ import Category from '../components/mainPage/Category';
 import StoreCard from '../components/mainPage/StoreCard';
 import Divider from '../components/Divider';
 import MarketInfo from '../components/mainPage/MarketInfo';
+import Header from '../components/Header';
 
 const Home = () => {
     const [selectedId, setSelectedId] = useState(1);
@@ -15,6 +16,7 @@ const Home = () => {
   return (
     <>
         <Layout overlapHeader>
+            <Header />
             <ImageSlider />
             <SearchBar />
             <Category selectedId={selectedId} onSelect={setSelectedId}/>

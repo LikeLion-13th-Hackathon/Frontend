@@ -8,7 +8,7 @@ const Layout = ({ children, overlapHeader = false }) => {
 
   return (
     <>
-      <Header />
+      {/* <Header /> */}
       <Outer>
         <Inner>
           <AppContent $overlap={overlapHeader}>{children}</AppContent>

@@ -11,6 +11,7 @@ import OnboardingEnd from './features/auth/pages/OnboardingEnd';
 import React from 'react'
 import './App.css'
 import Main from './pages/Main';
+import MarketDetail from './pages/MarketDetail';
 
 
 function App() {
@@ -30,6 +31,9 @@ function App() {
         <Route path="/signup/profile-sub" element={<SignUpProfileSub />} />
         <Route path="/signup/complete" element={<SignUpComplete />} />
         <Route path="/signup/end" element={<OnboardingEnd />} />
+
+        {/* 시장 */}
+        <Route path="/market" element={<MarketDetail />} />
 
       </Routes>
     </BrowserRouter>
