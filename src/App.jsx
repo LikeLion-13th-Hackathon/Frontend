@@ -8,6 +8,7 @@ import SignUpProfileSub from './features/auth/pages/SignUpProfileSub';
 import SignUpComplete from './features/auth/pages/SignUpComplete';
 import OnboardingEnd from './features/auth/pages/OnboardingEnd';
 
+import React from 'react'
 import './App.css'
 import Main from './pages/Main';
 
