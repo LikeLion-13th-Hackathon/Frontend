@@ -17,7 +17,7 @@ import OnboardingEnd from '@/features/auth/pages/OnboardingEnd';
 import Receipt from '@/features/auth/pages/Receipt';
 
 // AI 챗 시뮬레이터
-import AIChatSimulatorChat from '@/features/chat/pages/AIChatSimulatorChat';
+import AIChatSimulatorChat from '@/features/chat/pages/ChatSimulator';
 
 // 마켓(이번 브랜치에서 추가된 상세 페이지)
 import MarketDetail from '@/pages/MarketDetail';
