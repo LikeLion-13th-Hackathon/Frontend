@@ -167,7 +167,7 @@ export default function SignUpComplete() {
           </CommonButton>
         </Actions>
       </Card>
-    </Wrap>
+    </Layout>
   );
 }
 
