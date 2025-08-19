@@ -2,6 +2,9 @@ import React, { useRef, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { askAI } from '@/shared/api/ai';
+import Layout from '../../../components/common/Layout';
+import LeftHeader from '../../../components/common/header/LeftHeader';
+import BackImg from "@/assets/icons/header_back.png"
 
 export default function AIChatSimulatorChat() {
   const [selected, setSelected] = useState(1);
@@ -61,15 +64,20 @@ export default function AIChatSimulatorChat() {
   };
 
   return (
-    <Wrap>
+    <Layout>
       {/* 상단 네비 */}
-      <NavBar>
+      {/* <NavBar>
         <BackButton onClick={() => navigate(-1)} aria-label="뒤로가기">
           <ChevronLeftIcon />
         </BackButton>
         <NavTitle>AI Chat Simulator</NavTitle>
         <Spacer />
-      </NavBar>
+      </NavBar> */}
+      <LeftHeader 
+        title = "AI Chat Simulator"
+        leftIcon={BackImg}
+        onLeftClick={() => window.history.back()}
+      />
 
       {/* 시나리오 가로 카드 */}
       <ScenarioRow>
@@ -138,7 +146,7 @@ export default function AIChatSimulatorChat() {
       <BottomBar>
         <EndButton>End Chat &amp; Claim Reward</EndButton>
       </BottomBar>
-    </Wrap>
+    </Layout>
   );
 }
 
@@ -311,9 +319,13 @@ const PhraseRoman = styled.div`
 
 /* Bottom CTA */
 const BottomBar = styled.div`
-  position: fixed; left: 0; right: 0; bottom: 0;
+  position: fixed; 
+  left: 50%; right: 0; bottom: 0;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 375px;
   display: flex; justify-content: center; background: #fff;
-  padding: 10px 0 calc(22px + env(safe-area-inset-bottom));
+  padding: 10px 16px calc(22px + env(safe-area-inset-bottom));
 `;
 const EndButton = styled.button`
   width: clamp(280px, 88vw, 520px);
