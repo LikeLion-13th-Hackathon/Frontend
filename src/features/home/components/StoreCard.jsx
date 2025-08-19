@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components';
-import PinImg from "../../assets/icons/main_pin.png";
-import LikeImg from "../../assets/icons/main_like.png";
+import PinImg from "@/assets/icons/main_pin.png";
+import LikeImg from "@/assets/icons/main_like.png";
 
 const StoreCard = ( {items = [
     { id: 1, title: '가게명A', desc: '리뷰내용리뷰내용리뷰내용리뷰내용리뷰내용내용', imageUrl: '', MarketName: '흑석시장' },
