@@ -16,16 +16,18 @@ const HeaderContainer = styled.header`
   left: 50%;
   transform: translateX(-50%);
   z-index: 1000;
-  width: 420px;
-  background: #ffffff;
+  width: 375px;
+  background: transparent;
   backdrop-filter: blur(6px);
   border-bottom: 1px solid #eee;
 `;
 
 const HeaderInner = styled.div`
+  display: flex;
+  width: 375px;
   height: 56px;
-  display: grid;
-  grid-template-columns: 56px 1fr 56px;
+  padding: 0 20px;
   align-items: center;
-  padding: 0 8px;
+  gap: 16px;
+  flex-shrink: 0;
 `;

@@ -8,13 +8,16 @@ import SignUpProfileSub from './features/auth/pages/SignUpProfileSub';
 import SignUpComplete from './features/auth/pages/SignUpComplete';
 import OnboardingEnd from './features/auth/pages/OnboardingEnd';
 
+import './App.css'
+import Main from './pages/Main';
+
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         {/* 메인 */}
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Main />} />
         <Route path="/receipt" element={<Receipt />} />
 
         {/* 인증 */}
