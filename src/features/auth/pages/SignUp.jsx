@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import CommonButton from "../../../components/common/CommonButton";
 import Layout from "../../../components/common/Layout";
+import CenterHeader from "../../../components/common/header/CenterHeader";
 
 export default function SignUp() {
   const navigate = useNavigate();
@@ -36,7 +37,7 @@ export default function SignUp() {
 
   return (
     <Layout>
-      <Header>logo</Header>
+      <CenterHeader title = "logo" />
 
       <Card>
         <Title>Welcome!</Title>
@@ -135,9 +136,9 @@ const Card = styled.main`
   max-width: 375px;
   margin-top: 8px;
   padding: 24px;
-  border-radius: 16px;
-  border: 1px solid #eee;
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.06);
+  /* border-radius: 16px; */
+  /* border: 1px solid #eee; */
+  /* box-shadow: 0 8px 28px rgba(0, 0, 0, 0.06); */
   display: flex;
   flex-direction: column;
 `;
@@ -158,7 +159,7 @@ const Sub = styled.p`
 `;
 
 const Form = styled.form`
-  margin-top: 16px;
+  margin-top: 30px;
   display: flex;
   flex-direction: column;
   gap: 12px;

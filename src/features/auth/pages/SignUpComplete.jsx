@@ -3,7 +3,11 @@ import React, { useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import CommonButton from "../../../components/common/CommonButton";
+
+import Layout from "../../../components/common/Layout";
+import CenterHeader from "../../../components/common/header/CenterHeader";
 import { joinRequest } from "@/shared/api/auth";
+
 
 /* 국가코드 → 국기 이모지 */
 function flagEmoji(cc = "KR") {
@@ -115,8 +119,8 @@ export default function SignUpComplete() {
   };
 
   return (
-    <Wrap>
-      <Header>logo</Header>
+    <Layout>
+      <CenterHeader title = "logo" />
 
       <Card as="form" onSubmit={onSubmit} noValidate>
         <Title>Welcome!</Title>
@@ -195,9 +199,6 @@ const Card = styled.main`
   max-width: 375px;
   margin-top: 8px;
   padding: 24px;
-  border-radius: 16px;
-  border: 1px solid #eee;
-  box-shadow: 0 8px 28px rgba(0,0,0,.06);
   display: flex;
   flex-direction: column;
 `;
@@ -211,7 +212,7 @@ const Title = styled.h1`
 `;
 
 const Sub = styled.p`
-  margin: 4px 0 12px 0;
+  margin: 4px 0 30px 0;
   color: #555;
   font-size: 13px;
   line-height: 18px;

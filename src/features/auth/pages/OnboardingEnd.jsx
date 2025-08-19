@@ -3,7 +3,8 @@ import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import CommonButton from "../../../components/common/CommonButton";
-import Layout from "../../../components/common/Layout";
+import Layout from "@/components/common/Layout";
+import CenterHeader from "../../../components/common/header/CenterHeader";
 
 export default function OnboardingEnd() {
   const nav = useNavigate();
@@ -27,7 +28,7 @@ export default function OnboardingEnd() {
 
   return (
     <Layout>
-      <Header>logo</Header>
+      <CenterHeader title = "logo" />
 
       <Hero>
       <Avatar
@@ -71,7 +72,7 @@ const Hero = styled.section`
   display: grid;
   justify-items: center;
   gap: 12px;
-  margin-top: 8px;
+  margin-top: 56px;
 `;
 
 const LogoBadge = styled.div`
@@ -95,7 +96,7 @@ const Brand = styled.div`
 `;
 
 const Content = styled.section`
-  margin-top: 8px;
+  margin: 47px 20px 157px;
 `;
 
 const WelcomeRow = styled.div`
@@ -127,5 +128,5 @@ const Sub = styled.p`
 `;
 
 const CTA = styled.div`
-  margin-top: 24px;
+  margin: 24px 20px;
 `;

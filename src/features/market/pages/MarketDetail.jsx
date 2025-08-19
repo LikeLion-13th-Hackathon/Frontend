@@ -1,19 +1,22 @@
 import React from 'react'
 import styled from 'styled-components'
 import BackImg from "@/assets/icons/header_back.png";
-import SeachImg from '@/assets/icons/header_search.png';
+import SearchImg from '@/assets/icons/search.png';
 import StoreList from '../components/StoreList';
 import MarketInfo from '../components/MarketInfo';
 import Layout from '@/components/common/Layout';
+import LeftHeader from '@/components/common/header/LeftHeader';
 
 const MarketDetail = () => {
   return (
     <Layout overlapHeader>
-        <Header>
-            <Icon src={BackImg} alt="뒤로가기" />
-            <HeaderTitle>Market</HeaderTitle>
-            <Icon src={SeachImg} alt="검색" />
-        </Header>
+        <LeftHeader
+            title="Market"
+            leftIcon={BackImg}
+            rightIcon={SearchImg}
+            onLeftClick={() => window.history.back()}   // react-router 쓰면 navigate(-1)
+            onRightClick={() => console.log("검색 클릭")}
+        />
 
         <MarketInfo />
 
@@ -23,35 +26,3 @@ const MarketDetail = () => {
 }
 
 export default MarketDetail
-
-const Header = styled.div`
-    display: flex;
-    width: 375px;
-    height: 56px;
-    padding: 0 20px;
-    align-items: center;
-    gap: 16px;
-    flex-shrink: 0;
-
-    border-bottom: 1px solid #E8E8E8;
-    background: #FFF;
-`
-
-const HeaderTitle = styled.div`
-    flex: 1 0 0;
-    color: #000;
-
-    /* body/body 1-em */
-    font-family: Pretendard;
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 600;
-    line-height: 150%; /* 24px */
-    letter-spacing: -0.32px;
-`
-
-const Icon = styled.img`
-    width: 24px;
-    height: 24px;
-    flex-shrink: 0;
-`

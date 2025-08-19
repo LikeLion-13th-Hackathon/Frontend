@@ -5,6 +5,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import styled, { createGlobalStyle } from 'styled-components';
 import CommonButton from '../../../components/common/CommonButton';
 import Layout from '../../../components/common/Layout';
+
+import CenterHeader from '../../../components/common/header/CenterHeader';
 import { loginRequest } from '@/shared/api/auth';
 
 function Login() {
@@ -59,7 +61,8 @@ function Login() {
     <Layout>
       <GlobalStyle />
       <Wrap>
-        <Header>logo</Header>
+        {/* <Header>logo</Header> */}
+        <CenterHeader title = "logo" />
 
         <Card>
           <LogoBox />
@@ -132,7 +135,6 @@ export default Login;
 
 /* ---------------------- styled-components ---------------------- */
 const GlobalStyle = createGlobalStyle`
-  @import url('https://cdn.jsdelivr.net/npm/pretendard/dist/web/static/pretendard.css');
   :root {
     --bg-muted: #EAEAEA;
     --stroke:   #D9D9D9;
@@ -148,7 +150,10 @@ const Wrap = styled.div`
   display: grid;
   grid-template-rows: auto 1fr;
   background: #fff;
-  padding: 0 16px 24px;
+  width: 100%;
+  max-width: 375px;
+  /* margin: 0 auto; */
+  /* padding: 0 16px 24px; */
 `;
 
 const Header = styled.header`
@@ -162,12 +167,11 @@ const Header = styled.header`
 
 const Card = styled.main`
   width: 100%;
-  max-width: 420px;
   margin: 8px auto 0;
   padding: 20px;
-  border-radius: 16px;
-  border: 1px solid #eee;
-  box-shadow: 0 6px 24px rgba(0,0,0,.06);
+  /* border-radius: 16px; */
+  /* border: 1px solid #eee; */
+  /* box-shadow: 0 6px 24px rgba(0,0,0,.06); */
   display: flex;
   flex-direction: column;
   align-items: stretch;
