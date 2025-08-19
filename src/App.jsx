@@ -1,22 +1,38 @@
-import { useRef, useState } from 'react'
+import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
+import Home from './features/auth/pages/Home';
+import Receipt from './features/auth/pages/Receipt';
+import Login from './features/auth/pages/Login';
+import SignUp from './features/auth/pages/SignUp';
+import SignUpProfile from './features/auth/pages/SignUpProfile';
+import SignUpProfileSub from './features/auth/pages/SignUpProfileSub';
+import SignUpComplete from './features/auth/pages/SignUpComplete';
+import OnboardingEnd from './features/auth/pages/OnboardingEnd';
+
 import './App.css'
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Main from './pages/Main';
-// import Receipt from './pages/Receipt';
+
 
 function App() {
-
   return (
-    <>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Main />} />
-          {/* <Route path="/receipt" element={<Receipt />} /> */}
-        </Routes>
-      </BrowserRouter>
-    </>
+    <BrowserRouter>
+      <Routes>
+        {/* 메인 */}
+        <Route path="/" element={<Main />} />
+        <Route path="/receipt" element={<Receipt />} />
 
-  )
+        {/* 인증 */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<SignUp />} />
+
+        {/* 회원가입 단계 진행 */}
+        <Route path="/signup/profile" element={<SignUpProfile />} />
+        <Route path="/signup/profile-sub" element={<SignUpProfileSub />} />
+        <Route path="/signup/complete" element={<SignUpComplete />} />
+        <Route path="/signup/end" element={<OnboardingEnd />} />
+
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
