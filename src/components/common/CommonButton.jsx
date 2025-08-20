@@ -11,7 +11,7 @@ import styled, { css } from "styled-components";
  */
 const CommonButton = styled.button`
   --btn-primary: var(--pri, #6D6D6D);
-  --btn-primary-text: #fff;
+  --btn-primary-text: #000;
   --btn-disabled: #e0e0e0;
   --btn-disabled-text: #858585;
   --btn-secondary-bg: #d3d3d3;
@@ -31,6 +31,12 @@ const CommonButton = styled.button`
       return css`
         background: var(--btn-secondary-bg);
         color: var(--btn-secondary-text);
+      `;
+    }
+    if (variant === "secondary-dim") {
+      return css`
+        background: var(--btn-secondary-bg);
+        color: var(--btn-disabled-text); // 회색 글씨
       `;
     }
     if (variant === "ghost") {
