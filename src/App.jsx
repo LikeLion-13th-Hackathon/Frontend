@@ -21,6 +21,7 @@ import AIChatSimulatorChat from '@/features/chat/pages/ChatSimulator';
 
 // 마켓(이번 브랜치에서 추가된 상세 페이지)
 import MarketDetail from '@/features/market/pages/MarketDetail';
+import ReviewFlow from './features/review/pages/ReviewFlow';
 
 export default function App() {
   return (
@@ -42,6 +43,10 @@ export default function App() {
 
         {/* AI 챗 시뮬레이터 */}
         <Route path="/chat/simulator" element={<AIChatSimulatorChat />} />
+
+        {/* 인증 */}
+        <Route path="/review" element={<ReviewFlow />} />
+
 
         {/* 마켓 상세 (임시 경로) */}
         <Route path="/market" element={<MarketDetail />} />
