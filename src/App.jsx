@@ -20,7 +20,8 @@ import Receipt from '@/features/receipt/pages/Receipt';
 import AIChatSimulatorChat from '@/features/chat/pages/ChatSimulator';
 import ChatLoading from './features/chat/pages/ChatLoading';
 
-// 마켓 상세
+
+// 마켓
 import MarketDetail from '@/features/market/pages/MarketDetail';
 
 // 리뷰 페이지
@@ -31,6 +32,9 @@ import ReviewSnack from '@/features/review/pages/ReviewSnack';
 import ReviewConversation from "@/features/review/pages/ReviewConversation";
 import ReviewFeedback from '@/features/review/pages/ReviewFeedback';
 import ReviewComplete from './features/review/pages/ReviewComplete';
+
+// 가게
+import StoreDetail from '@/features/store/pages/StoreDetail';
 
 export default function App() {
   return (
@@ -67,6 +71,7 @@ export default function App() {
         />
         <Route path="/chat/simulator" element={<AIChatSimulatorChat />} />
 
+
         {/* 리뷰 */}
         {/* 개별 1단계 */}
         <Route path="/review" element={<ReviewRestaurant />} />
@@ -85,6 +90,9 @@ export default function App() {
 
         {/* 마켓 상세 */}
         <Route path="/market" element={<MarketDetail />} />
+
+        {/* 스토어 상세 */}
+        <Route path="/store" element={<StoreDetail />} />
 
         {/* 없는 경로 → 홈 */}
         <Route path="*" element={<Navigate to="/" replace />} />
