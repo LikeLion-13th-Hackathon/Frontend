@@ -19,9 +19,12 @@ import Receipt from '@/features/receipt/pages/Receipt';
 // AI 챗 시뮬레이터
 import AIChatSimulatorChat from '@/features/chat/pages/ChatSimulator';
 
-// 마켓(이번 브랜치에서 추가된 상세 페이지)
+// 마켓
 import MarketDetail from '@/features/market/pages/MarketDetail';
 import ChatLoading from './features/chat/pages/ChatLoading';
+
+// 가게
+import StoreDetail from '@/features/store/pages/StoreDetail';
 
 export default function App() {
   return (
@@ -53,8 +56,11 @@ export default function App() {
         />
         <Route path="/chat/simulator" element={<AIChatSimulatorChat />} />
 
-        {/* 마켓 상세 (임시 경로) */}
+        {/* 마켓 상세 */}
         <Route path="/market" element={<MarketDetail />} />
+
+        {/* 스토어 상세 */}
+        <Route path="/store" element={<StoreDetail />} />
 
         {/* 없는 경로 → 홈 */}
         <Route path="*" element={<Navigate to="/" replace />} />
