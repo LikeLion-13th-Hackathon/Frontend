@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || "http://54.180.214.201:8000",
+  baseURL: import.meta.env.VITE_API_BASE_URL || "https://oyes-hackathon.o-r.kr",
   headers: { "Content-Type": "application/json" },
 });
 
