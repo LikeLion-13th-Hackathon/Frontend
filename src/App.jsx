@@ -20,9 +20,17 @@ import Receipt from '@/features/receipt/pages/Receipt';
 import AIChatSimulatorChat from '@/features/chat/pages/ChatSimulator';
 import ChatLoading from './features/chat/pages/ChatLoading';
 
-// 마켓(이번 브랜치에서 추가된 상세 페이지)
+// 마켓 상세
 import MarketDetail from '@/features/market/pages/MarketDetail';
-import ReviewFlow from './features/review/pages/ReviewFlow';
+
+// 리뷰 페이지
+import ReviewRestaurant from '@/features/review/pages/ReviewRestaurant';
+import ReviewFresh from '@/features/review/pages/ReviewFresh';
+import ReviewGoods from '@/features/review/pages/ReviewGoods';
+import ReviewSnack from '@/features/review/pages/ReviewSnack';
+import ReviewConversation from "@/features/review/pages/ReviewConversation";
+import ReviewFeedback from '@/features/review/pages/ReviewFeedback';
+import ReviewComplete from './features/review/pages/ReviewComplete';
 
 export default function App() {
   return (
@@ -47,18 +55,35 @@ export default function App() {
           path="/chat/loading"
           element={
             <ChatLoading
-              store={{ nameKo: '수목식당', nameEn: 'Sumok Sikdang', menus: [{ name: '칼제비', price: 8000 }], reviewCount: 120 }}
+              store={{
+                nameKo: '수목식당',
+                nameEn: 'Sumok Sikdang',
+                menus: [{ name: '칼제비', price: 8000 }],
+                reviewCount: 120,
+              }}
               onBack={() => window.history.back()}
             />
           }
         />
         <Route path="/chat/simulator" element={<AIChatSimulatorChat />} />
 
-        {/* 인증 */}
-        <Route path="/review" element={<ReviewFlow />} />
+        {/* 리뷰 */}
+        {/* 개별 1단계 */}
+        <Route path="/review" element={<ReviewRestaurant />} />
+        <Route path="/review/fresh" element={<ReviewFresh />} />
+        <Route path="/review/goods" element={<ReviewGoods />} />
+        <Route path="/review/snack" element={<ReviewSnack />} />
 
+        {/* 공통 2단계 */}
+        <Route path="/review/conversation" element={<ReviewConversation />} />
+        
+        {/* 공통 3단계 */}
+        <Route path="/review/feedback" element={<ReviewFeedback />} />
+        
+        {/* 공통 4단계 */}
+        <Route path="/review/complete" element={<ReviewComplete />} />
 
-        {/* 마켓 상세 (임시 경로) */}
+        {/* 마켓 상세 */}
         <Route path="/market" element={<MarketDetail />} />
 
         {/* 없는 경로 → 홈 */}

@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 /* 공용 스캐폴드 */
 import Layout from "@/components/common/Layout";
 import LeftHeader from "@/components/common/header/LeftHeader";
-import Footer from "@/components/common/Footer";
 /* 공통 버튼 */
 import CommonButton from "@/components/common/CommonButton";
 /* 스테퍼 */
@@ -35,14 +34,11 @@ const REVIEW_TAGS = [
   "Spacious",
   "English spoken",
 ];
-const DIET_TAGS = ["Vegan", "Pork-free", "Beef-free", "Nut-free"];
+const PORTION_SIZE = ["Bite-sized", "Moderate", "Filling", "Hearty"];
 const SPICY_LEVELS = ["Mild", "Medium", "Spicy", "Very spicy"];
 const MAX_REVIEW_LEN = 3000;
 
-/* Footer(고정)와 겹침 방지 여백 */
-const TABBAR_H = 68;
-
-export default function ReviewFlow() {
+export default function ReviewSnack() {
   const nav = useNavigate();
 
   const [reviewTags, setReviewTags] = useState([]);
@@ -64,9 +60,7 @@ export default function ReviewFlow() {
 
   const onNext = () => {
     if (!canNext) return;
-    // TODO: API 연동 위치
-    // await api.post('/review/step1', { reviewTags, dietTags, spicy: SPICY_LEVELS[spicyIdx], text })
-    nav("/review/topic"); // 다음 단계 라우트로 교체
+    nav("/review/conversation"); // 다음 단계 라우트로 교체
   };
 
   return (
@@ -77,59 +71,59 @@ export default function ReviewFlow() {
         onLeftClick={() => nav(-1)}
         border={true}
       />
-
+  
       <Page>
         {/* 진행바 (1/4단계) */}
         <Stepper current={1} total={4} />
-
+  
         <Title>Share Your Thoughts{"\n"}About This Store</Title>
         <Sub>You can leave a quick review using tags or text.</Sub>
-
+  
         {/* 카드 */}
         <Card>
           <FieldLabel>Review Tags</FieldLabel>
           <ChipRow>
             {REVIEW_TAGS.map((t) => (
-              <Chip
+              <MultiChoiceChip
                 key={t}
                 $active={reviewTags.includes(t)}
                 onClick={() => toggle(reviewTags, setReviewTags, t)}
                 aria-pressed={reviewTags.includes(t)}
               >
                 {t}
-              </Chip>
+              </MultiChoiceChip>
             ))}
           </ChipRow>
-
-          <FieldLabel style={{ marginTop: 14 }}>Dietary Restrictions</FieldLabel>
+  
+          <FieldLabel style={{ marginTop: 14 }}>Portion Size</FieldLabel>
           <ChipRow>
-            {DIET_TAGS.map((t) => (
-              <Chip
+            {PORTION_SIZE.map((t) => (
+              <SingleChoiceChip
                 key={t}
                 $active={dietTags.includes(t)}
                 onClick={() => toggle(dietTags, setDietTags, t)}
                 aria-pressed={dietTags.includes(t)}
               >
                 {t}
-              </Chip>
+              </SingleChoiceChip>
             ))}
           </ChipRow>
-
+  
           <FieldLabel style={{ marginTop: 14 }}>Spicy level</FieldLabel>
           <ChipRow>
             {SPICY_LEVELS.map((t, i) => (
-              <Chip
+              <SingleChoiceChip
                 key={t}
                 $active={spicyIdx === i}
                 onClick={() => setSpicyIdx(i)}
                 aria-pressed={spicyIdx === i}
               >
                 {t}
-              </Chip>
+              </SingleChoiceChip>
             ))}
           </ChipRow>
         </Card>
-
+  
         {/* 텍스트 입력 */}
         <TextareaWrap>
           <Textarea
@@ -142,7 +136,7 @@ export default function ReviewFlow() {
             {Math.max(text.length, 0)} <span>/</span> {MAX_REVIEW_LEN}
           </Counter>
         </TextareaWrap>
-
+  
         {/* 공통 버튼 사용 */}
         <ButtonWrap>
           <CommonButton
@@ -154,20 +148,15 @@ export default function ReviewFlow() {
             Next
           </CommonButton>
         </ButtonWrap>
-
-        {/* Footer와 겹치지 않게 바닥 패딩 */}
-        <BottomPad />
       </Page>
-
-      <Footer />
     </Layout>
-  );
+  );  
 }
 
 /* ===== styled-components ===== */
 const Page = styled.div`
   color: ${tone.text};
-  padding: 12px 18px 0;
+  padding: 12px 18px;
 `;
 
 const Title = styled.h2`
@@ -177,20 +166,20 @@ const Title = styled.h2`
   margin: 14px 2px 6px;
 `;
 const Sub = styled.p`
-  color: ${tone.sub};
+  color: #000;
   font-size: 14px;
   margin: 0 2px 12px;
 `;
 
 const Card = styled.div`
-  background: ${tone.cardBg};
-  border: 1px solid ${tone.line};
+  background: #F8F8F8;
   border-radius: 16px;
   padding: 14px;
 `;
+
 const FieldLabel = styled.div`
   color: ${tone.text};
-  font-size: 13px;
+  font-size: 12px;
   margin-bottom: 8px;
 `;
 
@@ -199,24 +188,45 @@ const ChipRow = styled.div`
   gap: 8px;
   flex-wrap: wrap;
 `;
-const Chip = styled.button`
+
+const MultiChoiceChip = styled.button`
   padding: 8px 12px;
-  border-radius: 999px;
-  border: 1px solid ${tone.line};
-  background: ${tone.chipBg};
-  color: ${tone.chipText};
-  font-size: 13px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: #EAEAEA;
+  color: #818181;
+  font-size: 11px;
   cursor: pointer;
 
   ${({ $active }) =>
     $active &&
     css`
-      background: ${tone.chipActiveBg};
-      color: ${tone.chipActiveText};
-      border-color: ${tone.chipActiveBg};
+      background: #BCBCBC;
+      color: var(--primary);
+      border: 2px solid #555555;
       font-weight: 600;
     `}
 `;
+
+const SingleChoiceChip = styled.button`
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid #D9D9D9;
+  background: transparent;
+  color: #818181;
+  font-size: 12px;
+  cursor: pointer;
+
+  ${({ $active }) =>
+    $active &&
+    css`
+      background: #BCBCBC;
+      color: var(--primary);
+      border: 2px solid #555555;
+      font-weight: 600;
+    `}
+`;
+
 
 const TextareaWrap = styled.div`
   margin-top: 14px;
@@ -240,7 +250,7 @@ const Textarea = styled.textarea`
 const Counter = styled.div`
   text-align: right;
   color: ${tone.sub};
-  font-size: 12px;
+  font-size: 11px;
   padding: 6px 6px 0 0;
 
   span {
@@ -251,8 +261,4 @@ const Counter = styled.div`
 const ButtonWrap = styled.div`
   margin-top: 16px;
   margin-bottom: 8px;
-`;
-
-const BottomPad = styled.div`
-  height: ${TABBAR_H}px;
 `;
