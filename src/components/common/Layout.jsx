@@ -36,6 +36,6 @@ const Inner = styled.div`
 
 const AppContent = styled.main`
   /* padding-top: ${p => (p.$overlap ? '0' : 'calc(var(--header-h) + 8px)')}; */
-  padding-bottom: 64px;      /* 탭바에 안 가리게 */
+  padding-bottom: 0;          /* 탭바 없으니 0 */
   overflow-x: hidden;
 `;

@@ -18,6 +18,7 @@ import Receipt from '@/features/receipt/pages/Receipt';
 
 // AI 챗 시뮬레이터
 import AIChatSimulatorChat from '@/features/chat/pages/ChatSimulator';
+import ChatLoading from './features/chat/pages/ChatLoading';
 
 // 마켓(이번 브랜치에서 추가된 상세 페이지)
 import MarketDetail from '@/features/market/pages/MarketDetail';
@@ -42,6 +43,15 @@ export default function App() {
         <Route path="/onboarding-end" element={<OnboardingEnd />} />
 
         {/* AI 챗 시뮬레이터 */}
+        <Route
+          path="/chat/loading"
+          element={
+            <ChatLoading
+              store={{ nameKo: '수목식당', nameEn: 'Sumok Sikdang', menus: [{ name: '칼제비', price: 8000 }], reviewCount: 120 }}
+              onBack={() => window.history.back()}
+            />
+          }
+        />
         <Route path="/chat/simulator" element={<AIChatSimulatorChat />} />
 
         {/* 인증 */}
