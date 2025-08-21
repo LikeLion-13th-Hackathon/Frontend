@@ -36,6 +36,11 @@ import ReviewComplete from './features/review/pages/ReviewComplete';
 // 가게
 import StoreDetail from '@/features/store/pages/StoreDetail';
 
+// 마이페이지
+import Mypage from '@/features/mypage/pages/Mypage';
+import MyReviews from './features/mypage/pages/MyReviews';
+import Rewards from './features/mypage/pages/Rewards';
+
 export default function App() {
   return (
     <BrowserRouter>
@@ -81,7 +86,7 @@ export default function App() {
 
         {/* 공통 2단계 */}
         <Route path="/review/conversation" element={<ReviewConversation />} />
-        
+
         {/* 공통 3단계 */}
         <Route path="/review/feedback" element={<ReviewFeedback />} />
         
@@ -93,6 +98,11 @@ export default function App() {
 
         {/* 스토어 상세 */}
         <Route path="/store" element={<StoreDetail />} />
+
+        {/* 마이페이지 */}
+        <Route path="/mypage" element={<Mypage />} />
+        <Route path="/mypage/reviews" element={<MyReviews />} />
+        <Route path="/mypage/rewards" element={<Rewards />} />
 
         {/* 없는 경로 → 홈 */}
         <Route path="*" element={<Navigate to="/" replace />} />
