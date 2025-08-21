@@ -35,6 +35,7 @@ export default function SignUpProfile() {
       <CenterHeader title = "logo" />
 
       <Card>
+        <DecorCircle />
         <Title>Welcome!</Title>
         <Sub>Let’s set up your profile.</Sub>
 
@@ -106,6 +107,7 @@ const Header = styled.header`
 `;
 
 const Card = styled.main`
+  position: relative; /* 장식 원(DecorCircle)의 기준 컨테이너 */
   width: 100%;
   max-width: 375px;
   margin-top: 8px;
@@ -177,4 +179,17 @@ const Actions = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 18px;
+`;
+
+// 우상단 장식 원 (decorative circle)
+const DecorCircle = styled.div`
+  position: absolute;
+  top: -90px;    /* 화면 밖으로 살짝 */
+  right: -20px;  /* 화면 밖으로 살짝 */
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  background: #D9D9D9;   /* 회색(Gray) */
+  pointer-events: none;   /* 클릭 방해 X */
+  /* z-index 지정 안 해도 DOM 순서상 아래에 깔림(Decor가 먼저 그려지고, 뒤 요소들이 위에 옴) */
 `;

@@ -296,7 +296,9 @@ const bubbleBase = `
 const BubbleBot = styled.div`
   ${bubbleBase}
   background: #dfdfdf;
-  border-top-left-radius: 12px; border-top-right-radius: 12px; border-bottom-right-radius: 12px;
+  border-top-left-radius: 12px; 
+  border-top-right-radius: 12px; 
+  border-bottom-right-radius: 12px;
 `;
 
 const BubbleUser = styled.div`
