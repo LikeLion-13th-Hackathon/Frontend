@@ -36,66 +36,72 @@ import ReviewComplete from './features/review/pages/ReviewComplete';
 // 가게
 import StoreDetail from '@/features/store/pages/StoreDetail';
 
+// 검색
+import SearchPage from './features/search/pages/Search';
+
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
         {/* 메인 */}
-        <Route path="/" element={<Home />} />
+          <Route path="/" element={<Home />} />
 
         {/* 영수증 */}
-        <Route path="/receipt" element={<Receipt />} />
+          <Route path="/receipt" element={<Receipt />} />
 
         {/* 인증 */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="/signup/profile" element={<SignUpProfile />} />
-        <Route path="/signup/profile-sub" element={<SignUpProfileSub />} />
-        <Route path="/signup/complete" element={<SignUpComplete />} />
-        <Route path="/onboarding-end" element={<OnboardingEnd />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/signup/profile" element={<SignUpProfile />} />
+          <Route path="/signup/profile-sub" element={<SignUpProfileSub />} />
+          <Route path="/signup/complete" element={<SignUpComplete />} />
+          <Route path="/onboarding-end" element={<OnboardingEnd />} />
 
         {/* AI 챗 시뮬레이터 */}
-        <Route
-          path="/chat"
-          element={
-            <ChatLoading
-              store={{
-                nameKo: '수목식당',
-                nameEn: 'Sumok Sikdang',
-                menus: [{ name: '칼제비', price: 8000 }],
-                reviewCount: 120,
-              }}
-              onBack={() => window.history.back()}
-            />
-          }
-        />
-        <Route path="/chat/simulator" element={<AIChatSimulatorChat />} />
+          <Route
+            path="/chat"
+            element={
+              <ChatLoading
+                store={{
+                  nameKo: '수목식당',
+                  nameEn: 'Sumok Sikdang',
+                  menus: [{ name: '칼제비', price: 8000 }],
+                  reviewCount: 120,
+                }}
+                onBack={() => window.history.back()}
+              />
+            }
+          />
+          <Route path="/chat/simulator" element={<AIChatSimulatorChat />} />
 
 
         {/* 리뷰 */}
-        {/* 개별 1단계 */}
-        <Route path="/review" element={<ReviewRestaurant />} />
-        <Route path="/review/fresh" element={<ReviewFresh />} />
-        <Route path="/review/goods" element={<ReviewGoods />} />
-        <Route path="/review/snack" element={<ReviewSnack />} />
+          {/* 개별 1단계 */}
+          <Route path="/review" element={<ReviewRestaurant />} />
+          <Route path="/review/fresh" element={<ReviewFresh />} />
+          <Route path="/review/goods" element={<ReviewGoods />} />
+          <Route path="/review/snack" element={<ReviewSnack />} />
 
-        {/* 공통 2단계 */}
-        <Route path="/review/conversation" element={<ReviewConversation />} />
-        
-        {/* 공통 3단계 */}
-        <Route path="/review/feedback" element={<ReviewFeedback />} />
-        
-        {/* 공통 4단계 */}
-        <Route path="/review/complete" element={<ReviewComplete />} />
+          {/* 공통 2단계 */}
+          <Route path="/review/conversation" element={<ReviewConversation />} />
+          
+          {/* 공통 3단계 */}
+          <Route path="/review/feedback" element={<ReviewFeedback />} />
+          
+          {/* 공통 4단계 */}
+          <Route path="/review/complete" element={<ReviewComplete />} />
 
-        {/* 마켓 상세 */}
-        <Route path="/market" element={<MarketDetail />} />
+          {/* 마켓 상세 */}
+          <Route path="/market" element={<MarketDetail />} />
 
-        {/* 스토어 상세 */}
-        <Route path="/store" element={<StoreDetail />} />
+          {/* 스토어 상세 */}
+          <Route path="/store" element={<StoreDetail />} />
 
-        {/* 없는 경로 → 홈 */}
-        <Route path="*" element={<Navigate to="/" replace />} />
+          {/* 없는 경로 → 홈 */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+
+        {/* 검색 */}
+          <Route path="/search" element={<SearchPage />} />
       </Routes>
     </BrowserRouter>
   );
