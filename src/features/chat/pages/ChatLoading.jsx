@@ -12,9 +12,7 @@ import LocationImg from "@/assets/icons/location.png";
 import StarSvg from "@/assets/icons/star.svg?react";
 import SpinnerSvg from "@/assets/icons/spinner.svg?react";
 
-/* =========================
-   StoreItem (PNG 아이콘 버전)
-   ========================= */
+
 const StoreItem = ({ store }) => {
   const primary = store?.menus?.[0];
 
@@ -44,9 +42,7 @@ const StoreItem = ({ store }) => {
   );
 };
 
-/* =========================
-   ChatLoading Page
-   ========================= */
+
 export default function ChatLoading({ store }) {
   useEffect(() => {
     const prev = document.title;
@@ -98,9 +94,7 @@ export default function ChatLoading({ store }) {
   );
 }
 
-/* =========================
-   styled-components (Page)
-   ========================= */
+
    const Section = styled.section`
    padding: 16px;
  `;
@@ -123,9 +117,6 @@ export default function ChatLoading({ store }) {
    flex-shrink: 0;
  `;
  
- /* =========================
-    styled-components (로딩)
-    ========================= */
  const LoadingWrap = styled.section`
    padding: 12px 16px 24px;
  `;
@@ -190,14 +181,12 @@ const StarWrapper = styled.div`
  
  const LoadingText = styled.p`
   position: absolute;
-  bottom: 80px;   /* ⬇️ 글자를 더 밑으로 */
+  bottom: 80px;   /* 글자를 더 밑으로 */
   font-size: 16px;
   color: #222;
 `;
  
- /* =========================
-    styled-components (StoreItem)
-    ========================= */
+
  const SI_Card = styled.div`
    display: flex;
    align-items: center;

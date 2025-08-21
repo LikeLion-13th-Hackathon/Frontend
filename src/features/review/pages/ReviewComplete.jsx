@@ -23,8 +23,8 @@ export default function ReviewComplete() {
   const nav = useNavigate();
   const { width, height } = useWindowSize(); // 화면 크기 자동 반영
   
-  // 🎉 confetti 상태 관리
-  const [pieces, setPieces] = useState(1200);  // 🎊 시작할 때 훨씬 많이 (기존 800 → 1200)
+  // confetti 상태 관리
+  const [pieces, setPieces] = useState(1200);  // 시작할 때 훨씬 많이 (기존 800 → 1200)
     useEffect(() => {
     const timer = setInterval(() => {
         setPieces((prev) => {
@@ -32,7 +32,7 @@ export default function ReviewComplete() {
             clearInterval(timer);
             return 0;
         }
-        return prev - 15; // 🚀 더 크게 줄임 (빨리 사라짐)
+        return prev - 15; // 더 크게 줄임 (빨리 사라짐)
         });
     }, 250); // ⏱ 0.15초마다 업데이트 (기존 0.25s → 더 빠르게)
     return () => clearInterval(timer);
@@ -48,7 +48,7 @@ export default function ReviewComplete() {
         border
       />
 
-      {/* 🎉 빵빠레 효과 */}
+      {/* 빵빠레 효과 */}
       <Confetti
         width={width}
         height={height}

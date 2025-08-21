@@ -56,7 +56,7 @@ export default function App() {
 
         {/* AI 챗 시뮬레이터 */}
         <Route
-          path="/chat/loading"
+          path="/chat"
           element={
             <ChatLoading
               store={{
