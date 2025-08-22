@@ -7,6 +7,7 @@ import Profile from '../components/Profile';
 import ProfileStatsRow from '../components/ProfileStatsRow';
 import TabBar from '../../../components/common/TabBar';
 import DetailButton from '../components/DetailButton';
+import { clearAuth, loadUser } from '@/shared/api/auth';
 
 const MOCK_RESULTS = {
   user_id: 3,
@@ -29,8 +30,11 @@ function mapUserToProfile(results = {}) {
 }
 
 const Mypage = () => {
-    // 지금은 API 연결 전이므로 Mock 사용
-  const profileProps = mapUserToProfile(MOCK_RESULTS);
+    //로그인시 저장된 유저 불러오기
+    const user = loadUser();
+    const profileProps = mapUserToProfile(user || {});
+    const rewards = user?.reward_count ?? 0;
+    const visited = user?.visited_count ?? 0;
 
   return (
     <Layout overlapHeader>
@@ -50,8 +54,8 @@ const Mypage = () => {
         />
 
         <ProfileStatsRow
-            rewards={MOCK_RESULTS.reward_count ?? 0}
-            visited={MOCK_RESULTS.visited_count ?? 0}
+            rewards={rewards}
+            visited={visited}
         />
         </Background>
 
@@ -70,7 +74,7 @@ const Mypage = () => {
             />
         </ButtonBox>
 
-        <Logout onClick={() => console.log('로그아웃')}>
+        <Logout onClick={() => { clearAuth(); window.location.href = '/login'; }}>
             logout
         </Logout>
 

@@ -6,10 +6,22 @@ import SearchImg from '@/assets/icons/search.png';
 import BackImg from "@/assets/icons/header_back.png";
 import ReviewProfile from '../components/ReviewProfile';
 import UserReview from '../components/review/UserReview';
+import { loadUser } from '../../../shared/api/auth';
 
 const MyReviews = () => {
-    // 임시 카운트 (추후 API 값으로 대체)
-    const visits = 4;
+    // 로그인 시 저장된 유저 불러오기
+    const user = loadUser();
+
+    // 프로필 표시값 매핑
+    const raw = user?.profile_image || '';
+    const avatarUrl = /^https?:\/\//i.test(raw) ? raw : '';
+
+    const name = (user?.nickname && user.nickname.trim()) || user?.username || 'User';
+    const sub =
+        user?.subtitle || user?.nationality || user?.email || '';
+
+    // 방문 수(있으면 사용, 없으면 0)
+    const visits = user?.visited_count ?? 0;
     const placesLabel = `${visits} ${visits === 1 ? 'place' : 'places'}`;
 
   return (
@@ -25,9 +37,9 @@ const MyReviews = () => {
             />
 
             <ReviewProfile
-                avatarUrl=""
-                name="didii"
-                sub="멋쟁이전통시장마스터처럼"
+                avatarUrl={avatarUrl}
+                name={name}
+                sub={sub}
             />
 
             <Card>

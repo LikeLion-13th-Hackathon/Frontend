@@ -8,6 +8,7 @@ import Layout from '../../../components/common/Layout';
 
 import CenterHeader from '../../../components/common/header/CenterHeader';
 import { loginRequest } from '@/shared/api/auth';
+import { saveAuth } from '../../../shared/api/auth';
 
 function Login() {
   const nav = useNavigate();
@@ -32,21 +33,17 @@ function Login() {
       setLoading(true);
       setErrMsg('');
 
-      // 로그인 API 호출
-      const { user, token } = await loginRequest({ email, password: pw });
+      // 1) 로그인 API 호출
+      const data = await loginRequest({ email, password: pw });
 
-      // 토큰 저장
-      if (token?.access_token) localStorage.setItem('access_token', token.access_token);
-      if (token?.refresh_token) localStorage.setItem('refresh_token', token.refresh_token);
-
-      const avatar = user?.profile_image || "https://via.placeholder.com/120?text=Avatar";
-      localStorage.setItem('profile_image', avatar);
+      // 2) 토큰/유저 저장 (localStorage 등)
+      saveAuth(data);
 
       // 성공 이동
       nav('/onboarding-end', {
         state: {
-              username: user?.username || 'guest',
-              profile_image: avatar,
+              username: data.user?.username || 'guest',
+              profile_image: data.user?.profile_image || "https://via.placeholder.com/120?text=Avatar",
             },
         replace: true,
       });
