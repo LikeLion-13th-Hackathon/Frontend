@@ -17,7 +17,7 @@ import OnboardingEnd from '@/features/auth/pages/OnboardingEnd';
 import Receipt from '@/features/receipt/pages/Receipt';
 
 // AI 챗 시뮬레이터
-import AIChatSimulatorChat from '@/features/chat/pages/ChatSimulator';
+import ChatSimulator from '@/features/chat/pages/ChatSimulator';
 import ChatLoading from './features/chat/pages/ChatLoading';
 
 
@@ -67,12 +67,13 @@ export default function App() {
                   nameEn: 'Sumok Sikdang',
                   menus: [{ name: '칼제비', price: 8000 }],
                   reviewCount: 120,
+                  category: 'restaurants', // <-- 이 줄을 추가해주세요!
                 }}
                 onBack={() => window.history.back()}
               />
             }
           />
-          <Route path="/chat/simulator" element={<AIChatSimulatorChat />} />
+          <Route path="/chat/simulator" element={<ChatSimulator />} />
 
 
         {/* 리뷰 */}
