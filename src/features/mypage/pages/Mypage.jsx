@@ -9,9 +9,11 @@ import TabBar from '../../../components/common/TabBar';
 import DetailButton from '../components/DetailButton';
 import { clearAuth, loadUser } from '@/shared/api/auth';
 
+import defaultAvatar from '@/assets/icons/basic_profile.png';
+
 function mapUserToProfile(results = {}) {
   return {
-    avatarUrl: results.profile_image || "",
+    avatarUrl: (results.profile_image && String(results.profile_image).trim()) || defaultAvatar,
     name: (results.nickname && results.nickname.trim()) || results.username || "User",
     subtitle: results.subtitle || results.email || "", //미정
   };

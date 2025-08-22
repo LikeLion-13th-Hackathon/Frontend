@@ -8,13 +8,15 @@ import ReviewProfile from '../components/ReviewProfile';
 import UserReview from '../components/review/UserReview';
 import { loadUser } from '../../../shared/api/auth';
 
+import defaultAvatar from '@/assets/icons/basic_profile.png';
+
 const MyReviews = () => {
     // 로그인 시 저장된 유저 불러오기
     const user = loadUser();
 
     // 프로필 표시값 매핑
-    const raw = user?.profile_image || '';
-    const avatarUrl = /^https?:\/\//i.test(raw) ? raw : '';
+    const raw = (user?.profile_image && String(user.profile_image).trim()) || '';
+    const avatarUrl = /^https?:\/\//i.test(raw) ? raw : defaultAvatar;
 
     const name = (user?.nickname && user.nickname.trim()) || user?.username || 'User';
     const sub =
