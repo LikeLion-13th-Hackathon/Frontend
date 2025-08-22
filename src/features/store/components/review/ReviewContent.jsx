@@ -5,7 +5,7 @@ import ThumbOff from '@/assets/icons/thumb/thumb-up_off.png';
 import ReviewTags from './ReviewTags';
 
 const ReviewContent = ({
-  avatarUrl,
+  avatar,                // ✅ 이름 맞춤 (StoreReview에서 내려주는 값)
   nickname = '',
   createdAt = new Date(),
   likes,
@@ -17,51 +17,50 @@ const ReviewContent = ({
 
   text = '',
 }) => {
-    const dateText = formatDateYYMMDD(createdAt)
+  const dateText = formatDateYYMMDD(createdAt);
 
   return (
     <Wrap>
-        <ReviewHeader>
-            <Profile>
-                {avatarUrl ? (
-                    <Avatar src={avatarUrl} alt={`${nickname} 프로필 이미지`} />
-                ) : (
-                    <AvatarFallback aria-hidden />
-                )}
+      <ReviewHeader>
+        <Profile>
+          {avatar ? (
+            <Avatar src={avatar} alt={`${nickname} 프로필 이미지`} />
+          ) : (
+            <AvatarFallback aria-hidden />
+          )}
 
-                <Meta>
-                    <Nickname title={nickname}>{nickname}</Nickname>
-                    <DateBox>{dateText}</DateBox>
-                </Meta>
-            </Profile>
+          <Meta>
+            <Nickname title={nickname}>{nickname}</Nickname>
+            <DateBox>{dateText}</DateBox>
+          </Meta>
+        </Profile>
 
-            {typeof likes === 'number' && (
-                <LikeBox>
-                    <LikeButton
-                    type="button"
-                    onClick={onLikeClick}
-                    aria-pressed={liked}
-                    aria-label={liked ? '좋아요 취소' : '좋아요'}
-                >
-                    <LikeIcon src={liked ? ThumbOn : ThumbOff} alt="" aria-hidden />
-                    </LikeButton>
-                    <LikeCount>{likes}</LikeCount>
-                </LikeBox>
-            )}
-        </ReviewHeader>
+        {typeof likes === 'number' && (
+          <LikeBox>
+            <LikeButton
+              type="button"
+              onClick={onLikeClick}
+              aria-pressed={liked}
+              aria-label={liked ? '좋아요 취소' : '좋아요'}
+            >
+              <LikeIcon src={liked ? ThumbOn : ThumbOff} alt="" aria-hidden />
+            </LikeButton>
+            <LikeCount>{likes}</LikeCount>
+          </LikeBox>
+        )}
+      </ReviewHeader>
 
-        {/* 진행중 .. 태그 추가 필용.... */}
-        <ReviewTags
-            category={tagsCategory}
-            items={tagItems}
-            defaultOpen={false} //기본 접힘(default)
-        />
+      <ReviewTags
+        category={tagsCategory}
+        items={tagItems}
+        defaultOpen={false}
+      />
 
-        {/* text가 있을 때만 ! 요소 생성 */}
-        {text && <ReviewText>{text}</ReviewText>}
+      {text && <ReviewText>{text}</ReviewText>}
     </Wrap>
-  )
-}
+  );
+};
+
 
 export default ReviewContent
 

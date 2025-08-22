@@ -1,29 +1,40 @@
 import React from 'react'
 import styled from 'styled-components'
-
 import MenuIcon from '@/assets/icons/tag_restaurants.png'
 
 const MOCK_MENUS = [
-  { id: 1, nameKo: '라멘',   nameEn: 'Ramen',    price: '₩ 8,000' },
-  { id: 2, nameKo: '우동',   nameEn: 'Udon',     price: '₩ 9,000' },
-  { id: 3, nameKo: '가츠동', nameEn: 'Katsudon', price: '₩ 11,000' },
+  { id: 1, nameKo: '라멘',   nameEn: 'Ramen',    price: 8000 },
+  { id: 2, nameKo: '우동',   nameEn: 'Udon',     price: 9000 },
+  { id: 3, nameKo: '가츠동', nameEn: 'Katsudon', price: 11000 },
 ];
 
-
 const StoreSignatureMenu = ({ items = [] }) => {
-    const displayKRW = (s) => String(s).replace(/^₩\s+/, '₩\u00A0');
+  const displayKRW = (v) => {
+    if (!v) return "-";
+    return typeof v === "number" ? `₩ ${v.toLocaleString()}` : v;
+  };
 
-    const data = (items?.length ? items : MOCK_MENUS).slice(0, 3);
-    if (!data.length) return null;
+
+  // DB에서 내려오는 메뉴 데이터 → 컴포넌트용으로 매핑
+  const data = (items?.length ? items : MOCK_MENUS)
+  .slice(0, 3)
+  .map((m, i) => ({
+    id: m.menu_id ?? m.id ?? i,
+    nameKo: m.korean ?? m.nameKo,
+    nameEn: m.english ?? m.nameEn,
+    price: m.price,  // 문자열 그대로 둠
+  }));
+
+  if (!data.length) return null;
 
   return (
     <Wrap>
-      {data.map((m, i) => (
-        <MenuContainer key={m.id ?? i}>
+      {data.map((m) => (
+        <MenuContainer key={m.id}>
           <Left>
-                <Icon src={MenuIcon} alt="" aria-hidden /> 
-                <NameKO title={m.nameKo}>{m.nameKo}</NameKO>
-                <NameEN title={m.nameEn}>{m.nameEn}</NameEN>
+            <Icon src={MenuIcon} alt="" aria-hidden /> 
+            <NameKO title={m.nameKo}>{m.nameKo}</NameKO>
+            <NameEN title={m.nameEn}>{m.nameEn}</NameEN>
           </Left>
           <Price>{displayKRW(m.price)}</Price>
         </MenuContainer>

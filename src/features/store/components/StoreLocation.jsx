@@ -2,33 +2,35 @@ import React from 'react'
 import styled from 'styled-components'
 import MapIcon from '@/assets/icons/map.png'
 
-const buildNaverMapUrl = (address) =>
-  `https://map.naver.com/v5/search/${encodeURIComponent(address)}`
+// 네이버 지도 검색 URL 생성
+const buildNaverMapUrl = (roadAddress) =>
+  `https://map.naver.com/v5/search/${encodeURIComponent(roadAddress)}`
 
-const StoreLocation = ({ address }) => {
-    if (!address) return null
+const StoreLocation = ({ roadAddress }) => {
+  if (!roadAddress) return null
 
   return (
     <Wrap
-        as="a"
-        href={buildNaverMapUrl(address)}
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label={`네이버 지도에서 열기: ${address}`}
+      as="a"
+      href={buildNaverMapUrl(roadAddress)}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={`네이버 지도에서 열기: ${roadAddress}`}
     >
-        <Icon src={MapIcon} alt="" aria-hidden/>
-        <Addr title={address}>{address}</Addr>
+      <Icon src={MapIcon} alt="" aria-hidden />
+      <Addr title={roadAddress}>{roadAddress}</Addr>
     </Wrap>
   )
 }
 
 export default StoreLocation
 
+/* --- styled-components --- */
 const Wrap = styled.div`
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-bottom: 14px;
+    margin-bottom: 1px;
 `
 
 const Icon = styled.img`

@@ -98,22 +98,27 @@ const ReviewTags = ({
 export default ReviewTags
 
 const Card = styled.div`
-    position: relative; 
-    border-radius: 12px;
-    background: #F8F8F8;
-    padding: 10px;
+  position: relative; 
+  border-radius: 12px;
+  background: #F8F8F8;
+  padding: 10px;
 
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-    align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  align-self: stretch;
 
-    ${({ $open }) => $open ? '' : `
-        height: 46px;                /* 접힘: 1줄 높이 */
-        overflow: hidden;            /* 넘치면 감춤 */
-    `}
+  transition: max-height 0.25s ease;
+
+  ${({ $open }) => $open ? `
+      max-height: 500px; /* 펼쳤을 때 충분히 크게 */
+  ` : `
+      max-height: 42px;   /* 접힘: 한 줄 + padding 값에 딱 맞춤 */
+      overflow: hidden;   /* 넘치는 건 숨김 */
+  `}
 `
+
+
 
 /* 우측 끝 화살표 버튼 */
 const Toggle = styled.button`
@@ -135,7 +140,7 @@ const Chevron = styled.img`
   width: 18px;
   height: 18px;
   transition: transform .2s ease;
-  transform: rotate(${p => (p.$open ? 180 : 0)}deg);
+  transform: rotate(${p => (p.$open ? 0 : 180)}deg);
 `;
 
 const Content = styled.div`
