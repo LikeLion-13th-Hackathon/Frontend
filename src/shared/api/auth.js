@@ -1,15 +1,15 @@
 // src/shared/api/auth.js
-import { api } from './apiClient';
+import apiClient from "./apiClient";
 
 const USER_KEY = 'user';
 const AT_KEY   = 'access_token';
 const RT_KEY   = 'refresh_token';
 
 export const loginRequest = ({ email, password }) =>
-  api.post('/account/login/', { email, password }).then(r => r.data);
+  apiClient.post("/account/login/", { email, password }).then((r) => r.data);
 
 export const joinRequest = (payload) =>
-  api.post('/account/join/', payload).then(r => r.data);
+  apiClient.post("/account/join/", payload).then((r) => r.data);
 
 export const logoutRequest = () =>
   api.post('/account/logout/').then(r => r.data);

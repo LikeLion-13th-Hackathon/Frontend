@@ -1,20 +1,13 @@
-// src/shared/api/apiClient.js
+// src/shared/api/base.js
 import axios from "axios";
 
-const apiClient = axios.create({
+export const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || "https://oyes-hackathon.o-r.kr",
   headers: { "Content-Type": "application/json" },
 });
 
-// 요청 시 토큰 자동 첨부
-apiClient.interceptors.request.use((config) => {
-  const token = localStorage.getItem("access_token");
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-  return config;
-});
-
-// 에러 메시지 통일
-apiClient.interceptors.response.use(
+// 응답 에러 통일
+api.interceptors.response.use(
   (res) => res,
   (err) => {
     const msg =
@@ -26,4 +19,11 @@ apiClient.interceptors.response.use(
   }
 );
 
-export default apiClient;
+// 요청 시 토큰 자동 첨부
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("access_token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});

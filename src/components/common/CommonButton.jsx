@@ -49,6 +49,12 @@ const CommonButton = styled.button.withConfig({
         color: #111;
       `;
     }
+    if (variant === "ai") {
+      return css`
+      background: #ff8904;
+      color: #fff;
+      `
+    }
     // primary (default)
     return css`
       background: var(--btn-primary);

@@ -25,7 +25,6 @@ export default function OnboardingEnd() {
   return (
     <Layout>
       <CenterHeader title = "logo" />
-
       <Hero>
       <Avatar
         src={avatar}
@@ -124,4 +123,26 @@ const Sub = styled.p`
 
 const CTA = styled.div`
   margin: 24px 20px;
+`;
+
+// 페이지 내부 기준 컨테이너 (mobile canvas width)
+const Page = styled.div`
+  position: relative;      /* 👈 DecorCircle의 기준 */
+  width: 100%;
+  max-width: 375px;        /* 화면 캔버스 폭 */
+  margin: 0 auto;          /* 가운데 정렬 */
+  padding: 0 16px;         /* 좌우 여백 (필요시 조정) */
+`;
+
+// 우상단 장식 원 (decorative circle)
+const DecorCircle = styled.div`
+  position: absolute;
+  top: -138px;    /* 화면 밖으로 살짝 */
+  right: -20px;  /* 화면 밖으로 살짝 */
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  background: #D9D9D9;   /* 회색(Gray) */
+  pointer-events: none;   /* 클릭 방해 X */
+  /* z-index 지정 안 해도 DOM 순서상 아래에 깔림(Decor가 먼저 그려지고, 뒤 요소들이 위에 옴) */
 `;
