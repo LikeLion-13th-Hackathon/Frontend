@@ -1,5 +1,5 @@
 // src/shared/api/searchAll.js
-import { api } from "@/shared/api/apiClient";
+import apiClient from "./apiClient";
 
 /**
  * 전역 자동완성
@@ -8,7 +8,7 @@ import { api } from "@/shared/api/apiClient";
  */
 export async function suggestAll(q, { signal } = {}) {
   if (!q) return [];
-  const { data } = await api.get("/search/suggest", { params: { q }, signal });
+  const { data } = await apiClient.get("/search/suggest", { params: { q }, signal });
   return data;
 }
 
@@ -18,7 +18,7 @@ export async function suggestAll(q, { signal } = {}) {
  * @returns Array<{ type: string, id: number|string, ... }>
  */
 export async function fetchTrendingAll({ limit = 8 } = {}) {
-  const { data } = await api.get("/search/trending", { params: { limit } });
+  const { data } = await apiClient.get("/search/trending", { params: { limit } });
   return data;
 }
 
@@ -31,7 +31,7 @@ export async function searchAll({ q, scopes = [], limit = 20, cursor = null, sig
   const params = { q, limit };
   if (cursor) params.cursor = cursor;
   if (scopes?.length) params.scopes = scopes.join(",");
-  const { data } = await api.get("/search", { params, signal });
+  const { data } = await apiClient.get("/search", { params, signal });
   return data;
 }
 
@@ -39,8 +39,7 @@ export async function searchAll({ q, scopes = [], limit = 20, cursor = null, sig
 export async function fetchDiscover({ limit = 10 } = {}) {
   // 백엔드 엔드포인트에 맞게 경로만 바꿔도 됩니다.
   // 예시1) /search/discover  예시2) /markets/recommend
-  const { data } = await api.get("/search/discover", { params: { limit } });
+  const { data } = await apiClient.get("/search/discover", { params: { limit } });
   // 기대 응답: [{ id, name, desc, thumbnailUrl, marketName, likes }]
   return data;
 }
-
