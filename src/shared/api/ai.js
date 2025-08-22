@@ -25,22 +25,29 @@ export async function fetchAiTopics(category = "fresh") {
  * @param {boolean} [params.retry=false] - 재시도 여부
  * @param {string} [params.threadId] - 스레드 ID (없으면 topic 사용)
  */
+
 export async function postChatMessage({
   category,
   topic,
   role,
   message,
   retry = false,
+  threadId,
+  store_id,
 }) {
   const body = {
-    thread_id: topic,   // 항상 topic과 동일
+    store_id: String(store_id),  // 문자열 보장
+    thread_id: threadId,         // snake_case
     category,
     topic,
-    retry: String(retry),  // "true"/"false" 문자열
+    retry: String(retry),        // "true"/"false"
     role,
     message,
   };
 
+  console.log("[postChatMessage] 보내는 body:", body);
+
   const { data } = await apiClient.post(`/ai/chat/`, body);
   return data;
 }
+

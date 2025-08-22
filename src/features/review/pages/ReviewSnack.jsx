@@ -1,67 +1,93 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import styled, { css } from "styled-components";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
-/* 공용 스캐폴드 */
 import Layout from "@/components/common/Layout";
 import LeftHeader from "@/components/common/header/LeftHeader";
-/* 공통 버튼 */
 import CommonButton from "@/components/common/CommonButton";
-/* 스테퍼 */
 import Stepper from "@/components/Stepper";
-
-/* 아이콘 (프로젝트 아이콘으로 교체 가능) */
 import BackImg from "@/assets/icons/header_back.png";
+import { fetchReviewTags, createReview } from "@/shared/api/review";
 
-/* ===== 디자인 토큰 (와이어톤) ===== */
+/* ===== 디자인 토큰 ===== */
 const tone = {
   text: "#111111",
   sub: "#6B6F76",
   line: "#E7E9ED",
-  cardBg: "#F3F4F6",
-  chipBg: "#ECEEF2",
-  chipText: "#2D3142",
-  chipActiveBg: "#BFC4CC",
-  chipActiveText: "#111111",
 };
-
-/* 리스트 */
-const REVIEW_TAGS = [
-  "Delicious",
-  "Clean",
-  "Recommended",
-  "Hard to find",
-  "Spacious",
-  "English spoken",
-];
-const PORTION_SIZE = ["Bite-sized", "Moderate", "Filling", "Hearty"];
-const SPICY_LEVELS = ["Mild", "Medium", "Spicy", "Very spicy"];
 const MAX_REVIEW_LEN = 3000;
 
 export default function ReviewSnack() {
   const nav = useNavigate();
+  const { state } = useLocation();
+  const storeId = state?.store?.id; // ChatSimulator → Review 페이지에서 전달됨
 
-  const [reviewTags, setReviewTags] = useState([]);
-  const [dietTags, setDietTags] = useState([]);
-  const [spicyIdx, setSpicyIdx] = useState(null);
+  const [tags, setTags] = useState([]);
+  const [selectedTags, setSelectedTags] = useState({});
   const [text, setText] = useState("");
 
-  // Next 활성: 칩(아무거나) 1개 이상 + 텍스트 2자 이상
+  // Next 버튼 활성 조건: 최소 1개의 선택 + 텍스트 2자 이상
   const canNext = useMemo(() => {
-    const picked =
-      reviewTags.length > 0 || dietTags.length > 0 || spicyIdx !== null;
+    const picked = Object.values(selectedTags).some(
+      (arr) => Array.isArray(arr) ? arr.length > 0 : arr !== null
+    );
     return picked && text.trim().length >= 2;
-  }, [reviewTags, dietTags, spicyIdx, text]);
+  }, [selectedTags, text]);
 
-  const toggle = (arr, setter, v) => {
-    if (arr.includes(v)) setter(arr.filter((x) => x !== v));
-    else setter([...arr, v]);
+  // 태그 불러오기
+  useEffect(() => {
+    fetchReviewTags("snacks")
+      .then((res) => setTags(res.data))
+      .catch((err) => console.error("리뷰 태그 불러오기 실패:", err));
+  }, []);
+
+  // 그룹별 태그 분류
+  const grouped = tags.reduce((acc, t) => {
+    acc[t.group] = acc[t.group] ? [...acc[t.group], t] : [t];
+    return acc;
+  }, {});
+
+  // 토글 (multi/single 자동 구분)
+  const handleSelect = (group, id, type) => {
+    setSelectedTags((prev) => {
+      if (type === "multi") {
+        const current = prev[group] || [];
+        return {
+          ...prev,
+          [group]: current.includes(id)
+            ? current.filter((x) => x !== id)
+            : [...current, id],
+        };
+      } else {
+        return { ...prev, [group]: prev[group] === id ? null : id };
+      }
+    });
   };
 
-  const onNext = () => {
-    if (!canNext) return;
-    nav("/review/conversation"); // 다음 단계 라우트로 교체
-  };
+  // 리뷰 저장
+  const onNext = async () => {
+  if (!canNext) return;
+  try {
+    const tag_ids = [...reviewTags, ...dietTags, ...(spicyIdx !== null ? [spicyTags[spicyIdx]] : [])]
+      .map(t => t.id); // 태그 id 모으기
+
+    const res = await createReview(state?.store?.id, {
+      tag_ids,
+      comment: text,
+    });
+
+    // 서버가 준 reviewId를 state로 전달
+    nav("/review/conversation", { 
+      state: { 
+        store: state?.store,
+        reviewId: res.data.id,
+        tags // 서버에서 받아온 태그 리스트도 같이 전달
+      }
+    });
+  } catch (err) {
+    alert("리뷰 저장 실패: " + err.message);
+  }
+};
 
   return (
     <Layout>
@@ -69,61 +95,55 @@ export default function ReviewSnack() {
         title="Review"
         leftIcon={BackImg}
         onLeftClick={() => nav(-1)}
-        border={true}
+        border
       />
-  
+
       <Page>
-        {/* 진행바 (1/4단계) */}
         <Stepper current={1} total={4} />
-  
+
         <Title>Share Your Thoughts{"\n"}About This Store</Title>
         <Sub>You can leave a quick review using tags or text.</Sub>
-  
-        {/* 카드 */}
-        <Card>
-          <FieldLabel>Review Tags</FieldLabel>
-          <ChipRow>
-            {REVIEW_TAGS.map((t) => (
-              <MultiChoiceChip
-                key={t}
-                $active={reviewTags.includes(t)}
-                onClick={() => toggle(reviewTags, setReviewTags, t)}
-                aria-pressed={reviewTags.includes(t)}
-              >
-                {t}
-              </MultiChoiceChip>
-            ))}
-          </ChipRow>
-  
-          <FieldLabel style={{ marginTop: 14 }}>Portion Size</FieldLabel>
-          <ChipRow>
-            {PORTION_SIZE.map((t) => (
-              <SingleChoiceChip
-                key={t}
-                $active={dietTags.includes(t)}
-                onClick={() => toggle(dietTags, setDietTags, t)}
-                aria-pressed={dietTags.includes(t)}
-              >
-                {t}
-              </SingleChoiceChip>
-            ))}
-          </ChipRow>
-  
-          <FieldLabel style={{ marginTop: 14 }}>Spicy level</FieldLabel>
-          <ChipRow>
-            {SPICY_LEVELS.map((t, i) => (
-              <SingleChoiceChip
-                key={t}
-                $active={spicyIdx === i}
-                onClick={() => setSpicyIdx(i)}
-                aria-pressed={spicyIdx === i}
-              >
-                {t}
-              </SingleChoiceChip>
-            ))}
-          </ChipRow>
+
+        {/* 태그 카드 */}
+         <Card>
+          {[
+            "Review Tags", // 무조건 제일 먼저
+            ...Object.keys(grouped).filter((g) => g !== "Review Tags"),
+          ].map((groupName) => {
+            const list = grouped[groupName];
+            if (!list) return null;
+
+            const type =
+              groupName === "Review Tags" ? "multi" : "single";
+
+            return (
+              <div key={groupName}>
+                <FieldLabel>{groupName}</FieldLabel>
+                <ChipRow>
+                  {list.map((t) => {
+                    const isActive =
+                      type === "multi"
+                        ? (selectedTags[groupName] || []).includes(t.id)
+                        : selectedTags[groupName] === t.id;
+
+                    const Chip =
+                      type === "multi" ? MultiChoiceChip : SingleChoiceChip;
+                    return (
+                      <Chip
+                        key={t.id}
+                        $active={isActive}
+                        onClick={() => handleSelect(groupName, t.id, type)}
+                      >
+                        {t.tag}
+                      </Chip>
+                    );
+                  })}
+                </ChipRow>
+              </div>
+            );
+          })}
         </Card>
-  
+
         {/* 텍스트 입력 */}
         <TextareaWrap>
           <Textarea
@@ -133,11 +153,11 @@ export default function ReviewSnack() {
             maxLength={MAX_REVIEW_LEN}
           />
           <Counter>
-            {Math.max(text.length, 0)} <span>/</span> {MAX_REVIEW_LEN}
+            {text.length} <span>/</span> {MAX_REVIEW_LEN}
           </Counter>
         </TextareaWrap>
-  
-        {/* 공통 버튼 사용 */}
+
+        {/* 버튼 */}
         <ButtonWrap>
           <CommonButton
             variant="primary"
@@ -150,7 +170,7 @@ export default function ReviewSnack() {
         </ButtonWrap>
       </Page>
     </Layout>
-  );  
+  );
 }
 
 /* ===== styled-components ===== */
@@ -175,12 +195,13 @@ const Card = styled.div`
   background: #F8F8F8;
   border-radius: 16px;
   padding: 14px;
+  margin-bottom: 20px;
 `;
 
 const FieldLabel = styled.div`
   color: ${tone.text};
   font-size: 12px;
-  margin-bottom: 8px;
+  margin: 10px 0 6px;
 `;
 
 const ChipRow = styled.div`
@@ -227,7 +248,6 @@ const SingleChoiceChip = styled.button`
     `}
 `;
 
-
 const TextareaWrap = styled.div`
   margin-top: 14px;
 `;
@@ -252,12 +272,10 @@ const Counter = styled.div`
   color: ${tone.sub};
   font-size: 11px;
   padding: 6px 6px 0 0;
-
   span {
     margin: 0 2px;
   }
 `;
-
 const ButtonWrap = styled.div`
   margin-top: 16px;
   margin-bottom: 8px;
