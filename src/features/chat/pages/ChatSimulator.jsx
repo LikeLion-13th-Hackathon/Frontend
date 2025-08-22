@@ -19,6 +19,8 @@ export default function AIChatSimulatorChat() {
 
   // state 기반 설정
   const category = state?.store?.category?.toLowerCase() || "restaurants";
+  const storeId = state?.store?.store_id;
+
 
   // topic을 state로 관리
   const [topic, setTopic] = useState(state?.topic?.topic || "default_topic");
@@ -68,10 +70,14 @@ export default function AIChatSimulatorChat() {
         category,
         topic,
         role: "store",
+        threadId,
         message: initialMessage,
+        store_id: storeId
       };
 
       setLastRequest({ role: "store", message: initialMessage });
+
+      console.log("보내는 payload:", payload);
 
       const response = await postChatMessage(payload);
       setDialogue(response?.dialogue ?? []);
@@ -106,6 +112,7 @@ export default function AIChatSimulatorChat() {
         role: nextTurnRole,
         threadId,
         message: item.korean,
+        store_id: storeId,
       });
       setDialogue(response?.dialogue ?? []);
       setCurrentTurnRole(nextTurnRole);
@@ -131,6 +138,7 @@ export default function AIChatSimulatorChat() {
         role: lastRequest.role,
         message: lastRequest.message,
         retry: true,
+        store_id: storeId, 
       });
       setDialogue(response?.dialogue ?? []);
     } catch (e) {
@@ -226,19 +234,32 @@ export default function AIChatSimulatorChat() {
           </PhraseRow>
           <BottomBar>
             <EndButton
-              disabled={messages.length < 6}
+              disabled={messages.length < 2}
               onClick={() => {
                 const category = state?.store?.category?.toLowerCase();
+                const store = state?.store;   // store 객체 꺼내기
+
+                // store_id를 id로 변환
+                const storeWithId = { ...store, id: store.id ?? store.store_id };
+
+                if (!storeWithId.id) {
+                  alert("가게 ID가 없습니다. 백엔드 응답 확인 필요합니다.");
+                  console.log("현재 store 값:", store); // 디버깅
+                  return;
+                }
+
+                const nextState = { ...state, store: storeWithId };
+
                 if (category === "restaurants") {
-                  navigate("/review/restaurant", { state });
+                  navigate("/review/restaurant", { state: nextState });
                 } else if (category === "snacks") {
-                  navigate("/review/snack", { state });
+                  navigate("/review/snack", { state: nextState });
                 } else if (category === "fresh") {
-                  navigate("/review/fresh", { state });
+                  navigate("/review/fresh", { state: nextState });
                 } else if (category === "goods") {
-                  navigate("/review/goods", { state });
+                  navigate("/review/goods", { state: nextState });
                 } else {
-                  navigate("/review/restaurant", { state }); // fallback
+                  navigate("/review/restaurant", { state: nextState }); // fallback
                 }
               }}
             >

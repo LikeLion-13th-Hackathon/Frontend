@@ -156,7 +156,8 @@ export default function ChatLoading() {
           return;
         }
         const topicsData = await fetchAiTopics(category);
-        setTopics(topicsData);
+        console.log("[ChatLoading] topicsData:", topicsData);
+        setTopics(topicsData.all || []);   // ✅ 이렇게 배열만 세팅
       } catch (error) {
         console.error("Failed to fetch topics:", error);
       } finally {
@@ -172,10 +173,17 @@ export default function ChatLoading() {
     }
   }, [store]);
 
+
   const handleTopicSelect = (topic) => {
+    const storeWithId = { 
+      ...store, 
+      id: store.store_id, 
+      store_id: store.store_id 
+    };
+    
     navigate("/chat/simulator", {
       state: {
-        store,
+        store: storeWithId,
         topic: {
           id: topic.id,          // 내부 클라에서 필요하면 사용
           topic: topic.topic,    // 서버 전송용 (텍스트)

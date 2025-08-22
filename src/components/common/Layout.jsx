@@ -9,7 +9,9 @@ const Layout = ({ children, overlapHeader = false }) => {
       {/* <Header /> */}
       <Outer>
         <Inner>
-          <AppContent $overlap={overlapHeader}>{children}</AppContent>
+          <AppContent $overlap={overlapHeader}>
+            {children}
+          </AppContent>
         </Inner>
       </Outer>
       {/* <TabBar /> */}
@@ -21,7 +23,7 @@ export default Layout
 
 const Outer = styled.div`
   width: 100%;
-  background: #0b1016; 
+  background: #0b1016;
 `;
 
 const Inner = styled.div`
@@ -30,12 +32,14 @@ const Inner = styled.div`
   background: #fff;
   box-shadow: 0 10px 30px rgba(0,0,0,0.15);
 
-  min-height: 100dvh;  /* 브라우저 지원 시 */
-  overflow: hidden;
+  min-height: 100dvh;   /* 화면 높이 이상 */
+  display: flex;
+  flex-direction: column;
 `;
 
 const AppContent = styled.main`
-  /* padding-top: ${p => (p.$overlap ? '0' : 'calc(var(--header-h) + 8px)')}; */
-  padding-bottom: 0;          /* 탭바 없으니 0 */
+  flex: 1;               /* ✅ 내부 콘텐츠가 늘어나면 자동 확장 */
   overflow-x: hidden;
+  overflow-y: auto;       /* ✅ 세로 스크롤 허용 */
+  padding-bottom: 0;
 `;

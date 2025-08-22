@@ -23,17 +23,20 @@ const ReviewContent = ({
     <Wrap>
         <ReviewHeader>
             <Profile>
-                {avatarUrl ? (
-                    <Avatar src={avatarUrl} alt={`${nickname} 프로필 이미지`} />
-                ) : (
-                    <AvatarFallback aria-hidden />
-                )}
+              <Avatar
+                src={avatarUrl || "https://via.placeholder.com/42x42.png?text=👤"}
+                alt={`${nickname} 프로필 이미지`}
+                onError={(e) => {
+                  e.currentTarget.src = "https://via.placeholder.com/42x42.png?text=👤";
+                }}
+              />
 
-                <Meta>
-                    <Nickname title={nickname}>{nickname}</Nickname>
-                    <DateBox>{dateText}</DateBox>
-                </Meta>
+              <Meta>
+                <Nickname title={nickname}>{nickname}</Nickname>
+                <DateBox>{dateText}</DateBox>
+              </Meta>
             </Profile>
+
 
             {typeof likes === 'number' && (
                 <LikeBox>

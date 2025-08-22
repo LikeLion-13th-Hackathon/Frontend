@@ -1,42 +1,31 @@
+// src/features/home/components/MarketInfo.jsx
 import React from 'react'
 import styled from 'styled-components'
 
-const MarketInfo = () => {
-    const infos = [
-        {
-            id: 1,
-            title: '흑석시장',
-            subtitle: '– Small, Local, and Full of Life',
-            description: 'This cozy neighborhood market invites you to shop, snack, and mingle with locals.'
-        },
-        {
-            id: 2,
-            title: '상도전통시장',
-            subtitle: '– Alleys of Local Flavors',
-            description: 'Step into the bustling alleys of Sangdo Traditional Market, where fresh produce, sizzling street food fill every corner.'
-        },
-        {
-            id: 3,
-            title: '노량진수산시장',
-            subtitle: '– Seoul’s Seafood Hub',
-            description: 'Explore the vibrant world of Noryangjin Fish Market, where endless rows of fresh seafood meet the lively energy.'
-        }
-  ]
+const MarketInfo = ({ infos = [] }) => {
+
+  // 시장별 설명 하드코딩 매핑
+  const descMap = {
+    1: "A vibrant spot to taste authentic local flavors with fresh produce and traditional street food loved by both visitors and locals.",
+    2: "A busy market loved by local residents for fresh groceries, colorful produce, and classic Korean snacks that capture daily life and community spirit.",
+    3: "An iconic destination offering vast varieties of live and fresh seafood, attracting seafood lovers and visitors seeking authentic marine flavors and market excitement."
+  };
+
   return (
     <>
-        <Title>Learn more about the market</Title>
+      <Title>Learn more about the market</Title>
 
-        <Wrapper>
-            {infos.map(info => (
-                <InfoCard
-                    key={info.id}
-                    title={info.title}
-                    subtitle={info.subtitle}
-                    description={info.description}
-                    image={info.image}   
-                />
-            ))}
-        </Wrapper>
+      <Wrapper>
+        {infos.map(info => (
+          <InfoCard
+            key={info.market_id}
+            title={info.market_name}
+            subtitle={`– ${info.market_english}`}
+            description={descMap[info.market_id] ?? ""}
+            image={info.market_image}
+          />
+        ))}
+      </Wrapper>
     </>
   )
 }
@@ -44,97 +33,102 @@ const MarketInfo = () => {
 export default MarketInfo
 
 const InfoCard = ({ title, subtitle, description, image }) => {
+
+  const safeImage = image?.endsWith(".jpg") ? image.replace(".jpg", ".png") : image;
+    
   return (
     <Card>
-      <ImageBox style={ image ? { backgroundImage: `url(${image})` } : {} } />
+      <ImageBox $image={image} />
       <TextBox>
         <TitleText>
-            {title} <SubText>{subtitle}</SubText>
+          {title} <SubText>{subtitle}</SubText>
         </TitleText>
-        <DescText>{description}</DescText>
+        {description && <DescText>{description}</DescText>}
       </TextBox>
     </Card>
   )
 }
 
 const Title = styled.div`
-    color: #000;
-
-    /* head/head 2-em */
-    font-family: Pretendard;
-    font-size: 20px;
-    font-style: normal;
-    font-weight: 600;
-    line-height: 125%; /* 25px */
-    letter-spacing: -0.4px;
-    padding: 20px 26px 16px;
+  color: #000;
+  font-family: Pretendard;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 125%;
+  letter-spacing: -0.4px;
+  padding: 20px 26px 16px;
 `
 
 const Wrapper = styled.div`
-    display: flex;
-    width: 335px;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 16px;
-    margin: 0 20px;
-    /* padding: 0 20px; */
+  display: flex;
+  width: 335px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  margin: 0 20px;
 `
 
 const Card = styled.div`
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    align-self: stretch;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  align-self: stretch;
 `
 
 const ImageBox = styled.div`
-    width: 56px;
-    height: 56px;
-    border-radius: 8px;
-    background: #efefef;
-    /* background-size: cover;
-    background-position: center; */
+  width: 56px;
+  height: 56px;
+  border-radius: 5px;
+  background: ${({ $image }) =>
+    $image
+      ? `url(${$image}) no-repeat center/cover`
+      : "#efefef"};
 `
 
+
 const TextBox = styled.div`
-    display: flex;
-    width: 256px;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 2px;
+  display: flex;
+  width: 256px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
 `
 
 const TitleText = styled.div`
-    color: #000;
-    font-family: Pretendard;
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 600;
-    line-height: 150%; /* 24px */
-    letter-spacing: -0.32px;
+  color: #000;
+  font-family: Pretendard;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 150%;
+  letter-spacing: -0.32px;
+  white-space: nowrap; /* 한 줄로 고정 */
+  overflow: hidden;
+  text-overflow: ellipsis; /* 너무 길면 ... 처리 */
 `
 
 const SubText = styled.span`
-    color: #000;
+  color: #000;
+  font-family: Pretendard;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 150%;
+  letter-spacing: -0.32px;
+  white-space: nowrap;
+`
 
-    /* body/body 1 */
-    font-family: Pretendard;
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 150%;
-    letter-spacing: -0.32px;
-`;
 
 const DescText = styled.div`
-    align-self: stretch;
-    color: #858585;
+  align-self: stretch;
+  color: #858585;
+  font-family: Pretendard;
+  font-size: 10px;            /* 조금 작게 */
+  font-weight: 400;
+  line-height: 150%;
+  letter-spacing: -0.2px;
 
-    /* caption/caption 2 */
-    font-family: Pretendard;
-    font-size: 10px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 150%; /* 15px */
-    letter-spacing: -0.2px;
+  display: -webkit-box;       /* 멀티라인 ... 처리 */
+  -webkit-line-clamp: 2;      /* 최대 2줄 */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `
