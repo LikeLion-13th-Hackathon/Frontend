@@ -5,10 +5,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import styled, { createGlobalStyle } from 'styled-components';
 import CommonButton from '../../../components/common/CommonButton';
 import Layout from '../../../components/common/Layout';
-
 import CenterHeader from '../../../components/common/header/CenterHeader';
-import { loginRequest } from '@/shared/api/auth';
-import { saveAuth } from '../../../shared/api/auth';
+
+import { loginRequest, saveAuth, loadUser } from '@/shared/api/auth';
+import defaultAvatar from '@/assets/icons/basic_profile.png';
 
 function Login() {
   const nav = useNavigate();
@@ -33,17 +33,17 @@ function Login() {
       setLoading(true);
       setErrMsg('');
 
-      // 1) 로그인 API 호출
       const data = await loginRequest({ email, password: pw });
+      await saveAuth(data);
 
-      // 2) 토큰/유저 저장 (localStorage 등)
-      saveAuth(data);
+      const current = loadUser();
+      const profileImage = current?.profile_image || defaultAvatar;
 
       // 성공 이동
       nav('/onboarding-end', {
         state: {
-              username: data.user?.username || 'guest',
-              profile_image: data.user?.profile_image || "https://via.placeholder.com/120?text=Avatar",
+              username: current?.username || data.user?.username || 'guest',
+              profile_image: profileImage,
             },
         replace: true,
       });
@@ -124,10 +124,6 @@ function Login() {
 }
 
 export default Login;
-
-/* ---------------------- styled-components 아래는 네 파일 그대로 유지 ---------------------- */
-// GlobalStyle, Wrap, Header, Card, LogoBox, LogoText, Form, Label, Field,
-// IconLeft, IconRightBtn, Help, Signup ...
 
 
 /* ---------------------- styled-components ---------------------- */

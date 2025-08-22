@@ -7,8 +7,9 @@ import CommonButton from "../../../components/common/CommonButton";
 import Layout from "../../../components/common/Layout";
 import CenterHeader from "../../../components/common/header/CenterHeader";
 import { joinRequest, saveAuth } from "@/shared/api/auth";
-import { uploadProfileImage } from "../../../shared/api/upload";
-import { getPresign } from "../../../shared/api/storage";
+import { saveS3ImageUrl } from '@/shared/api/upload';
+import { getPresign, putFileToS3 } from '@/shared/api/storage';
+
 
 
 /* 국가코드 → 국기 이모지 */
@@ -80,16 +81,17 @@ export default function SignUpComplete() {
       let imageUrl = '';
 
       if (file) {
-        // 1) presign 발급
-        const filename = file.name || "profile.jpg";
-        const contentType = file.type || "image/jpeg";
-        const { uploadURL, fileURL } = await getPresign({ filename, contentType, folder: "profiles" });
+        const { uploadURL, fileURL } = await getPresign(file.name);
+        await putFileToS3(uploadURL, file);   // S3 업로드
 
-        // 2) S3 업로드
-        await putFileToS3(uploadURL, file, contentType);
-
-        // 3) 이 URL을 프로필 이미지로 사용
-        imageUrl = fileURL;
+        // (백엔드 가이드에 맞게) 업로드된 s3_url을 서버에 저장
+        try {
+          const savedUrl = await saveS3ImageUrl(fileURL);
+          imageUrl = savedUrl;                // 서버가 정규화한 최종 URL 사용
+        } catch (e) {
+          // 저장 API가 인증 필요 등으로 실패하면 S3 URL이라도 사용
+          imageUrl = fileURL;
+        }
       }
 
       const email = prev.email;

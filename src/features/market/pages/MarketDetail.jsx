@@ -14,7 +14,7 @@ const MarketDetail = () => {
             title="Market"
             leftIcon={BackImg}
             rightIcon={SearchImg}
-            onLeftClick={() => window.history.back()}   // react-router 쓰면 navigate(-1)
+            onLeftClick={() => window.history.back()}
             onRightClick={() => console.log("검색 클릭")}
         />
 

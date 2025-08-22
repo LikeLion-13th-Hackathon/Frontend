@@ -9,23 +9,11 @@ import TabBar from '../../../components/common/TabBar';
 import DetailButton from '../components/DetailButton';
 import { clearAuth, loadUser } from '@/shared/api/auth';
 
-const MOCK_RESULTS = {
-  user_id: 3,
-  username: "test2",
-  email: "test2@gmail.com",
-  nickname: "didii",
-  subtitle: "멋쟁이전통시장마스터처럼",
-  nationality: "Korea",
-  profile_image: "", // 없으면 null
-  reward_count: 3,
-  visited_count: 12,
-};
-
 function mapUserToProfile(results = {}) {
   return {
     avatarUrl: results.profile_image || "",
     name: (results.nickname && results.nickname.trim()) || results.username || "User",
-    subtitle: results.subtitle || results.nationality || results.email || "", //미정
+    subtitle: results.subtitle || results.email || "", //미정
   };
 }
 

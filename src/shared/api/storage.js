@@ -1,19 +1,21 @@
 // src/shared/api/storage.js
-import { api } from "./apiClient";
+import { api } from './apiClient';
 
-// 1) presign 발급 요청
-export async function getPresign({ filename, contentType, folder = "profiles" }) {
-  const { data } = await api.post("/storage/presign", { filename, contentType, folder });
-  // data = { uploadURL, fileURL, key }
-  return data;
+// presign 받기 (백 스펙: POST /images/ { filename })
+export async function getPresign(filename) {
+  const { data } = await api.post('/images/', { filename });
+  const uploadURL = data.presigned_url; // S3에 PUT할 URL
+  const fileURL   = data.s3_url;        // 공개 접근 URL
+  if (!uploadURL || !fileURL) throw new Error('presign 응답에 URL이 없습니다.');
+  return { uploadURL, fileURL };
 }
 
-// 2) presigned URL로 실제 업로드(PUT)
-export async function putFileToS3(uploadURL, file, contentType) {
+// S3로 PUT 업로드
+export async function putFileToS3(uploadURL, file) {
   const res = await fetch(uploadURL, {
-    method: "PUT",
-    headers: { "Content-Type": contentType },
+    method: 'PUT',
+    headers: { 'Content-Type': file.type || 'application/octet-stream' },
     body: file,
   });
-  if (!res.ok) throw new Error("S3 업로드 실패");
+  if (!res.ok) throw new Error(`S3 업로드 실패 (${res.status})`);
 }
