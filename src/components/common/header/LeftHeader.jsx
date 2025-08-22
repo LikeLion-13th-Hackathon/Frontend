@@ -8,17 +8,24 @@ const LeftHeader = ( { title,
   onRightClick,
   width = "375px",
   border = true,
+  overlay = false,
   className,}) => {
 
   return (
-    <Header $width={width} $border={border} className={className} role="banner">
-      {leftIcon ? (
+    <Header $overlay={overlay} $width={width} $border={border} className={className} role="banner">
+      {leftIcon && (
+        <IconButton type="button" onClick={onLeftClick} aria-label="left-button">
+          <Icon src={leftIcon} alt="" />
+        </IconButton>
+      )}
+
+      {/* {leftIcon ? (
         <IconButton type="button" onClick={onLeftClick} aria-label="left-button">
           <Icon src={leftIcon} alt="" />
         </IconButton>
       ) : (
         <Spacer />
-      )}
+      )} */}
 
       {/* 타이틀은 왼쪽 정렬, 오른쪽 아이콘은 오른쪽으로 밀림 */}
       <HeaderTitle>{title}</HeaderTitle>
@@ -37,6 +44,9 @@ const LeftHeader = ( { title,
 export default LeftHeader
 
 const Header = styled.header`
+  position: ${p => (p.$overlay ? 'absolute' : 'sticky')};
+  top: 0;
+  z-index: 10;
   display: flex;
   width: ${(p) => p.$width};
   height: 56px;
@@ -45,8 +55,11 @@ const Header = styled.header`
   gap: 16px;
   flex-shrink: 0;
 
-  border-bottom: ${(p) => (p.$border ? "1px solid #E8E8E8" : "none")};
-  background: #fff;
+  background: ${p => (p.$overlay ? 'transparent' : '#FFF')};
+  border-bottom: ${p => (p.$overlay ? 'none' : '1px solid #D2D2D2')};
+
+  /* border-bottom: ${(p) => (p.$border ? "1px solid #E8E8E8" : "none")}; */
+  /* background: #fff; */
 `;
 
 const HeaderTitle = styled.div`

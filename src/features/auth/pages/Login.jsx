@@ -5,9 +5,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import styled, { createGlobalStyle } from 'styled-components';
 import CommonButton from '../../../components/common/CommonButton';
 import Layout from '../../../components/common/Layout';
-
 import CenterHeader from '../../../components/common/header/CenterHeader';
-import { loginRequest } from '@/shared/api/auth';
+
+import { loginRequest, saveAuth, loadUser } from '@/shared/api/auth';
+import defaultAvatar from '@/assets/icons/basic_profile.png';
 
 function Login() {
   const nav = useNavigate();
@@ -32,21 +33,17 @@ function Login() {
       setLoading(true);
       setErrMsg('');
 
-      // 로그인 API 호출
-      const { user, token } = await loginRequest({ email, password: pw });
+      const data = await loginRequest({ email, password: pw });
+      await saveAuth(data);
 
-      // 토큰 저장
-      if (token?.access_token) localStorage.setItem('access_token', token.access_token);
-      if (token?.refresh_token) localStorage.setItem('refresh_token', token.refresh_token);
-
-      const avatar = user?.profile_image || "https://via.placeholder.com/120?text=Avatar";
-      localStorage.setItem('profile_image', avatar);
+      const current = loadUser();
+      const profileImage = current?.profile_image || defaultAvatar;
 
       // 성공 이동
       nav('/onboarding-end', {
         state: {
-              username: user?.username || 'guest',
-              profile_image: avatar,
+              username: current?.username || data.user?.username || 'guest',
+              profile_image: profileImage,
             },
         replace: true,
       });
@@ -127,10 +124,6 @@ function Login() {
 }
 
 export default Login;
-
-/* ---------------------- styled-components 아래는 네 파일 그대로 유지 ---------------------- */
-// GlobalStyle, Wrap, Header, Card, LogoBox, LogoText, Form, Label, Field,
-// IconLeft, IconRightBtn, Help, Signup ...
 
 
 /* ---------------------- styled-components ---------------------- */

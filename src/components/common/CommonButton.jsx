@@ -9,7 +9,10 @@ import styled, { css } from "styled-components";
  *
  * fullWidth: 너비 100% (기본 true)
  */
-const CommonButton = styled.button`
+const CommonButton = styled.button.withConfig({
+  shouldForwardProp: (prop) => !['variant', 'fullWidth'].includes(prop),
+})
+`
   --btn-primary: var(--pri, #6D6D6D);
   --btn-primary-text: #000;
   --btn-disabled: #e0e0e0;

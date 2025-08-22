@@ -36,8 +36,14 @@ import ReviewComplete from './features/review/pages/ReviewComplete';
 // 가게
 import StoreDetail from '@/features/store/pages/StoreDetail';
 
+// 마이페이지
+import Mypage from '@/features/mypage/pages/Mypage';
+import MyReviews from './features/mypage/pages/MyReviews';
+import Rewards from './features/mypage/pages/Rewards';
+
 // 검색
 import SearchPage from './features/search/pages/Search';
+
 
 export default function App() {
   return (
@@ -86,6 +92,11 @@ export default function App() {
 
           {/* 없는 경로 → 홈 */}
           <Route path="*" element={<Navigate to="/" replace />} />
+            
+          {/* 마이페이지 */}
+          <Route path="/mypage" element={<Mypage />} />
+          <Route path="/mypage/reviews" element={<MyReviews />} />
+          <Route path="/mypage/rewards" element={<Rewards />} />
 
         {/* 검색 */}
           <Route path="/search" element={<SearchPage />} />

@@ -5,21 +5,17 @@ import styled from "styled-components";
 import CommonButton from "../../../components/common/CommonButton";
 import Layout from "@/components/common/Layout";
 import CenterHeader from "../../../components/common/header/CenterHeader";
+import defaultAvatar from '@/assets/icons/basic_profile.png';
+
+import { loadUser } from '@/shared/api/auth';
 
 export default function OnboardingEnd() {
   const nav = useNavigate();
   const { state } = useLocation();
 
-  console.log("[OnboardingEnd state]", state);
-
-  // 이전 단계에서 받은 값들 (username, profile_image 등)
-  const username = state?.username || "guest";
-  const avatar =
-      state?.profile_image ||
-      localStorage.getItem('profile_image') ||
-      "https://via.placeholder.com/120.png?text=Avatar";
-
-   console.log('[OnboardingEnd] username:', username, 'avatar:', avatar);
+  const u = loadUser();
+  const username = state?.username || u?.username || "guest";
+  const avatar = state?.profile_image || u?.profile_image || defaultAvatar;
 
   const onStart = () => {
     // 메인으로 이동
@@ -29,33 +25,29 @@ export default function OnboardingEnd() {
   return (
     <Layout>
       <CenterHeader title = "logo" />
-      <Page>
-        <DecorCircle />
-        <Hero>
-        <Avatar
-          src={avatar}
-          alt="profile"
-          onError={(e) => {
-            // via.placeholder.com이 막히거나 깨질 때 대체
-            e.currentTarget.src = "https://placehold.co/120x120?text=Avatar";
-          }}
-        />
+      <Hero>
+      <Avatar
+        src={avatar}
+        alt="profile"
+        onError={(e) => {
+          e.currentTarget.src = defaultAvatar;
+        }}
+      />
 
-          <Brand>logo</Brand>
-        </Hero>
+        <Brand>logo</Brand>
+      </Hero>
 
-        <Content>
-          <WelcomeRow>
-            <WelcomeTitle>Welcome!</WelcomeTitle>
-            <UserName>{username}</UserName>
-          </WelcomeRow>
-          <Sub>Explore traditional markets with logo</Sub>
-        </Content>
+      <Content>
+        <WelcomeRow>
+          <WelcomeTitle>Welcome!</WelcomeTitle>
+          <UserName>{username}</UserName>
+        </WelcomeRow>
+        <Sub>Explore traditional markets with logo</Sub>
+      </Content>
 
-        <CTA>
-          <CommonButton onClick={onStart}>Get Started</CommonButton>
-        </CTA>
-      </Page>
+      <CTA>
+        <CommonButton onClick={onStart}>Get Started</CommonButton>
+      </CTA>
     </Layout>
   );
 }

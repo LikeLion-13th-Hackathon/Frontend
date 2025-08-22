@@ -6,7 +6,10 @@ import CommonButton from "../../../components/common/CommonButton";
 
 import Layout from "../../../components/common/Layout";
 import CenterHeader from "../../../components/common/header/CenterHeader";
-import { joinRequest } from "@/shared/api/auth";
+import { joinRequest, saveAuth } from "@/shared/api/auth";
+import { saveS3ImageUrl } from '@/shared/api/upload';
+import { getPresign, putFileToS3 } from '@/shared/api/storage';
+
 
 
 /* 국가코드 → 국기 이모지 */
@@ -69,18 +72,27 @@ export default function SignUpComplete() {
   // 최종 제출
   const onSubmit = async (e) => {
     e.preventDefault();
-    if (!file) {
-      setError("프로필 이미지를 업로드해 주세요.");
-      return;
-    }
+    if (loading) return;
 
     try {
       setLoading(true);
       setError("");
 
-      // 현재 백엔드 스펙은 URL 문자열만 받음 → 임시 기본 URL 사용
-      // (CDN 업로드가 준비되면 여기서 실제 업로드 후 받은 URL로 교체)
-      const profileImageUrl = "https://via.placeholder.com/256.png?text=Profile";
+      let imageUrl = '';
+
+      if (file) {
+        const { uploadURL, fileURL } = await getPresign(file.name);
+        await putFileToS3(uploadURL, file);   // S3 업로드
+
+        // (백엔드 가이드에 맞게) 업로드된 s3_url을 서버에 저장
+        try {
+          const savedUrl = await saveS3ImageUrl(fileURL);
+          imageUrl = savedUrl;                // 서버가 정규화한 최종 URL 사용
+        } catch (e) {
+          // 저장 API가 인증 필요 등으로 실패하면 S3 URL이라도 사용
+          imageUrl = fileURL;
+        }
+      }
 
       const email = prev.email;
       const username = prev.username?.trim() || (email?.split("@")[0] ?? "user");
@@ -92,22 +104,16 @@ export default function SignUpComplete() {
         nickname: prev.fullName || username,
         age: prev.age,
         nationality: prev.nationality,      // 예: "KR"
-        profile_image: profileImageUrl,     // URL 문자열만 전송
+        ...(imageUrl ? { profile_image: imageUrl } : {}),     // URL 문자열만 전송
       };
 
-      const { user, token } = await joinRequest(payload);
-      
-      // 프로필 이미지 로컬에도 저장 (state가 사라져도 복구용)
-      const avatar = user?.profile_image || profileImageUrl;
-      localStorage.setItem('profile_image', avatar)
-
-      if (token?.access_token) localStorage.setItem("access_token", token.access_token);
-      if (token?.refresh_token) localStorage.setItem("refresh_token", token.refresh_token);
+      const data = await joinRequest(payload);
+      saveAuth(data);
 
       nav("/onboarding-end", {
         state: { 
-          username: user?.username || username,
-          profile_image: avatar,
+          username: data.user?.username || username,
+          profile_image: data.user?.profile_image || imageUrl || "",
         },
         replace: true,
       });
@@ -128,7 +134,7 @@ export default function SignUpComplete() {
         <Sub>This is the last step!</Sub>
 
         <Label>
-          Profile Image<span className="req">*</span>
+          Profile Image
         </Label>
 
         <UploadCard
@@ -163,7 +169,7 @@ export default function SignUpComplete() {
           <CommonButton type="button" onClick={() => nav(-1)}>
             Back
           </CommonButton>
-          <CommonButton type="submit" disabled={!file || loading}>
+          <CommonButton type="submit" disabled={loading}>
             {loading ? "Submitting…" : "Next"}
           </CommonButton>
         </Actions>
