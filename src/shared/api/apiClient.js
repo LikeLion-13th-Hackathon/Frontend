@@ -26,4 +26,6 @@ apiClient.interceptors.response.use(
   }
 );
 
-export default apiClient;
+// export 방식 2가지 지원
+export const api = apiClient;   // named export
+export default apiClient;       // default export
