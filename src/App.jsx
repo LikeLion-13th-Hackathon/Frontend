@@ -58,21 +58,7 @@ export default function App() {
           <Route path="/onboarding-end" element={<OnboardingEnd />} />
 
         {/* AI 챗 시뮬레이터 */}
-          <Route
-            path="/chat"
-            element={
-              <ChatLoading
-                store={{
-                  nameKo: '수목식당',
-                  nameEn: 'Sumok Sikdang',
-                  menus: [{ name: '칼제비', price: 8000 }],
-                  reviewCount: 120,
-                  category: 'restaurants', // <-- 이 줄을 추가해주세요!
-                }}
-                onBack={() => window.history.back()}
-              />
-            }
-          />
+          <Route path="/chat" element={<ChatLoading />} />
           <Route path="/chat/simulator" element={<ChatSimulator />} />
 
 
@@ -96,7 +82,7 @@ export default function App() {
           <Route path="/market" element={<MarketDetail />} />
 
           {/* 스토어 상세 */}
-          <Route path="/store" element={<StoreDetail />} />
+          <Route path="/store/:id" element={<StoreDetail />} />
 
           {/* 없는 경로 → 홈 */}
           <Route path="*" element={<Navigate to="/" replace />} />

@@ -8,11 +8,17 @@ export default function BottomCTA({
   onClick,
   disabled,
   bottomOffset = 0, // 탭바가 있다면 66 같은 값으로 띄우기
+  variant = "primary",
 }) {
   return (
     <Bar $offset={bottomOffset}>
       <Inner>
-        <CommonButton fullWidth onClick={onClick} disabled={disabled}>
+        <CommonButton
+          fullWidth
+          onClick={onClick}
+          disabled={disabled}
+          variant={variant}
+        >
           {label}
         </CommonButton>
       </Inner>
