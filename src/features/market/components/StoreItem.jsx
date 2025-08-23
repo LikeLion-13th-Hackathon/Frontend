@@ -1,37 +1,42 @@
 import React from 'react'
 import styled from 'styled-components'
 import ReviewIcon from '@/assets/icons/review.png'
+import MenuImg from '@/assets/icons/tag_restaurants.png'
 
 const StoreItem = ({ store }) => {
-    const primary = store?.menus?.[0];
+    const nameKo = store?.store_name || store?.nameKo || '';
+    const nameEn = store?.store_english || store?.nameEn || '';
+    const image  = store?.store_image || '';
+    const reviewCount = store?.review_count ?? store?.reviewCount ?? 0;
+
+    // 대표 메뉴 1개
+    const primary = store?.menu_list?.[0] || store?.menus?.[0] || null;
+    const menuName = primary?.korean || primary?.name || '-';
+    const menuPrice = primary?.price;
 
   return (
     <Wrapper>
         <StoreContainer>
-            <StoreImage/>
+            <StoreImage src={image} />
 
             <TextBox>
                 {/* <StoreTitle>수목식당 Sumok Sikdang</StoreTitle> */}
                 <StoreTitle>
-                    <span className="ko">{store.nameKo}</span>
-                    {store.nameEn && <span className="en"> {store.nameEn}</span>}
+                    <span className="ko">{nameKo}</span>
+                    {nameEn && <span className="en"> {nameEn}</span>}
                 </StoreTitle>
 
                 <SubTextBox>
                     <MenuContainer>
-                        <MenuIcon />
-                        {/* <MenuTitle>칼제비</MenuTitle> */}
-                        <MenuTitle>{primary?.name ?? '-'}</MenuTitle>
-                        {/* <MenuCost>W 8,000</MenuCost> */}
-                        <MenuCost>
-                            {primary?.price != null ? `₩ ${primary.price.toLocaleString()}` : '-'}
-                        </MenuCost>
+                        <MenuIcon src={MenuImg} alt="메뉴"/>
+                        <MenuTitle>{menuName}</MenuTitle>
+                        <MenuCost>{menuPrice}</MenuCost>
                     </MenuContainer>
 
                     <ReviewContainer>
                         <Icon src={ReviewIcon} alt="리뷰" />
                         {/* <ReviewNum>120</ReviewNum> */}
-                        <ReviewNum>{store.reviewCount ?? 0}</ReviewNum>
+                        <ReviewNum>{reviewCount}</ReviewNum>
                     </ReviewContainer>
                 </SubTextBox>
             </TextBox>
@@ -57,7 +62,7 @@ const StoreContainer = styled.div`
     align-self: stretch;
 `
 
-const StoreImage = styled.div`
+const StoreImage = styled.img`
     width: 72px;
     height: 72px;
     background: #D9D9D9;
@@ -96,10 +101,9 @@ const MenuContainer = styled.div`
     gap: 6px;
 `
 
-const MenuIcon = styled.div`
+const MenuIcon = styled.img`
     width: 16px;
     height: 16px;
-    background: #D9D9D9;
 `
 
 const MenuTitle = styled.div`

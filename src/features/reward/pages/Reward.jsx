@@ -1,33 +1,31 @@
 import React from 'react'
-import Layout from '@/components/common/Layout';
-import LeftHeader from '../../../components/common/header/LeftHeader';
+import Layout from "@/components/common/Layout";
+import TabBar from '../../../components/common/TabBar';
 import styled from 'styled-components';
+import LeftHeader from '../../../components/common/header/LeftHeader';
+import ReviewProfile from '../../mypage/components/ReviewProfile';
 import SearchImg from '@/assets/icons/search.png';
 import BackImg from "@/assets/icons/header_back.png";
-import ReviewProfile from '../components/ReviewProfile';
-import UserReview from '../components/review/UserReview';
 import { loadUser } from '../../../shared/api/auth';
-
 import defaultAvatar from '@/assets/icons/basic_profile.png';
 
-const MyReviews = () => {
+const Reward = () => {
     // 로그인 시 저장된 유저 불러오기
     const user = loadUser();
+
+    const rewards = user?.reward_count ?? 0;
+    const placesLabel = `${rewards} ${rewards === 1 ? 'point' : 'points'}`;
 
     // 프로필 표시값 매핑
     const raw = (user?.profile_image && String(user.profile_image).trim()) || '';
     const avatarUrl = /^https?:\/\//i.test(raw) ? raw : defaultAvatar;
-
+    
     const name = (user?.nickname && user.nickname.trim()) || user?.username || 'User';
     const sub =
         user?.subtitle || user?.nationality || user?.email || '';
 
-    // 방문 수(있으면 사용, 없으면 0)
-    const visits = user?.visited_count ?? 0;
-    const placesLabel = `${visits} ${visits === 1 ? 'place' : 'places'}`;
-
   return (
-    <Layout overlapHeader>
+    <Layout>
         <Background>
             <LeftHeader
                 title="My Reviews"
@@ -46,7 +44,7 @@ const MyReviews = () => {
 
             <Card>
                 <CardText>
-                    <CardTitle>My Visits</CardTitle>
+                    <CardTitle>Rewards</CardTitle>
                     <Divider aria-hidden>|</Divider>
                     <CardMeta>{placesLabel}</CardMeta>
                 </CardText>
@@ -54,13 +52,12 @@ const MyReviews = () => {
         </Background>
 
         <HeroOverlapSpacer height={40} />
-
-        <UserReview />
+        <TabBar/>
     </Layout>
   )
 }
 
-export default MyReviews
+export default Reward
 
 const Background = styled.div`
     position: relative;

@@ -6,8 +6,15 @@ import StoreList from '../components/StoreList';
 import MarketInfo from '../components/MarketInfo';
 import Layout from '@/components/common/Layout';
 import LeftHeader from '@/components/common/header/LeftHeader';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import TabBar from '../../../components/common/TabBar';
 
 const MarketDetail = () => {
+    const [searchParams] = useSearchParams();
+    const marketId = Number(searchParams.get('market')) || 1;
+
+    const navigate = useNavigate();
+
   return (
     <Layout overlapHeader>
         <LeftHeader
@@ -15,12 +22,14 @@ const MarketDetail = () => {
             leftIcon={BackImg}
             rightIcon={SearchImg}
             onLeftClick={() => window.history.back()}
-            onRightClick={() => console.log("검색 클릭")}
+            onRightClick={() => navigate("/search")}
         />
 
         <MarketInfo />
 
-        <StoreList />
+        <StoreList marketId={marketId}/>
+
+        <TabBar />
     </Layout>
   )
 }

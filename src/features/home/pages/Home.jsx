@@ -5,6 +5,7 @@ import Category from '@/features/home/components/Category';
 import StoreCard from '@/features/home/components/StoreCard';
 import Divider from '@/components/common/Divider';
 import MarketInfo from '@/features/home/components/MarketInfo';
+import TabBar from '../../../components/common/TabBar';
 import HomeHeader from "@/features/home/components/HomeHeader";
 
 import { filterStoresByCategory } from '@/shared/api/store';
@@ -59,6 +60,7 @@ export default function Home() {
       <StoreCard items={stores} />
       <Divider />
       <MarketInfo infos={markets} />
+      <TabBar />
     </Layout>
   );
 }

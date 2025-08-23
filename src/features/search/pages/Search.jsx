@@ -8,6 +8,7 @@ import { suggestAll, fetchTrendingAll, searchAll } from "@/shared/api/searchAll"
 
 // 아이콘
 import BackImg from "@/assets/icons/header_back.png";
+import TabBar from "../../../components/common/TabBar";
 
 // 공통 형태로 맞추기
 const adapt = (x = {}) => ({
@@ -207,6 +208,8 @@ export default function SearchPage() {
           </Section>
         )}
       </Wrap>
+
+      <TabBar />
     </Layout>
   );
 }

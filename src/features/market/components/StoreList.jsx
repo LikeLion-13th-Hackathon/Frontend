@@ -1,68 +1,102 @@
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import styled from 'styled-components';
 import SortButtons from './SortButtons';
 import StoreItem from './StoreItem';
+import { filterStoresByMarketAndCategory } from '@/shared/api/store';
 
 const categories = ["Fresh", "Snacks", "Goods", "Restaurants"];
 
-const StoreList = () => {
+const StoreList = ({ marketId }) => {
     const [activeCategory, setActiveCategory] = useState("Fresh"); // 기본값 fresh
     const [activeSort, setActiveSort] = useState('default');
+    const [stores, setStores] = useState([]);
+    const [loading, setLoading] = useState(false);
 
-    // 임시 더미 데이터(6개) -> 나중에 백이랑 연결
-    const [stores] = useState([
-        { id: 1, nameKo: '수목식당', nameEn: 'Sumok Sikdang', category: 'Restaurants',
-        menus: [{ name: '칼제비', price: 8000 }], reviewCount: 120, thumbnail: '' },
-        { id: 2, nameKo: '영수분식', nameEn: 'Youngsu Snacks', category: 'Snacks',
-        menus: [{ name: '떡볶이', price: 4000 }], reviewCount: 42 },
-        { id: 3, nameKo: '상도문구', nameEn: 'Sangdo Goods', category: 'Goods',
-        menus: [{ name: '노트', price: 1200 }], reviewCount: 5 },
-        { id: 4, nameKo: '바다횟집', nameEn: 'Bada Restaurant', category: 'Restaurants',
-        menus: [{ name: '회덮밥', price: 9000 }], reviewCount: 18 },
-        { id: 5, nameKo: '흥부네 과일', nameEn: 'Heungbu Fruits', category: 'Fresh',
-        menus: [{ name: '사과 1kg', price: 6900 }], reviewCount: 33 },
-        { id: 6, nameKo: '흑석정육', nameEn: 'Heukseok Butcher', category: 'Fresh',
-        menus: [{ name: '삼겹살 100g', price: 2300 }], reviewCount: 99 },
-    ])
+    const activeIndex = Math.max(0, categories.indexOf(activeCategory));
+    const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
+    const btnRefs = useRef([]);
 
-    // 1) 카테고리 필터
-    const filtered = useMemo(
-        () => stores.filter(s => s.category === activeCategory),
-        [stores, activeCategory]
-    );
+    useEffect(() => {
+    if (btnRefs.current[activeIndex]) {
+        const el = btnRefs.current[activeIndex];
+        setIndicatorStyle({
+        left: el.offsetLeft,
+        width: el.offsetWidth,
+        });
+    }
+    }, [activeIndex, stores]);
+
+
+    useEffect(() => {
+        if (!marketId) {
+        console.warn('[StoreList] missing marketId');
+        setStores([]);
+        return;
+        }
+
+        const fetchData = async () => {
+        setLoading(true);
+        try {
+            console.log('[StoreList] fetch start', { marketId, activeCategory });
+
+            // (1) category 포함 조회
+            const res = await filterStoresByMarketAndCategory(marketId, activeCategory);
+            const list =
+            Array.isArray(res.data) ? res.data : (res.data?.results ?? []);
+
+            console.log('[StoreList] result (with category)', list.length, list);
+            setStores(list);
+
+        } catch (err) {
+            console.error('[StoreList] fetch error', err);
+            setStores([]);
+        } finally {
+            setLoading(false);
+        }
+        };
+
+        fetchData();
+    }, [marketId, activeCategory]);
+
+    const safeStores = Array.isArray(stores) ? stores : [];
 
     const sorted = useMemo(() => {
-        const name = (s) => (s.nameEn || s.nameKo || '').toLowerCase();
-        const arr = [...filtered];
+        const name = (s) => (s.store_english || s.store_name || '').toLowerCase();
+        const arr = [...safeStores];
         if (activeSort === 'most reviewed') {
-            // 리뷰 개수 desc, 동률이면 ABC
-            return arr.sort((a, b) =>
-            (b.reviewCount - a.reviewCount) || name(a).localeCompare(name(b), 'en'),
-            );
+        return arr.sort(
+            (a, b) =>
+            ((b.review_count ?? 0) - (a.review_count ?? 0)) ||
+            name(a).localeCompare(name(b), 'en')
+        );
         }
-        // default: ABC
         return arr.sort((a, b) => name(a).localeCompare(name(b), 'en'));
-    }, [filtered, activeSort]);
+    }, [safeStores, activeSort]);
 
   return (
     <>
         <Wrapper>
-        {categories.map((cat) => (
+        {categories.map((cat, idx) => (
             <CategoryButton
-            key={cat}
-            $active={activeCategory === cat}
-            onClick={() => setActiveCategory(cat)}
+                key={cat}
+                ref={(el) => (btnRefs.current[idx] = el)}
+                $active={activeCategory === cat}
+                onClick={() => setActiveCategory(cat)}
             >
-            {cat}
+                {cat}
             </CategoryButton>
         ))}
+            <Indicator style={indicatorStyle} />
         </Wrapper>
 
         <SortButtons value={activeSort} onChange={setActiveSort} />
 
         {/* <StoreItem /> */}
         <ListWrapper>
-            {sorted.map(s => <StoreItem key={s.id} store={s} />)}
+            {!loading &&
+            sorted.map((s) => (
+                <StoreItem key={s.store_id ?? `${s.store_name}-${s.road_address}`} store={s} />
+            ))}
         </ListWrapper>
     </>
     
@@ -72,33 +106,37 @@ const StoreList = () => {
 export default StoreList
 
 const Wrapper = styled.div`
+    position: relative;     
+    border-bottom: 1px solid #E8E8E8;
     display: flex;
     width: 375px;
     align-items: flex-start;
-    border-bottom: 1px solid #E8E8E8;
 `
 
 const CategoryButton = styled.div`
-    display: flex;
-    padding: 12px 16px;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 16px;
+  cursor: pointer;
 
-    border-bottom: ${(props) =>
-        props.$active ? "2px solid #6D6D6D" : "2px solid transparent"};
-
-    color: #000;
-    font-family: Pretendard;
-    font-size: 18px;
-    font-style: normal;
-    line-height: 125%; /* 22.5px */
+  color: ${(props) => (props.$active ? "#000" : "#707070")};
+  font-family: Pretendard;
+  font-size: 18px;
+  font-weight: ${(props) => (props.$active ? 600 : 400)};
+  line-height: 125%; /* 22.5px */
     letter-spacing: -0.36px;
-
-    /* 선택 시 굵기만 변경 */
-    font-weight: ${(props) => (props.$active ? 600 : 400)};
+    font-style: normal;
+  transition: color 0.2s ease;
 `;
 
 const ListWrapper = styled.div`
   width: 375px;
 `
+const Indicator = styled.div`
+  position: absolute;
+  bottom: 0;
+  height: 2px;
+  background: #FF6900;
+  transition: left 0.3s ease, width 0.3s ease;
+`;
