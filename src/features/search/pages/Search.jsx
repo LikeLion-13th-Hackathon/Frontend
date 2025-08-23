@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { searchStores, fetchDiscover, fetchTrendingAll } from "@/shared/api/searchAll";
+import { useNavigate } from "react-router-dom";
 
 import Layout from "@/components/common/Layout";
 import LeftHeader from "@/components/common/header/LeftHeader";
 import BackImg from "@/assets/icons/header_back.png";
 import SearchImg from "@/assets/icons/search.png";
 import CheckThisOut from "@/features/search/components/CheckThisOut";
+import TrendingNow from "@/features/search/components/TrendingNow";
 import StoreCard from "@/features/home/components/StoreCard";
+import TabBar from '../../../components/common/TabBar';
 
 export default function SearchPage() {
   const [keyword, setKeyword] = useState("");
@@ -16,6 +19,8 @@ export default function SearchPage() {
 
   const [discover, setDiscover] = useState([]);
   const [trending, setTrending] = useState([]);
+
+  const navigate = useNavigate();
 
   // 기본 데이터
   useEffect(() => {
@@ -32,7 +37,7 @@ export default function SearchPage() {
     try {
       const list = await searchStores({ keyword });
 
-      // 프론트에서 다시 필터링: 상호명(store_name) 안에만 검색어 포함되도록
+      // store_name 안에 검색어 포함 여부 확인 (list는 이미 매핑된 name 사용 가능)
       const filtered = list.filter((x) =>
         x.name?.toLowerCase().includes(keyword.toLowerCase())
       );
@@ -45,7 +50,6 @@ export default function SearchPage() {
       setLoading(false);
     }
   };
-
 
   const showDefault = !keyword.trim() && items.length === 0;
 
@@ -69,6 +73,7 @@ export default function SearchPage() {
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+            placeholder="Search for stores..."
           />
           <SearchButton onClick={handleSearch}>
             <img src={SearchImg} alt="검색" />
@@ -80,11 +85,7 @@ export default function SearchPage() {
           <>
             <Section>
               <CheckThisOut items={discover} />
-            </Section>
-
-            <Section>
-              <H2>Trending Now</H2>
-              <StoreCard items={trending} />
+              <TrendingNow items={trending} />
             </Section>
           </>
         )}
@@ -99,7 +100,10 @@ export default function SearchPage() {
 
             <List>
               {items.map((item, idx) => (
-                <Row key={item.id ?? `store-${idx}`}>
+                 <Row 
+                  key={item.id ?? `store-${idx}`} 
+                  onClick={() => navigate(`/store/${item.id}`)}
+                >
                   <Thumb
                     style={{
                       backgroundImage: item.thumbnailUrl
@@ -109,12 +113,20 @@ export default function SearchPage() {
                   />
                   <Col>
                     <Top>
-                      <Name>{item.name}</Name>
+                      <Name>
+                        {item.name} <EngName>{item.englishName}</EngName>
+                      </Name>
                     </Top>
-                    <Sub>{item.marketName}</Sub>
+
+                    {/* 대표 메뉴 */}
+                    {item.firstMenu && (
+                      <MenuInfo>
+                        {item.firstMenu.korean} · {item.firstMenu.price}
+                      </MenuInfo>
+                    )}
+
                     <Meta>
                       <span>리뷰 {item.reviewCount}개</span>
-                      <span>♥ {item.likes}</span>
                     </Meta>
                   </Col>
                 </Row>
@@ -123,6 +135,7 @@ export default function SearchPage() {
           </>
         )}
       </Content>
+      <TabBar />
     </Layout>
   );
 }
@@ -191,7 +204,16 @@ const List = styled.div`
   flex-direction: column;
   gap: 14px;
 `;
-const Row = styled.div`display: flex; gap: 10px; cursor: pointer;`;
+
+const Row = styled.div`
+  display: flex;
+  gap: 10px;
+  cursor: pointer;   
+  &:hover {
+    background: #f9f9f9;  
+  }
+`;
+
 const Thumb = styled.div`
   width: 56px; height: 56px; flex: 0 0 56px;
   border-radius: 8px; background: #EAEAEA center/cover no-repeat;
@@ -202,23 +224,18 @@ const Name = styled.div`
   font-size: 14px; font-weight: 700; color: #111;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 `;
-const Sub = styled.div`
-  margin-top: 2px; font-size: 12px; color: #666;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+const EngName = styled.span`
+  font-size: 13px; font-weight: 400; color: #666; margin-left: 4px;
+`;
+const MenuInfo = styled.div`
+  margin-top: 2px; font-size: 13px; font-weight: 500; color: #444;
 `;
 const Meta = styled.div`
-  margin-top: 2px; font-size: 12px; color: #999;
-  display: flex; gap: 10px;
+  margin-top: 2px; font-size: 12px; color: #999; display: flex; gap: 10px;
 `;
 const Loading = styled.div`
-  padding: 12px 0;
-  text-align: center;
-  font-size: 13px;
-  color: #666;
+  padding: 12px 0; text-align: center; font-size: 13px; color: #666;
 `;
 const Empty = styled.div`
-  padding: 24px 0;
-  text-align: center;
-  font-size: 13px;
-  color: #999;
+  padding: 24px 0; text-align: center; font-size: 13px; color: #999;
 `;
