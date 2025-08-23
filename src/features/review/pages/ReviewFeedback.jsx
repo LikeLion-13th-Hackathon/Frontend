@@ -1,21 +1,18 @@
-// src/features/review/pages/ReviewFeedback.jsx
 import React, { useMemo, useState } from "react";
-import styled, { css } from "styled-components";
 import { useNavigate } from "react-router-dom";
+import styled, { css } from "styled-components";
 
-/* 공용 스캐폴드 */
+
 import Layout from "@/components/common/Layout";
 import LeftHeader from "@/components/common/header/LeftHeader";
-/* 공통 버튼 */
 import CommonButton from "@/components/common/CommonButton";
-/* 스테퍼 */
 import Stepper from "@/components/Stepper";
 
-/* 아이콘 */
 import BackImg from "@/assets/icons/header_back.png";
 import LikeIcon from "@/assets/icons/review_like.svg";
 import DislikeIcon from "@/assets/icons/review_dislike.svg";
 
+import { createFeedback } from "@/shared/api/review";
 
 const MAX_LEN = 500;
 
@@ -24,13 +21,25 @@ export default function ReviewFeedback() {
   const [feedback, setFeedback] = useState("");
   const [choice, setChoice] = useState(null); // "up" | "down"
 
+  // Next 버튼 활성 조건
   const canNext = useMemo(() => {
     return choice !== null && feedback.trim().length >= 2;
   }, [choice, feedback]);
 
-  const onNext = () => {
+  // 서버 저장 + 다음 단계 이동
+  const onNext = async () => {
     if (!canNext) return;
-    nav("/review/complete"); // 마지막 페이지 예시
+    try {
+      const body = {
+        thumbs: choice === "up", // true = 좋아요, false = 싫어요
+        comment: feedback.trim(),
+      };
+
+      await createFeedback(body);
+      nav("/review/complete");
+    } catch (err) {
+      alert("피드백 저장 실패: " + err.message);
+    }
   };
 
   return (
@@ -49,20 +58,19 @@ export default function ReviewFeedback() {
         <Sub>Your feedback* helps us make the simulator better.</Sub>
 
         <ChoiceRow>
-            <ChoiceBtn
-                $active={choice === "up"}
-                onClick={() => setChoice("up")}
-            >
-                <img src={LikeIcon} alt="Like" width={40} height={40} />
-            </ChoiceBtn>
-            <ChoiceBtn
-                $active={choice === "down"}
-                onClick={() => setChoice("down")}
-            >
-                <img src={DislikeIcon} alt="Dislike" width={40} height={40} />
-            </ChoiceBtn>
+          <ChoiceBtn
+            $active={choice === "up"}
+            onClick={() => setChoice("up")}
+          >
+            <img src={LikeIcon} alt="Like" width={40} height={40} />
+          </ChoiceBtn>
+          <ChoiceBtn
+            $active={choice === "down"}
+            onClick={() => setChoice("down")}
+          >
+            <img src={DislikeIcon} alt="Dislike" width={40} height={40} />
+          </ChoiceBtn>
         </ChoiceRow>
-
 
         <Sub>Your feedback helps us make the simulator better.</Sub>
 
@@ -77,28 +85,28 @@ export default function ReviewFeedback() {
           </Counter>
         </TextareaWrap>
 
-        {/* 공통 버튼 */}
         <ButtonRow>
-        <CommonButton
+          <CommonButton
             variant="secondary-dim"
             fullWidth={false}
-            onClick={() => nav(-1)}  // 이전 단계로 이동
-        >
+            onClick={() => nav(-1)} // 이전 단계로 이동
+          >
             Back to Review
-        </CommonButton>
+          </CommonButton>
 
-        <CommonButton
+          <CommonButton
             variant={canNext ? "primary" : "secondary"}
             disabled={!canNext}
             onClick={onNext}
-        >
+          >
             Next
-        </CommonButton>
+          </CommonButton>
         </ButtonRow>
       </Page>
     </Layout>
   );
 }
+
 
 /* styled-components */
 const Page = styled.div`

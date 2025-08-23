@@ -62,7 +62,7 @@ const Card = styled.div`
   background: #FFF;
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.10);
 
-  /* ✅ 카드 높이 통일 */
+  /* 카드 높이 통일 */
   min-height: 180px;
 `;
 

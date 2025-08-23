@@ -1,18 +1,17 @@
-// src/features/review/pages/ReviewConversation.jsx
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import styled, { css } from "styled-components";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
-/* 공용 스캐폴드 */
 import Layout from "@/components/common/Layout";
 import LeftHeader from "@/components/common/header/LeftHeader";
-/* 공통 버튼 */
 import CommonButton from "@/components/common/CommonButton";
-/* 스테퍼 */
 import Stepper from "@/components/Stepper";
-
-/* 아이콘 */
 import BackImg from "@/assets/icons/header_back.png";
+
+import { fetchAiTopics } from "@/shared/api/ai";
+import { createConversation } from "@/shared/api/review";
+
+const MAX_REVIEW_LEN = 500;
 
 /* ===== 디자인 토큰 ===== */
 const tone = {
@@ -21,39 +20,62 @@ const tone = {
   line: "#E7E9ED",
 };
 
-/* 리스트 */
-const CONVERSATION_TOPIC = [
-  "Placing an Order",
-  "Asking About the Menu",
-  "Chaning Quantity of Options",
-  "Take Out / To-Go",
-  "Water & Side Dishes",
-  "Paying the Bill",
-];
-
-const MAX_REVIEW_LEN = 500;
-
 export default function ReviewConversation() {
   const nav = useNavigate();
+  const { state } = useLocation();
 
-  const [reviewTags, setReviewTags] = useState([]);
-  const [freshIdx, setFreshIdx] = useState(null);
+  const [topics, setTopics] = useState([]); // 서버에서 불러온 토픽
+  const [selectedTopics, setSelectedTopics] = useState([]);
   const [text, setText] = useState("");
 
   const canNext = useMemo(() => {
-    const picked = reviewTags.length > 0 || freshIdx !== null;
-    return picked && text.trim().length >= 2;
-  }, [reviewTags, freshIdx, text]);
+    return selectedTopics.length > 0 || text.trim().length >= 2;
+  }, [selectedTopics, text]);
 
-  const toggle = (arr, setter, v) => {
-    if (arr.includes(v)) setter(arr.filter((x) => x !== v));
-    else setter([...arr, v]);
+  
+
+  // 토픽 불러오기
+  useEffect(() => {
+    fetchAiTopics(state?.store?.category || "fresh")
+      .then((res) => {
+        console.log("AI Topics raw response:", res);
+
+        // res.all 에 모든 토픽 있음
+        const list = res.all || [];
+        setTopics(list);
+      })
+      .catch((err) => console.error("토픽 불러오기 실패:", err));
+  }, [state?.store?.category]);
+
+
+
+
+  // 토픽 선택 토글
+  const toggleTopic = (id) => {
+    setSelectedTopics((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    );
   };
 
-  const onNext = () => {
+  // 서버 저장
+  const onNext = async () => {
     if (!canNext) return;
-    nav("/review/feedback"); // 다음 단계 예시
+    try {
+      const body = {
+        topics: selectedTopics,
+        comment: text.trim() || null,
+      };
+
+      const res = await createConversation(body); // res === data
+
+      nav("/review/feedback", {
+        state: { conversationId: res.id, conversation: res },
+      });
+    } catch (err) {
+      alert("Conversation 저장 실패: " + err.message);
+    }
   };
+
 
   return (
     <Layout>
@@ -61,7 +83,7 @@ export default function ReviewConversation() {
         title="Review"
         leftIcon={BackImg}
         onLeftClick={() => nav(-1)}
-        border={true}
+        border
       />
 
       <Page>
@@ -70,26 +92,24 @@ export default function ReviewConversation() {
         <Title>What was the topic of{"\n"}the conversation?</Title>
         <Sub>Tell us what you discussed at this store.</Sub>
 
-        {/* 카드 */}
+        {/* 서버에서 불러온 토픽 */}
         <Card>
           <FieldLabel>Conversation Topic*</FieldLabel>
           <ChipRow>
-            {CONVERSATION_TOPIC.map((t) => (
+            {topics.map((t) => (
               <MultiChoiceChip
-                key={t}
-                $active={reviewTags.includes(t)}
-                onClick={() => toggle(reviewTags, setReviewTags, t)}
-                aria-pressed={reviewTags.includes(t)}
+                key={t.id}
+                $active={selectedTopics.includes(t.id)}
+                onClick={() => toggleTopic(t.id)}
               >
-                {t}
+                {t.topic}
               </MultiChoiceChip>
             ))}
           </ChipRow>
         </Card>
-        
+
         <Sub className="other-responses">For other responses, enter them below.</Sub>
 
-        {/* 텍스트 입력 */}
         <TextareaWrap>
           <Textarea
             placeholder="Write a topic of the conversation."
@@ -98,27 +118,21 @@ export default function ReviewConversation() {
             maxLength={MAX_REVIEW_LEN}
           />
           <Counter>
-            {Math.max(text.length, 0)} <span>/</span> {MAX_REVIEW_LEN}
+            {text.length} <span>/</span> {MAX_REVIEW_LEN}
           </Counter>
         </TextareaWrap>
 
-        {/* 공통 버튼 */}
         <ButtonRow>
-        <CommonButton
-            variant="secondary-dim"
-            fullWidth={false}
-            onClick={() => nav(-1)}  // 이전 단계로 이동
-        >
+          <CommonButton variant="secondary-dim" onClick={() => nav(-1)}>
             Back to Review
-        </CommonButton>
-
-        <CommonButton
+          </CommonButton>
+          <CommonButton
             variant={canNext ? "primary" : "secondary"}
             disabled={!canNext}
             onClick={onNext}
-        >
+          >
             Next
-        </CommonButton>
+          </CommonButton>
         </ButtonRow>
       </Page>
     </Layout>

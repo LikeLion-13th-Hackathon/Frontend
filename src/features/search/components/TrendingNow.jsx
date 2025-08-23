@@ -1,23 +1,23 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import StoreCard from "@/features/home/components/StoreCard";
-import { filterStoresByCategory } from "@/shared/api/store";  // ✅ 추가
+import apiClient from "@/shared/api/apiClient";
 
-export default function CheckThisOut() {
+export default function TrendingNow() {
   const [stores, setStores] = useState([]);
 
   useEffect(() => {
-    async function loadStores() {
+    async function loadTrendingStores() {
       try {
-        // ✅ 카테고리 지정 (예: Restaurants)
-        const res = await filterStoresByCategory("Restaurants");
-        
+        // 🔥 전체 가게 불러오기
+        const res = await apiClient.get("/store/list/?limit=60");
+
         const marketNameMap = {
           1: "흑석시장",
           2: "상도시장",
           3: "노량진수산시장",
         };
-        
+
         const formatted = (res.data || []).map((s) => ({
           id: s.store_id,
           title: s.store_name,
@@ -25,28 +25,24 @@ export default function CheckThisOut() {
           imageUrl: s.store_image,
           marketName: marketNameMap[s.market_id] || "알 수 없음",
           likes: s.most_liked_review?.likes_count || 0,
+          reviewCount: s.review_count || 0, // ✅ 댓글(리뷰) 수
         }));
 
-        // ✅ Fisher–Yates shuffle
-      const shuffled = [...formatted];
-      for (let i = shuffled.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-      }
+        // ✅ 리뷰 수 기준 내림차순 정렬
+        const sorted = formatted.sort((a, b) => b.reviewCount - a.reviewCount);
 
-      // ✅ 랜덤 5개 선택
-      const randomFive = shuffled.slice(0, 5);
-      setStores(randomFive);
-    } catch (err) {
-      console.error("❌ CheckThisOut 가게 불러오기 실패:", err);
+        // ✅ 상위 4개만 선택
+        setStores(sorted.slice(0, 4));
+      } catch (err) {
+        console.error("❌ TrendingNow 가게 불러오기 실패:", err);
+      }
     }
-  }
-  loadStores();
-}, []);
+    loadTrendingStores();
+  }, []);
 
   return (
     <Wrap>
-      <Title>Check this place out</Title>
+      <Title>Trending Now</Title>
       <StoreCard items={stores} />
     </Wrap>
   );
