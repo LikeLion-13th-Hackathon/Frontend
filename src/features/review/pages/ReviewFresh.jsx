@@ -1,17 +1,13 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import styled, { css } from "styled-components";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
-/* 공용 스캐폴드 */
 import Layout from "@/components/common/Layout";
 import LeftHeader from "@/components/common/header/LeftHeader";
-/* 공통 버튼 */
 import CommonButton from "@/components/common/CommonButton";
-/* 스테퍼 */
 import Stepper from "@/components/Stepper";
-
-/* 아이콘 */
 import BackImg from "@/assets/icons/header_back.png";
+import { fetchReviewTags, createReview } from "@/shared/api/review";
 
 /* ===== 디자인 토큰 ===== */
 const tone = {
@@ -19,40 +15,75 @@ const tone = {
   sub: "#6B6F76",
   line: "#E7E9ED",
 };
-
-/* 리스트 */
-const REVIEW_TAGS = [
-  "Fresh",
-  "Clean",
-  "Recommended",
-  "Hard to find",
-  "Very Good Value",
-  "English spoken",
-];
-const FRESHNESS = ["Excellent", "Good", "Fair", "Poor", "Very Poor"];
 const MAX_REVIEW_LEN = 3000;
 
 export default function ReviewFresh() {
   const nav = useNavigate();
+  const { state } = useLocation();
+  const storeId = state?.store?.id;
 
-  const [reviewTags, setReviewTags] = useState([]);
-  const [freshIdx, setFreshIdx] = useState(null);
+  const [tags, setTags] = useState([]);
+  const [selectedTags, setSelectedTags] = useState({});
   const [text, setText] = useState("");
 
-  // Next 활성: 칩(아무거나) 선택 + 텍스트 2자 이상
+  // Next 버튼 활성 조건: 최소 1개의 선택 + 텍스트 2자 이상
   const canNext = useMemo(() => {
-    const picked = reviewTags.length > 0 || freshIdx !== null;
+    const picked = Object.values(selectedTags).some(
+      (arr) => Array.isArray(arr) ? arr.length > 0 : arr !== null
+    );
     return picked && text.trim().length >= 2;
-  }, [reviewTags, freshIdx, text]);
+  }, [selectedTags, text]);
 
-  const toggle = (arr, setter, v) => {
-    if (arr.includes(v)) setter(arr.filter((x) => x !== v));
-    else setter([...arr, v]);
+  // 태그 불러오기
+  useEffect(() => {
+    fetchReviewTags("fresh")
+      .then((res) => setTags(res.data))
+      .catch((err) => console.error("리뷰 태그 불러오기 실패:", err));
+  }, []);
+
+  // 그룹별 태그 분류
+  const grouped = tags.reduce((acc, t) => {
+    acc[t.group] = acc[t.group] ? [...acc[t.group], t] : [t];
+    return acc;
+  }, {});
+
+  // 토글 (multi/single 자동 구분)
+  const handleSelect = (group, id, type) => {
+    setSelectedTags((prev) => {
+      if (type === "multi") {
+        const current = prev[group] || [];
+        return {
+          ...prev,
+          [group]: current.includes(id)
+            ? current.filter((x) => x !== id)
+            : [...current, id],
+        };
+      } else {
+        return { ...prev, [group]: prev[group] === id ? null : id };
+      }
+    });
   };
 
-  const onNext = () => {
+  // 리뷰 저장
+  const onNext = async () => {
     if (!canNext) return;
-    nav("/review/conversation"); // 다음 단계 예시
+    try {
+      const tag_ids = Object.values(selectedTags).flat().filter(Boolean);
+      const res = await createReview(storeId, {
+        tag_ids,
+        comment: text,
+      });
+
+      nav("/review/conversation", {
+        state: {
+          store: state?.store,
+          reviewId: res.data.id,
+          tags, // 태그 리스트 전달
+        },
+      });
+    } catch (err) {
+      alert("리뷰 저장 실패: " + err.message);
+    }
   };
 
   return (
@@ -61,7 +92,7 @@ export default function ReviewFresh() {
         title="Review"
         leftIcon={BackImg}
         onLeftClick={() => nav(-1)}
-        border={true}
+        border
       />
 
       <Page>
@@ -70,35 +101,43 @@ export default function ReviewFresh() {
         <Title>Share Your Thoughts{"\n"}About This Store</Title>
         <Sub>You can leave a quick review using tags or text.</Sub>
 
-        {/* 카드 */}
+        {/* 태그 카드 */}
         <Card>
-          <FieldLabel>Review Tags</FieldLabel>
-          <ChipRow>
-            {REVIEW_TAGS.map((t) => (
-              <MultiChoiceChip
-                key={t}
-                $active={reviewTags.includes(t)}
-                onClick={() => toggle(reviewTags, setReviewTags, t)}
-                aria-pressed={reviewTags.includes(t)}
-              >
-                {t}
-              </MultiChoiceChip>
-            ))}
-          </ChipRow>
+          {[
+            "Review Tags", // 항상 먼저
+            ...Object.keys(grouped).filter((g) => g !== "Review Tags"),
+          ].map((groupName) => {
+            const list = grouped[groupName];
+            if (!list) return null;
 
-          <FieldLabel style={{ marginTop: 14 }}>Freshness</FieldLabel>
-          <ChipRow>
-            {FRESHNESS.map((t, i) => (
-              <SingleChoiceChip
-                key={t}
-                $active={freshIdx === i}
-                onClick={() => setFreshIdx(i)}
-                aria-pressed={freshIdx === i}
-              >
-                {t}
-              </SingleChoiceChip>
-            ))}
-          </ChipRow>
+            const type = groupName === "Review Tags" ? "multi" : "single";
+
+            return (
+              <div key={groupName}>
+                <FieldLabel>{groupName}</FieldLabel>
+                <ChipRow>
+                  {list.map((t) => {
+                    const isActive =
+                      type === "multi"
+                        ? (selectedTags[groupName] || []).includes(t.id)
+                        : selectedTags[groupName] === t.id;
+
+                    const Chip =
+                      type === "multi" ? MultiChoiceChip : SingleChoiceChip;
+                    return (
+                      <Chip
+                        key={t.id}
+                        $active={isActive}
+                        onClick={() => handleSelect(groupName, t.id, type)}
+                      >
+                        {t.tag}
+                      </Chip>
+                    );
+                  })}
+                </ChipRow>
+              </div>
+            );
+          })}
         </Card>
 
         {/* 텍스트 입력 */}
@@ -110,11 +149,11 @@ export default function ReviewFresh() {
             maxLength={MAX_REVIEW_LEN}
           />
           <Counter>
-            {Math.max(text.length, 0)} <span>/</span> {MAX_REVIEW_LEN}
+            {text.length} <span>/</span> {MAX_REVIEW_LEN}
           </Counter>
         </TextareaWrap>
 
-        {/* 공통 버튼 */}
+        {/* 버튼 */}
         <ButtonWrap>
           <CommonButton
             variant="primary"
@@ -129,6 +168,7 @@ export default function ReviewFresh() {
     </Layout>
   );
 }
+
 
 /* ===== styled-components ===== */
 const Page = styled.div`
