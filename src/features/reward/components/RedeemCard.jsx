@@ -1,9 +1,39 @@
-import React from 'react'
+import React, { useCallback, useState } from 'react'
 import styled from 'styled-components'
 import GiftImg from '@/assets/icons/gift.png'
 import RedeemModal from './RedeemModal'
+import VoucherModal from './VoucherModal'
 
 const RedeemCard = () => {
+    const [redeemOpen, setRedeemOpen] = useState(false);
+    const [voucherOpen, setVoucherOpen] = useState(false);
+    const [selected, setSelected] = useState(null);
+    const [voucher, setVoucher] = useState(null);
+
+    const handleRedeem = useCallback((amount) => {
+        setSelected(amount);
+        setRedeemOpen(true);
+    }, []);
+
+    const generateCode = (amount) => {
+        // 예시 코드: ONN-5000-XXXX-XXXX
+        const rand = () => Math.floor(Math.random() * 9000 + 1000);
+        return `ONN-${amount}-${rand()}-${rand()}`;
+    };
+
+    const handleConfirm = useCallback(async (amount) => {
+        // TODO: 여기서 실제 교환 API 호출하고, 응답으로 바코드 URL/코드 수신
+        // const { code, barcodeUrl } = await redeemAPI(amount);
+
+        // 데모용 더미
+        const code = generateCode(amount);
+        const barcodeUrl = ''; // 실제 url 있으면 채우기
+
+        setVoucher({ code, barcodeUrl, amount });
+        setRedeemOpen(false);
+        setVoucherOpen(true);
+    }, []);
+
   return (
     <>
         <Wrap>
@@ -68,10 +98,21 @@ const RedeemCard = () => {
             </FlexRow>
         </Wrap>
 
+        {/* 1단계: 교환 확인 모달 */}
         <RedeemModal
-            open={open} 
-            onClose={() => setOpen(false)} 
-            onOpenApp={() => alert(`${selected}원 상품권 사용하기!`)} 
+            open={redeemOpen}
+            amount={selected}
+            onClose={() => setRedeemOpen(false)}
+            onConfirm={handleConfirm}
+        />
+
+        {/* 2단계: 바코드 모달 */}
+        <VoucherModal
+            open={voucherOpen}
+            amount={voucher?.amount}
+            code={voucher?.code}
+            barcodeUrl={voucher?.barcodeUrl}
+            onClose={() => setVoucherOpen(false)}
         />
     </>
   )
@@ -173,7 +214,7 @@ const GiftText = styled.div`
     letter-spacing: -0.24px;
 `
 
-const RedeemButton = styled.div`
+const RedeemButton = styled.button`
     display: flex;
     width: 72px;
     padding: 10px;
