@@ -9,6 +9,7 @@ import Category from '@/features/home/components/Category';
 import StoreCard from '@/features/home/components/StoreCard';
 import Divider from '@/components/common/Divider';
 import MarketInfo from '@/features/home/components/MarketInfo';
+import TabBar from '../../../components/common/TabBar';
 
 export default function Home() {
   const [selectedId, setSelectedId] = useState(1);
@@ -21,6 +22,7 @@ export default function Home() {
       <StoreCard />
       <Divider />
       <MarketInfo />
+      <TabBar />
     </Layout>
   );
 }

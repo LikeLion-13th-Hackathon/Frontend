@@ -18,3 +18,7 @@ export const sortStores = (type) => api.get(`store/?sort_by=${type}`);
 
 // 특정 시장 내 가게 정렬
 export const filterStoresByMarket = (marketId) => api.get(`store/?market=${marketId}`);
+
+// 특정 시장 + 카테고리
+export const filterStoresByMarketAndCategory = (marketId, category) =>
+  api.get(`store/?market=${marketId}&category=${category}`);

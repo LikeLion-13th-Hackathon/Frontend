@@ -40,7 +40,7 @@ const SortButton = styled.div`
   border-radius: 20px;
   cursor: pointer;
 
-  background: ${(props) => (props.$active ? "#6D6D6D" : "#FFF")};
+  background: ${(props) => (props.$active ? "#FF6900" : "#FFF7ED")};
   border: ${(props) => (props.$active ? "none" : "1px solid #E8E8E8")};
 
   color: ${(props) => (props.$active ? "#FFF" : "#707070")};

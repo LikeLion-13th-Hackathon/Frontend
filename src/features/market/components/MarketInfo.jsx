@@ -102,7 +102,6 @@ const MarketInfo = () => {
     <Wrapper>
       <Container ref={rootRef}>
         <MarketTitle onClick={() => setOpen((v) => !v)}>
-          <Rectangle />
           <Title>{title}</Title>
           <Icon src={DropDwonIcon} alt="드롭다운" />
         </MarketTitle>
@@ -142,7 +141,6 @@ const MarketInfo = () => {
 
 export default MarketInfo;
 
-/* ---------------- styled-components ---------------- */
 const Wrapper = styled.div`
   display: flex;
   width: 637px;
@@ -162,11 +160,7 @@ const MarketTitle = styled.div`
   align-items: center;
   gap: 16px;
 `;
-const Rectangle = styled.div`
-  width: 32px;
-  height: 32px;
-  background: #d9d9d9;
-`;
+
 const Title = styled.div`
   color: #000;
   font-family: Pretendard;
@@ -182,7 +176,7 @@ const Icon = styled.img`
 const Popover = styled.div`
   position: absolute;
   top: 110px;
-  left: 100px;
+  left: 80px;
   z-index: 1000;
   border: 1px solid #d5d5d5;
   border-radius: 12px;
@@ -227,10 +221,4 @@ const StyledImg = styled.img`
   object-fit: cover;
   border-radius: 8px;
   display: block;
-`;
-const PlaceholderBox = styled.div`
-  width: 160px;
-  height: 276px;
-  border-radius: 8px;
-  background: #d1d5db;
 `;

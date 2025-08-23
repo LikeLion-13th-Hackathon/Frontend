@@ -39,10 +39,10 @@ import StoreDetail from '@/features/store/pages/StoreDetail';
 // 마이페이지
 import Mypage from '@/features/mypage/pages/Mypage';
 import MyReviews from './features/mypage/pages/MyReviews';
-import Rewards from './features/mypage/pages/Rewards';
 
 // 검색
 import SearchPage from './features/search/pages/Search';
+import Reward from './features/reward/pages/Reward';
 
 
 export default function App() {
@@ -50,56 +50,59 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         {/* 메인 */}
-          <Route path="/" element={<Home />} />
+        <Route path="/" element={<Home />} />
 
         {/* 영수증 */}
-          <Route path="/receipt" element={<Receipt />} />
+        <Route path="/receipt" element={<Receipt />} />
 
         {/* 인증 */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="/signup/profile" element={<SignUpProfile />} />
-          <Route path="/signup/profile-sub" element={<SignUpProfileSub />} />
-          <Route path="/signup/complete" element={<SignUpComplete />} />
-          <Route path="/onboarding-end" element={<OnboardingEnd />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/signup/profile" element={<SignUpProfile />} />
+        <Route path="/signup/profile-sub" element={<SignUpProfileSub />} />
+        <Route path="/signup/complete" element={<SignUpComplete />} />
+        <Route path="/onboarding-end" element={<OnboardingEnd />} />
 
         {/* AI 챗 시뮬레이터 */}
-          <Route path="/chat" element={<ChatLoading />} />
-          <Route path="/chat/simulator" element={<ChatSimulator />} />
+        <Route path="/chat" element={<ChatLoading />} />
+        <Route path="/chat/simulator" element={<ChatSimulator />} />
 
 
         {/* 리뷰 */}
-          {/* 개별 1단계 */}
-          <Route path="/review" element={<ReviewRestaurant />} />
-          <Route path="/review/fresh" element={<ReviewFresh />} />
-          <Route path="/review/goods" element={<ReviewGoods />} />
-          <Route path="/review/snack" element={<ReviewSnack />} />
+        {/* 개별 1단계 */}
+        <Route path="/review" element={<ReviewRestaurant />} />
+        <Route path="/review/fresh" element={<ReviewFresh />} />
+        <Route path="/review/goods" element={<ReviewGoods />} />
+        <Route path="/review/snack" element={<ReviewSnack />} />
 
-          {/* 공통 2단계 */}
-          <Route path="/review/conversation" element={<ReviewConversation />} />
+        {/* 공통 2단계 */}
+        <Route path="/review/conversation" element={<ReviewConversation />} />
           
-          {/* 공통 3단계 */}
-          <Route path="/review/feedback" element={<ReviewFeedback />} />
+        {/* 공통 3단계 */}
+        <Route path="/review/feedback" element={<ReviewFeedback />} />
           
-          {/* 공통 4단계 */}
-          <Route path="/review/complete" element={<ReviewComplete />} />
+        {/* 공통 4단계 */}
+        <Route path="/review/complete" element={<ReviewComplete />} />
 
-          {/* 마켓 상세 */}
-          <Route path="/market" element={<MarketDetail />} />
+        {/* 마켓 상세 */}
+        <Route path="/market" element={<MarketDetail />} />
 
-          {/* 스토어 상세 */}
-          <Route path="/store/:id" element={<StoreDetail />} />
+        {/* 스토어 상세 */}
+        <Route path="/store/:id" element={<StoreDetail />} />
 
-          {/* 없는 경로 → 홈 */}
-          <Route path="*" element={<Navigate to="/" replace />} />
+        {/* 없는 경로 → 홈 */}
+        <Route path="*" element={<Navigate to="/" replace />} />
             
-          {/* 마이페이지 */}
-          <Route path="/mypage" element={<Mypage />} />
-          <Route path="/mypage/reviews" element={<MyReviews />} />
-          <Route path="/mypage/rewards" element={<Rewards />} />
+        {/* 마이페이지 */}
+        <Route path="/mypage" element={<Mypage />} />
+        <Route path="/mypage/reviews" element={<MyReviews />} />
 
         {/* 검색 */}
-          <Route path="/search" element={<SearchPage />} />
+        <Route path="/search" element={<SearchPage />} />
+
+        {/* 리워드 */}
+        <Route path="/reward" element={<Reward />} />
+        
       </Routes>
     </BrowserRouter>
   );
