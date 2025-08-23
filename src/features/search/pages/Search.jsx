@@ -116,7 +116,7 @@ export default function SearchPage() {
   };
 
   return (
-    <Layout>
+    <Layout bottomPadding={66}>
       <LeftHeader
         title="Search"
         leftIcon={BackImg}

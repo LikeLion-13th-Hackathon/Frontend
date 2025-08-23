@@ -2,14 +2,14 @@ import React, { useRef } from 'react'
 import styled from 'styled-components';
 import TabBar from './TabBar';
 
-const Layout = ({ children, overlapHeader = false }) => {
+const Layout = ({ children, overlapHeader = false, bottomPadding = 0 }) => {
 
   return (
     <>
       {/* <Header /> */}
       <Outer>
         <Inner>
-          <AppContent $overlap={overlapHeader}>
+          <AppContent $overlap={overlapHeader} $bottomPadding={bottomPadding}>
             {children}
           </AppContent>
         </Inner>
@@ -41,5 +41,7 @@ const AppContent = styled.main`
   flex: 1;               /* ✅ 내부 콘텐츠가 늘어나면 자동 확장 */
   overflow-x: hidden;
   overflow-y: auto;       /* ✅ 세로 스크롤 허용 */
-  padding-bottom: 0;
+  
+  padding-bottom: ${({ $bottomPadding = 0 }) =>
+    `calc(${$bottomPadding}px + env(safe-area-inset-bottom, 0px))`};
 `;

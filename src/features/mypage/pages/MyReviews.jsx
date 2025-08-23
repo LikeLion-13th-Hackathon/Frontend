@@ -27,7 +27,7 @@ const MyReviews = () => {
     const placesLabel = `${visits} ${visits === 1 ? 'place' : 'places'}`;
 
   return (
-    <Layout overlapHeader>
+    <Layout overlapHeader bottomPadding={66}>
         <Background>
             <LeftHeader
                 title="My Reviews"

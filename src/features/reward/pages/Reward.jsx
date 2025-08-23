@@ -34,7 +34,7 @@ const Reward = () => {
         user?.subtitle || user?.nationality || user?.email || '';
 
   return (
-    <Layout overlapHeader>
+    <Layout overlapHeader bottomPadding={66}>
         <Background>
             <LeftHeader
                 title="My Reviews"

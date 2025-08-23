@@ -46,7 +46,7 @@ const Item = styled.button`
 
   border: 0;
   border-radius: 8px;
-  background: #FFEDD4;
+  background: #F8F8F8;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 
