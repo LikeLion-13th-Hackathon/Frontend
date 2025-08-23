@@ -52,6 +52,11 @@ export default function VoucherModal({ open, onClose, amount, code, barcodeUrl }
             enter the above code to use your voucher.
         </Sub>
 
+        <VoucherDetail>
+            Amount: ₩5,000<br />
+            Expires: 2025-12-31
+        </VoucherDetail>
+
         <ButtonRow>
           <SizedButton variant="secondary" fullWidth={false} onClick={onClose}>
             Close
@@ -72,7 +77,6 @@ export default function VoucherModal({ open, onClose, amount, code, barcodeUrl }
   return createPortal(modal, document.body);
 }
 
-/* ===== styles ===== */
 
 const Overlay = styled.div`
   position: fixed;
@@ -85,17 +89,21 @@ const Overlay = styled.div`
 `;
 
 const Wrap = styled.div`
-  width: 334px;
-  max-width: calc(100vw - 32px);
-  border-radius: 12px;
-  background: #FFF;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 20px;
-  padding-bottom: 96px; /* 하단 버튼 영역 */
-  position: relative;
+    display: inline-flex;
+    padding: 15px;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+
+    width: 334px;
+    max-width: calc(100vw - 32px);
+    border-radius: 12px;
+    background: #FFF;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 96px; /* 하단 버튼 영역 */
+    position: relative;
 `;
 
 const Header = styled.div`
@@ -112,10 +120,29 @@ const Title = styled.div`
 `;
 
 const Sub = styled.div`
-  color: #6D6D6D;
-  font-size: 12px;
-  margin-top: 6px;
+    color: #000;
+    text-align: center;
+
+    /* caption/caption 1 */
+    font-family: Pretendard;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%; /* 18px */
+    letter-spacing: -0.24px;
 `;
+
+const VoucherDetail = styled.div`
+    color: #000;
+
+    /* caption/caption 2 */
+    font-family: Pretendard;
+    font-size: 10px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%; /* 15px */
+    letter-spacing: -0.2px;
+`
 
 const BarcodeArea = styled.div`
   margin-top: 8px;
