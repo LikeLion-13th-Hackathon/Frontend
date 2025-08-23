@@ -59,7 +59,7 @@ export async function searchStores({ keyword, signal } = {}) {
     thumbnailUrl: x.store_image ?? null,
     marketName: x.store_english ?? "",
     reviewCount: x.review_count ?? 0,
-    likes: 0, // 현재 응답에 좋아요 필드 없음 → 기본값 0
+    firstMenu: x.menu_list?.[0] || null,
   }));
 }
 

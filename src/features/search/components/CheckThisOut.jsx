@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import StoreCard from "@/features/home/components/StoreCard";
-import { filterStoresByCategory } from "@/shared/api/store";  // ✅ 추가
+import { filterStoresByCategory } from "@/shared/api/store";
 
 export default function CheckThisOut() {
   const [stores, setStores] = useState([]);
@@ -9,15 +9,14 @@ export default function CheckThisOut() {
   useEffect(() => {
     async function loadStores() {
       try {
-        // ✅ 카테고리 지정 (예: Restaurants)
         const res = await filterStoresByCategory("Restaurants");
-        
+
         const marketNameMap = {
           1: "흑석시장",
           2: "상도시장",
           3: "노량진수산시장",
         };
-        
+
         const formatted = (res.data || []).map((s) => ({
           id: s.store_id,
           title: s.store_name,
@@ -27,27 +26,26 @@ export default function CheckThisOut() {
           likes: s.most_liked_review?.likes_count || 0,
         }));
 
-        // ✅ Fisher–Yates shuffle
-      const shuffled = [...formatted];
-      for (let i = shuffled.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-      }
+        const shuffled = [...formatted];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
 
-      // ✅ 랜덤 5개 선택
-      const randomFive = shuffled.slice(0, 5);
-      setStores(randomFive);
-    } catch (err) {
-      console.error("❌ CheckThisOut 가게 불러오기 실패:", err);
+        setStores(shuffled.slice(0, 5));
+      } catch (err) {
+        console.error("❌ CheckThisOut 가게 불러오기 실패:", err);
+      }
     }
-  }
-  loadStores();
-}, []);
+    loadStores();
+  }, []);
 
   return (
     <Wrap>
       <Title>Check this place out</Title>
-      <StoreCard items={stores} />
+      <CardOverride>
+        <StoreCard items={stores} />
+      </CardOverride>
     </Wrap>
   );
 }
@@ -63,5 +61,12 @@ const Title = styled.div`
   font-weight: 600;
   line-height: 125%;
   letter-spacing: -0.4px;
-  padding-bottom: 12px;
+`;
+
+const CardOverride = styled.div`
+  /* StoreCard > Wrapper에 적용된 좌우 padding 무효화 */
+  & > div {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
 `;
