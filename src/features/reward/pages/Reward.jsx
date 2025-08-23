@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Layout from "@/components/common/Layout";
 import TabBar from '../../../components/common/TabBar';
 import styled from 'styled-components';
@@ -14,8 +14,11 @@ import { loadUser } from '../../../shared/api/auth';
 import defaultAvatar from '@/assets/icons/basic_profile.png';
 import RedeemCard from '../components/RedeemCard';
 import PointHistory from '../components/PointHistory';
+import InfoModal from '../components/InfoModal';
 
 const Reward = () => {
+    const [openInfo, setOpenInfo] = useState(false);
+
     // 로그인 시 저장된 유저 불러오기
     const user = loadUser();
 
@@ -74,7 +77,14 @@ const Reward = () => {
 
         <InfoRow>
             <Title>Redeem for Gift Card</Title>
-            <InfoIcon src={InfoImg} alt="info" />
+            <InfoIcon 
+                src={InfoImg} 
+                alt="info"
+                role="button"
+                tabIndex={0}
+                onClick={() => setOpenInfo(true)}
+                onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setOpenInfo(true)}
+            />
         </InfoRow>
         
         <InfoDescription>
@@ -85,6 +95,8 @@ const Reward = () => {
         <RedeemCard />
 
         <PointHistory />
+
+        <InfoModal open={openInfo} onClose={() => setOpenInfo(false)} />
 
         <TabBar/>
     </Layout>

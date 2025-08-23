@@ -1,70 +1,79 @@
 import React from 'react'
 import styled from 'styled-components'
 import GiftImg from '@/assets/icons/gift.png'
+import RedeemModal from './RedeemModal'
 
 const RedeemCard = () => {
   return (
-    <Wrap>
-        {/* 5,000원 상품권 */}
-        <FlexRow>
-            <CardContainer>
-                <Rectangle />
+    <>
+        <Wrap>
+            {/* 5,000원 상품권 */}
+            <FlexRow>
+                <CardContainer>
+                    <Rectangle />
 
-                <TextContainer>
-                    <SubName>디지털 온누리상품권</SubName>
-                    <Cost>5,000 won</Cost>
-                    <PointRow>
-                        <GiftIcon src={GiftImg}/>
-                        <GiftText>Use 5,000 points</GiftText>
-                    </PointRow>
-                </TextContainer>
-            </CardContainer>
+                    <TextContainer>
+                        <SubName>디지털 온누리상품권</SubName>
+                        <Cost>5,000 won</Cost>
+                        <PointRow>
+                            <GiftIcon src={GiftImg}/>
+                            <GiftText>Use 5,000 points</GiftText>
+                        </PointRow>
+                    </TextContainer>
+                </CardContainer>
 
-            <RedeemButton>
-                Redeem
-            </RedeemButton>
-        </FlexRow>
+                <RedeemButton onClick={() => handleRedeem(5000)}>
+                    Redeem
+                </RedeemButton>
+            </FlexRow>
 
-        {/* 10,000원 상품권 */}
-        <FlexRow>
-            <CardContainer>
-                <Rectangle />
+            {/* 10,000원 상품권 */}
+            <FlexRow>
+                <CardContainer>
+                    <Rectangle />
 
-                <TextContainer>
-                    <SubName>디지털 온누리상품권</SubName>
-                    <Cost>10,000 won</Cost>
-                    <PointRow>
-                        <GiftIcon src={GiftImg}/>
-                        <GiftText>Use 10,000 points</GiftText>
-                    </PointRow>
-                </TextContainer>
-            </CardContainer>
+                    <TextContainer>
+                        <SubName>디지털 온누리상품권</SubName>
+                        <Cost>10,000 won</Cost>
+                        <PointRow>
+                            <GiftIcon src={GiftImg}/>
+                            <GiftText>Use 10,000 points</GiftText>
+                        </PointRow>
+                    </TextContainer>
+                </CardContainer>
 
-            <RedeemButton>
-                Redeem
-            </RedeemButton>
-        </FlexRow>
+                <RedeemButton onClick={() => handleRedeem(10000)}>
+                    Redeem
+                </RedeemButton>
+            </FlexRow>
 
-        {/* 30,000원 상품권 */}
-        <FlexRow>
-            <CardContainer>
-                <Rectangle />
+            {/* 30,000원 상품권 */}
+            <FlexRow>
+                <CardContainer>
+                    <Rectangle />
 
-                <TextContainer>
-                    <SubName>디지털 온누리상품권</SubName>
-                    <Cost>30,000 won</Cost>
-                    <PointRow>
-                        <GiftIcon src={GiftImg}/>
-                        <GiftText>Use 30,000 points</GiftText>
-                    </PointRow>
-                </TextContainer>
-            </CardContainer>
+                    <TextContainer>
+                        <SubName>디지털 온누리상품권</SubName>
+                        <Cost>30,000 won</Cost>
+                        <PointRow>
+                            <GiftIcon src={GiftImg}/>
+                            <GiftText>Use 30,000 points</GiftText>
+                        </PointRow>
+                    </TextContainer>
+                </CardContainer>
 
-            <RedeemButton>
-                Redeem
-            </RedeemButton>
-        </FlexRow>
-    </Wrap>
+                <RedeemButton onClick={() => handleRedeem(30000)}>
+                    Redeem
+                </RedeemButton>
+            </FlexRow>
+        </Wrap>
+
+        <RedeemModal
+            open={open} 
+            onClose={() => setOpen(false)} 
+            onOpenApp={() => alert(`${selected}원 상품권 사용하기!`)} 
+        />
+    </>
   )
 }
 
