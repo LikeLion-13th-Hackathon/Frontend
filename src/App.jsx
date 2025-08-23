@@ -70,7 +70,7 @@ export default function App() {
 
         {/* 리뷰 */}
         {/* 개별 1단계 */}
-        <Route path="/review" element={<ReviewRestaurant />} />
+        <Route path="/review/restaurant" element={<ReviewRestaurant />} />
         <Route path="/review/fresh" element={<ReviewFresh />} />
         <Route path="/review/goods" element={<ReviewGoods />} />
         <Route path="/review/snack" element={<ReviewSnack />} />

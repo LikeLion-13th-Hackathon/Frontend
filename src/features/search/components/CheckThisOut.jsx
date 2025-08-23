@@ -1,88 +1,72 @@
-// src/features/search/components/CheckThisOut.jsx
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { fetchDiscover } from "@/shared/api/searchAll";
 import StoreCard from "@/features/home/components/StoreCard";
+import { filterStoresByCategory } from "@/shared/api/store";
 
-
-/* --- 모의데이터(API 전용 placeholder) --- */
-const MOCK = Array.from({ length: 6 }).map((_, i) => ({
-  id: `mock-${i}`,
-  title: "가게명",
-  desc: "리뷰내용리뷰내용리뷰내...",
-  imageUrl: "",                 // 스켈레톤(회색 배경)으로 표시
-  MarketName: "흑석시장",
-  likes: 4,
-}));
-
-/* 응답 → StoreCard 형태로 매핑 */
-const mapToStoreCard = (x = {}) => ({
-  id: x.id,
-  title: x.name || x.title || "-",
-  desc: x.desc || x.subtitle || "",
-  imageUrl: x.thumbnailUrl || x.image || "",
-  MarketName: x.marketName || "흑석시장",
-  likes: x.likes ?? 0,
-});
-
-export default function CheckThisOut({ onClickItem }) {
-  const [items, setItems] = useState(MOCK);
-  const [loading, setLoading] = useState(true);
+export default function CheckThisOut() {
+  const [stores, setStores] = useState([]);
 
   useEffect(() => {
-    let mounted = true;
-    (async () => {
+    async function loadStores() {
       try {
-        const res = await fetchDiscover({ limit: 10 }); // 백엔드 준비되면 실제 데이터
-        if (!mounted) return;
-        const list = (res || []).map(mapToStoreCard);
-        setItems(list.length ? list : MOCK);            // 비었으면 MOCK 사용
-      } catch {
-        setItems(MOCK);                                 // 오류 시 MOCK
-      } finally {
-        setLoading(false);
+        const res = await filterStoresByCategory("Restaurants");
+
+        const marketNameMap = {
+          1: "흑석시장",
+          2: "상도시장",
+          3: "노량진수산시장",
+        };
+
+        const formatted = (res.data || []).map((s) => ({
+          id: s.store_id,
+          title: s.store_name,
+          desc: s.most_liked_review?.comment || "등록된 리뷰가 없습니다.",
+          imageUrl: s.store_image,
+          marketName: marketNameMap[s.market_id] || "알 수 없음",
+          likes: s.most_liked_review?.likes_count || 0,
+        }));
+
+        const shuffled = [...formatted];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+
+        setStores(shuffled.slice(0, 5));
+      } catch (err) {
+        console.error("❌ CheckThisOut 가게 불러오기 실패:", err);
       }
-    })();
-    return () => { mounted = false; };
+    }
+    loadStores();
   }, []);
 
   return (
     <Wrap>
       <Title>Check this place out</Title>
-      {/* 페이지 padding이 이미 있으니 바깥 패딩은 0으로 */}
-      <Bleed>
-        <StoreCard
-            items={items}
-            onCardClick={onClickItem}
-            outerPadding="0"
-        />
-      </Bleed>
+      <CardOverride>
+        <StoreCard items={stores} />
+      </CardOverride>
     </Wrap>
   );
 }
 
-/* styled — 제목만 유지 */
+/* === styled === */
 const Wrap = styled.section`
   margin: 20px 0;
 `;
 
 const Title = styled.div`
-  color:#000;
+  color: #000;
   font-size: 20px;
-  font-weight:600;
-  line-height:125%;
-  letter-spacing:-0.4px;
-  padding-bottom:12px;
+  font-weight: 600;
+  line-height: 125%;
+  letter-spacing: -0.4px;
 `;
 
-/* 페이지 좌우 padding이 20px일 때 첫 카드가 딱 붙게 하는 래퍼 */
-const Bleed = styled.div`
-  margin-left: -20px;   /* 페이지 패딩 무시 */
-  margin-right: -20px;
-  /* StoreCard가 기본적으로 좌우 padding 20px을 갖고 있어서
-     검색 페이지에서는 제거해줘야 함 */
+const CardOverride = styled.div`
+  /* StoreCard > Wrapper에 적용된 좌우 padding 무효화 */
   & > div {
-    padding-left: 10;
-    padding-right: 10;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
   }
 `;

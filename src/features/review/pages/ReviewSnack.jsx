@@ -66,28 +66,30 @@ export default function ReviewSnack() {
 
   // 리뷰 저장
   const onNext = async () => {
-  if (!canNext) return;
-  try {
-    const tag_ids = [...reviewTags, ...dietTags, ...(spicyIdx !== null ? [spicyTags[spicyIdx]] : [])]
-      .map(t => t.id); // 태그 id 모으기
+    if (!canNext) return;
+    try {
+      // selectedTags 객체 안의 값들을 전부 모아서 tag_ids 생성
+      const tag_ids = Object.values(selectedTags)
+        .flat()              // 배열 펼치기
+        .filter(Boolean);    // null 제거
 
-    const res = await createReview(state?.store?.id, {
-      tag_ids,
-      comment: text,
-    });
+      const res = await createReview(state?.store?.id, {
+        tag_ids,
+        comment: text,
+      });
 
-    // 서버가 준 reviewId를 state로 전달
-    nav("/review/conversation", { 
-      state: { 
-        store: state?.store,
-        reviewId: res.data.id,
-        tags // 서버에서 받아온 태그 리스트도 같이 전달
-      }
-    });
-  } catch (err) {
-    alert("리뷰 저장 실패: " + err.message);
-  }
-};
+      nav("/review/conversation", { 
+        state: { 
+          store: state?.store,
+          reviewId: res.data.id,
+          tags, // 태그 리스트도 전달
+        }
+      });
+    } catch (err) {
+      alert("리뷰 저장 실패: " + err.message);
+    }
+  };
+
 
   return (
     <Layout>

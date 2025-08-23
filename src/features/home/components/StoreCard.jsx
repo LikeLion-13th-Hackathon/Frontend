@@ -1,13 +1,20 @@
 import React from 'react'
 import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
 import LocationSvg from "@/assets/icons/location.svg?react";
 import LikeImg from "@/assets/icons/main_like.png";
 
 const StoreCard = ({ items = [] }) => {
+  const navigate = useNavigate();  // ✅ 추가
+
+  const handleClick = (id) => {
+    navigate(`/store/${id}`);  // ✅ 상세 페이지로 이동
+  };
+
   return (
     <Wrapper>
       {items.map(it => (
-        <Card key={it.id}>
+        <Card key={it.id} onClick={() => handleClick(it.id)}> {/* ✅ 클릭 이벤트 추가 */}
           <ImageBox>
             {it.imageUrl ? (
               <StoreImage src={it.imageUrl} alt={it.title} />
@@ -62,7 +69,7 @@ const Card = styled.div`
   background: #FFF;
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.10);
 
-  /* ✅ 카드 높이 통일 */
+  /* 카드 높이 통일 */
   min-height: 180px;
 `;
 

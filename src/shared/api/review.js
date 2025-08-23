@@ -26,3 +26,14 @@ export const deleteReview = (reviewId) =>
 // 좋아요 토글
 export const toggleReviewLike = (reviewId) =>
   api.post(`/reviews/${reviewId}/like/`);
+
+// Conversation 저장
+export const createConversation = (data) =>
+  api.post(`/ai/chat/conversation/`, data).then((res) => res.data);
+
+// 피드백 저장
+export const createFeedback = (data) =>
+  api.post(`/ai/feedback/`, data).then((res) => res.data);
+
+
+

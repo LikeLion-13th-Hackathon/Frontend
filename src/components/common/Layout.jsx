@@ -39,10 +39,9 @@ const Inner = styled.div`
 `;
 
 const AppContent = styled.main`
-  flex: 1;               /* ✅ 내부 콘텐츠가 늘어나면 자동 확장 */
+  flex: 1;               
   min-height: 0;
   overflow-x: hidden;
-  overflow-y: auto;       /* ✅ 세로 스크롤 허용 */
   
   padding-bottom: ${({ $bottomPadding = 0 }) =>
     `calc(${$bottomPadding}px + env(safe-area-inset-bottom, 0px))`};

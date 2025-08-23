@@ -44,7 +44,6 @@ const ReviewTags = ({
         const byGroup = new Map();
 
         (items || [])
-            .filter(it => norm(it.category) === norm(category))
             .forEach(it => {
                 const title = it.group || '';
                 if (!byGroup.has(title)) byGroup.set(title, new Set());

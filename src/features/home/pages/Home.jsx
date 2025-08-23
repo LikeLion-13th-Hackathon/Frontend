@@ -41,7 +41,7 @@ export default function Home() {
           desc: s.most_liked_review?.comment || "등록된 리뷰가 없습니다.", 
           imageUrl: s.store_image,
           marketName: marketNameMap[s.market_id] || "알 수 없음",
-          likes: s.most_liked_review?.likes_count || 0,  // ✅ 여기 수정
+          likes: s.most_liked_review?.likes_count || 0,  // 여기 수정
         }));
 
         setStores(formatted);
