@@ -2,20 +2,50 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { fetchStores } from "@/shared/api/store";
 
-// 카테고리 순서 고정
 const FIXED_ORDER = ["Fresh", "Snacks", "Goods", "Restaurants"];
 
-// 카테고리별 아이콘 매핑
 import TagFresh from "@/assets/icons/tag_fresh.svg?react";
 import TagSnacks from "@/assets/icons/tag_snacks.svg?react";
 import TagGoods from "@/assets/icons/tag_goods.svg?react";
 import TagRestaurants from "@/assets/icons/tag_restaurants.svg?react";
 
+// 1) 원본 아이콘 매핑
 const CATEGORY_ICONS = {
   Fresh: TagFresh,
   Snacks: TagSnacks,
   Goods: TagGoods,
   Restaurants: TagRestaurants,
+};
+
+// 2) 렌더 밖(모듈 스코프)에서 한 번만 styled 래핑
+const baseSvgStyle = `
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+
+  path, circle, rect, line, polygon {
+    fill: currentColor !important;
+    stroke: currentColor !important;
+  }
+`;
+
+const STYLED_ICONS = {
+  Fresh: styled(TagFresh)`
+    ${baseSvgStyle}
+    color: ${(p) => (p.$active ? "#fff" : "#707070")};
+  `,
+  Snacks: styled(TagSnacks)`
+    ${baseSvgStyle}
+    color: ${(p) => (p.$active ? "#fff" : "#707070")};
+  `,
+  Goods: styled(TagGoods)`
+    ${baseSvgStyle}
+    color: ${(p) => (p.$active ? "#fff" : "#707070")};
+  `,
+  Restaurants: styled(TagRestaurants)`
+    ${baseSvgStyle}
+    color: ${(p) => (p.$active ? "#fff" : "#707070")};
+  `,
 };
 
 const Category = ({ selectedId, onSelect }) => {
@@ -25,12 +55,9 @@ const Category = ({ selectedId, onSelect }) => {
     fetchStores()
       .then((res) => {
         const uniqueCats = [...new Set(res.data.map((s) => s.category))];
-
-        // 고정 순서대로 정렬
         const orderedCats = FIXED_ORDER.filter((cat) =>
           uniqueCats.includes(cat)
         );
-
         setCategories(orderedCats);
       })
       .catch((err) => console.error("❌ 카테고리 로드 실패:", err));
@@ -39,17 +66,16 @@ const Category = ({ selectedId, onSelect }) => {
   return (
     <Wrapper>
       {categories.map((cat) => {
-        const IconComp = CATEGORY_ICONS[cat];
-        const ActiveSvg = makeStyledSvg(IconComp); // 여기서 styled 생성
-
+        const Icon = STYLED_ICONS[cat]; // ✅ 렌더에서는 참조만
+        const active = cat === selectedId;
         return (
           <CategoryItem
             key={cat}
-            $active={cat === selectedId}
+            $active={active}
             onClick={() => onSelect(cat)}
           >
-            <ActiveSvg $active={cat === selectedId} />
-            <Label $active={cat === selectedId}>{cat}</Label>
+            <Icon $active={active} />
+            <Label $active={active}>{cat}</Label>
           </CategoryItem>
         );
       })}
@@ -93,21 +119,4 @@ const Label = styled.span`
   letter-spacing: -0.24px;
   color: ${(p) => (p.$active ? "#fff" : "#707070")};
   font-weight: ${(p) => (p.$active ? 600 : 400)};
-`;
-
-const makeStyledSvg = (Comp) => styled(Comp)`
-  width: 13px;
-  height: 13px;
-  flex-shrink: 0;
-
-  path,
-  circle,
-  rect,
-  line,
-  polygon {
-    fill: currentColor !important;
-    stroke: currentColor !important;
-  }
-
-  color: ${(p) => (p.$active ? "#fff" : "#707070")};
 `;
