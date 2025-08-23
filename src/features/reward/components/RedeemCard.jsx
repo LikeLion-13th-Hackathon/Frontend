@@ -4,6 +4,10 @@ import GiftImg from '@/assets/icons/gift.png'
 import RedeemModal from './RedeemModal'
 import VoucherModal from './VoucherModal'
 
+import CardImg1 from '@/assets/icons/5000.png'
+import CardImg2 from '@/assets/icons/10000.png'
+import CardImg3 from '@/assets/icons/30000.png'
+
 const RedeemCard = () => {
     const [redeemOpen, setRedeemOpen] = useState(false);
     const [voucherOpen, setVoucherOpen] = useState(false);
@@ -40,7 +44,7 @@ const RedeemCard = () => {
             {/* 5,000원 상품권 */}
             <FlexRow>
                 <CardContainer>
-                    <Rectangle />
+                    <GiftCardIcon src={CardImg1} />
 
                     <TextContainer>
                         <SubName>디지털 온누리상품권</SubName>
@@ -60,7 +64,7 @@ const RedeemCard = () => {
             {/* 10,000원 상품권 */}
             <FlexRow>
                 <CardContainer>
-                    <Rectangle />
+                    <GiftCardIcon src={CardImg2} />
 
                     <TextContainer>
                         <SubName>디지털 온누리상품권</SubName>
@@ -80,7 +84,7 @@ const RedeemCard = () => {
             {/* 30,000원 상품권 */}
             <FlexRow>
                 <CardContainer>
-                    <Rectangle />
+                    <GiftCardIcon src={CardImg3} />
 
                     <TextContainer>
                         <SubName>디지털 온누리상품권</SubName>
@@ -143,7 +147,7 @@ const CardContainer = styled.div`
     gap: 8px;
 `
 
-const Rectangle = styled.div`
+const GiftCardIcon = styled.img`
     width: 60px;
     height: 60px;
     flex-shrink: 0;
@@ -223,9 +227,9 @@ const RedeemButton = styled.button`
     gap: 10px;
     border-radius: 8px;
     border: 1px solid var(--gray-200, #E5E7EB);
-    background: var(--pri, #6D6D6D);
+    background: var(--pri, #E5E7EB);
 
-    color: var(--zinc-700, #3F3F47);
+    color: var(--zinc-700, #8D8D8D);
     text-align: center;
 
     /* body/body 2 */

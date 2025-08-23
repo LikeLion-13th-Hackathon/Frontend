@@ -32,13 +32,15 @@ const Inner = styled.div`
   background: #fff;
   box-shadow: 0 10px 30px rgba(0,0,0,0.15);
 
-  min-height: 100dvh;   /* 화면 높이 이상 */
+  /* height: 100dvb; */
+  min-height: 100dvb;   /* 화면 높이 이상 */
   display: flex;
   flex-direction: column;
 `;
 
 const AppContent = styled.main`
   flex: 1;               /* ✅ 내부 콘텐츠가 늘어나면 자동 확장 */
+  min-height: 0;
   overflow-x: hidden;
   overflow-y: auto;       /* ✅ 세로 스크롤 허용 */
   
