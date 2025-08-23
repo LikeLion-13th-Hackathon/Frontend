@@ -1,27 +1,30 @@
-// src/features/chat/pages/ChatSimulator.jsx (UI 수정이 적용된 전체 코드)
+// src/features/chat/pages/ChatSimulator.jsx
 
 import React, { useRef, useState, useEffect, useMemo } from 'react';
-import { useLocation } from "react-router-dom"; // 추가
+import { useLocation, useNavigate } from "react-router-dom";
 import Layout from '../../../components/common/Layout';
 import LeftHeader from '../../../components/common/header/LeftHeader';
 import BackImg from "@/assets/icons/header_back.png";
 import { postChatMessage } from "@/shared/api/ai";
 import styled from "styled-components";
 
-const DEFAULT_CATEGORY = "fresh";
-const DEFAULT_TOPIC = "asking about freshness";
+import TopicIcon from "@/features/chat/components/TopicIcon";
 
 export default function AIChatSimulatorChat() {
-  const { state } = useLocation();   // ✅ ChatLoading에서 받은 값
-  console.log("[ChatSimulator state]", state);
+  const { state } = useLocation();   // ChatLoading에서 받은 값
+  const navigate = useNavigate();
 
-  const [selected, setSelected] = useState(1);
   const [messages, setMessages] = useState([]);
   const chatBottomRef = useRef(null);
 
-  // ✅ 하드코딩 제거, state 기반으로 설정
-  const category = state?.store?.category || "restaurants";
-  const topic = state?.topic?.topic || "default_topic";
+  // state 기반 설정
+  const category = state?.store?.category?.toLowerCase() || "restaurants";
+  const storeId = state?.store?.store_id;
+
+
+  // topic을 state로 관리
+  const [topic, setTopic] = useState(state?.topic?.topic || "default_topic");
+  const [topicCaption, setTopicCaption] = useState(state?.topic?.caption || topic);
 
   const threadId = useMemo(() => topic, [topic]);
 
@@ -29,17 +32,29 @@ export default function AIChatSimulatorChat() {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [currentTurnRole, setCurrentTurnRole] = useState("store");
-  const [lastRequest, setLastRequest] = useState(null); // 새로고침
+  const [lastRequest, setLastRequest] = useState(null); // 새로고침용
+
+  const activeCardRef = useRef(null); // CARD CENTER
 
   useEffect(() => {
-    // scrollIntoView를 messages가 업데이트될 때마다 호출하여 항상 최신 메시지로 스크롤
     chatBottomRef.current?.scrollIntoView();
   }, [messages]);
 
+  // category 또는 topic이 바뀔 때마다 대화 초기화
   useEffect(() => {
     bootLoad();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [category, topic]);
+
+  useEffect(() => {
+    if (activeCardRef.current) {
+      activeCardRef.current.scrollIntoView({
+        behavior: "smooth",
+        inline: "center",
+        block: "nearest",
+      });
+    }
+  }, [topic]);
 
   async function bootLoad() {
     setLoading(true);
@@ -51,14 +66,20 @@ export default function AIChatSimulatorChat() {
       setCurrentTurnRole("store");
       const initialMessage = "가게 주인이 손님에게 건네는 자연스러운 첫 인사말 3개를 생성해 줘.";
 
-      setLastRequest({ role: "store", message: initialMessage });
-
-      const response = await postChatMessage({
+      const payload = {
         category,
         topic,
         role: "store",
+        threadId,
         message: initialMessage,
-      });
+        store_id: storeId
+      };
+
+      setLastRequest({ role: "store", message: initialMessage });
+
+      console.log("보내는 payload:", payload);
+
+      const response = await postChatMessage(payload);
       setDialogue(response?.dialogue ?? []);
     } catch (e) {
       setErrorMsg(e.message || "채팅 시작에 실패했습니다. 새로고침 해주세요.");
@@ -83,7 +104,7 @@ export default function AIChatSimulatorChat() {
     try {
       const nextTurnRole = currentTurnRole === 'store' ? 'user' : 'store';
 
-      setLastRequest({ role: nextTurnRole, message: item.korean }); // 새로고침
+      setLastRequest({ role: nextTurnRole, message: item.korean });
 
       const response = await postChatMessage({
         category,
@@ -91,6 +112,7 @@ export default function AIChatSimulatorChat() {
         role: nextTurnRole,
         threadId,
         message: item.korean,
+        store_id: storeId,
       });
       setDialogue(response?.dialogue ?? []);
       setCurrentTurnRole(nextTurnRole);
@@ -102,7 +124,7 @@ export default function AIChatSimulatorChat() {
   }
 
   async function handleRefreshOptions() {
-    if (!lastRequest) return; // 저장된 요청이 없으면 실행하지 않음
+    if (!lastRequest) return;
 
     setLoading(true);
     setErrorMsg("");
@@ -115,7 +137,8 @@ export default function AIChatSimulatorChat() {
         threadId,
         role: lastRequest.role,
         message: lastRequest.message,
-        retry: true, // API에 재요청임을 알려주는 파라미터
+        retry: true,
+        store_id: storeId, 
       });
       setDialogue(response?.dialogue ?? []);
     } catch (e) {
@@ -125,37 +148,53 @@ export default function AIChatSimulatorChat() {
     }
   }
 
+  // 여러 토픽 중 하나 선택
+  function handleSelectTopic(t) {
+    setTopic(t.topic);
+    setTopicCaption(t.caption);
+  }
+
+  const formatTopicTitle = (text) => {
+    if (!text) return "";
+    return text
+      .split(/[\s_]+/)
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  };
+
   return (
     <Layout>
       <PageContainer>
-        {/* --- Header & Scenario (상단 고정 영역) --- */}
-        <div>
-          <LeftHeader
-            title="AI Chat Simulator"
-            leftIcon={BackImg}
-            onLeftClick={() => window.history.back()}
-          />
-          <ScenarioRow>
-            {[0,1,2].map((id) => {
-              const active = id === selected;
-              return (
-                <ScenarioCard key={id} $active={active} onClick={() => setSelected(id)} role="button" tabIndex={0} aria-pressed={active}>
-                  <ScenarioThumb />
-                  <ScenarioTexts>
-                    <ScenarioTitle $active={active}>
-                      {id === 0 ? "Placing an Order" : id === 1 ? "Placing an Order" : "Asking About the Menu"}
-                    </ScenarioTitle>
-                    <ScenarioSub>
-                      {id === 0 ? "One of this, please." : id === 1 ? "One of this, please." : "Is it spicy?"}
-                    </ScenarioSub>
-                  </ScenarioTexts>
-                </ScenarioCard>
-              );
-            })}
-          </ScenarioRow>
-        </div>
+        {/* --- Header --- */}
+        <LeftHeader
+          title="AI Chat Simulator"
+          leftIcon={BackImg}
+          onLeftClick={() => window.history.back()}
+        />
 
-        {/* --- 채팅창 (중앙 스크롤 영역) --- */}
+        {/* --- 여러 토픽 카드 --- */}
+        <ScenarioRow>
+          {state?.topics?.map((t, i) => (
+            <ScenarioCard
+              key={i}
+              ref={t.topic === topic ? activeCardRef : null} 
+              $active={t.topic === topic}
+              onClick={() => handleSelectTopic(t)}
+            >
+              <ScenarioThumb>
+                <TopicIcon id={t.topic} size={27} />
+              </ScenarioThumb>
+              <ScenarioTexts>
+                <ScenarioTitle $active={t.topic === topic}>
+                  {formatTopicTitle(t.topic)}
+                </ScenarioTitle>
+                <ScenarioSub>{t.caption}</ScenarioSub>
+              </ScenarioTexts>
+            </ScenarioCard>
+          ))}
+        </ScenarioRow>
+
+        {/* --- 채팅창 --- */}
         <ChatStage>
           <Messages>
             {messages.map((m, i) =>
@@ -169,7 +208,7 @@ export default function AIChatSimulatorChat() {
         
         {errorMsg && <ErrorBox>⚠️ {errorMsg}</ErrorBox>}
 
-        {/* --- 하단 컨트롤 (하단 고정 영역) --- */}
+        {/* --- 하단 컨트롤 --- */}
         <ControlsContainer>
           <OptionHeader>
             {loading 
@@ -179,23 +218,53 @@ export default function AIChatSimulatorChat() {
           </OptionHeader>
           <PhraseRow>
             {dialogue?.map((d, i) => (
-              <PhraseCard key={i} role="button" tabIndex={0} onClick={() => onSelect(d)} aria-label={`select: ${d.korean}`}>
+              <PhraseCard key={i} onClick={() => onSelect(d)}>
                 <PhraseEn>{d.english_gloss}</PhraseEn>
                 <PhraseKo>{d.korean}</PhraseKo>
                 <PhraseRoman>{d.romanization}</PhraseRoman>
               </PhraseCard>
             ))}
             
-            {/* 로딩 중이 아닐 때만 버튼이 보이도록 처리 */}
             {!loading && dialogue.length > 0 && (
-              <RefreshCard role="button" tabIndex={0} onClick={handleRefreshOptions}>
+              <RefreshCard onClick={handleRefreshOptions}>
                 <RefreshIcon>↻</RefreshIcon>
                 <RefreshText>Show Another Response</RefreshText>
               </RefreshCard>
             )}
           </PhraseRow>
           <BottomBar>
-            <EndButton>End Chat &amp; Claim Reward</EndButton>
+            <EndButton
+              disabled={messages.length < 2}
+              onClick={() => {
+                const category = state?.store?.category?.toLowerCase();
+                const store = state?.store;   // store 객체 꺼내기
+
+                // store_id를 id로 변환
+                const storeWithId = { ...store, id: store.id ?? store.store_id };
+
+                if (!storeWithId.id) {
+                  alert("가게 ID가 없습니다. 백엔드 응답 확인 필요합니다.");
+                  console.log("현재 store 값:", store); // 디버깅
+                  return;
+                }
+
+                const nextState = { ...state, store: storeWithId };
+
+                if (category === "restaurants") {
+                  navigate("/review/restaurant", { state: nextState });
+                } else if (category === "snacks") {
+                  navigate("/review/snack", { state: nextState });
+                } else if (category === "fresh") {
+                  navigate("/review/fresh", { state: nextState });
+                } else if (category === "goods") {
+                  navigate("/review/goods", { state: nextState });
+                } else {
+                  navigate("/review/restaurant", { state: nextState }); // fallback
+                }
+              }}
+            >
+              End Chat &amp; Claim Reward
+            </EndButton>
           </BottomBar>
         </ControlsContainer>
       </PageContainer>
@@ -233,7 +302,6 @@ export const ChatStage = styled.div`
 export const Messages = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
   gap: 10px;
   padding: 12px;
   width: 100%;
@@ -363,11 +431,15 @@ export const EndButton = styled.button`
   width: clamp(280px, 88vw, 520px);
   padding: 10px 12px;
   border-radius: 8px;
-  background: #6d6d6d;
-  color: #000;
   font-size: 14px;
   font-weight: 600;
+  cursor: ${({ disabled }) => (disabled ? "not-allowed" : "pointer")};
+
+  background: ${({ disabled }) => (disabled ? "#ccc" : "#6d6d6d")};
+  color: ${({ disabled }) => (disabled ? "#666" : "#000")};
+  transition: background 0.2s;
 `;
+
 
 export const ScenarioRow = styled.div`
   margin-top: 12px;
@@ -389,7 +461,7 @@ export const ScenarioCard = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 12px;
+  padding: 7px;
   border-radius: 12px;
   background: ${({ $active }) => ($active ? '#ECECEC' : '#F8F8F8')};
   ${({ $active }) => $active && `
@@ -402,8 +474,15 @@ export const ScenarioCard = styled.div`
 export const ScenarioThumb = styled.div`
   width: clamp(40px, 5vw, 48px);
   height: clamp(40px, 5vw, 48px);
-  background: #d9d9d9;
   border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  svg, img {
+    width: 70%;
+    height: 70%;
+  }
 `;
 
 export const ScenarioTexts = styled.div`
@@ -414,12 +493,33 @@ export const ScenarioTexts = styled.div`
 `;
 
 export const ScenarioTitle = styled.div`
-  font-size: clamp(15px, 2vw, 18px);
+  font-size: clamp(13px, 2vw, 15px);
   line-height: 1.4;
   font-weight: ${({ $active }) => ($active ? 600 : 400)};
+
+  white-space: nowrap;       /* 줄바꿈 방지 */
+  overflow: hidden;          /* 넘치는 부분 숨김 */
+  text-overflow: ellipsis;   /* ... 처리 */
 `;
 
 export const ScenarioSub = styled.div`
   font-size: 12px;
   color: #404040;
+`;
+
+const SelectedTopicBox = styled.div`
+  margin: 12px 20px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: #f0f0f0;
+  font-size: 14px;
+  color: #333;
+
+  span {
+    color: #666;
+    margin-right: 6px;
+  }
+  strong {
+    font-weight: 600;
+  }
 `;

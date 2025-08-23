@@ -12,15 +12,14 @@ import BackImg from "@/assets/icons/header_back.png";
 import LocationImg from "@/assets/icons/location.png";
 import StarSvg from "@/assets/icons/star.svg?react";
 import SpinnerSvg from "@/assets/icons/spinner.svg?react";
-import TopicIconPlaceholder from "@/assets/icons/topic_placeholder.png";
 import ChevronDown from "@/assets/icons/chevron_down.png";
-import MapIcon from "@/assets/icons/map.png";
 
 
 // 추가 컴포넌트 import
 import StoreSignatureMenu from "@/features/store/components/StoreSignatureMenu";
 import StoreTag from "@/features/store/components/StoreTag";
 import StoreLocation from "@/features/store/components/StoreLocation";
+import TopicIcon from "@/features/chat/components/TopicIcon";
 
 const StoreItem = ({ store, open, onToggle }) => {
   if (!store) return null;
@@ -101,18 +100,24 @@ const formatTopicTitle = (text) => {
     .join(" ");
 };
 
-const TopicItem = ({ topic, onClick }) => (
-  <TI_Card onClick={onClick}>
-    <TI_Icon src={TopicIconPlaceholder} alt="" />
-    <TI_Text>
-      <TI_Title>{formatTopicTitle(topic.topic)}</TI_Title>
-      <TI_Subtitle>
-        {topic.caption || "Select to start conversation"}
-      </TI_Subtitle>
-    </TI_Text>
-    <TI_Arrow src={BackImg} alt=">" />
-  </TI_Card>
-);
+// --- Topic Item ---
+const TopicItem = ({ topic, onClick }) => {
+  return (
+    <TI_Card onClick={onClick}>
+      <TI_Icon>
+        <TopicIcon id={topic.topic} size={27} />
+      </TI_Icon>
+      <TI_Text>
+        <TI_Title>{formatTopicTitle(topic.topic)}</TI_Title>
+        <TI_Subtitle>
+          {topic.caption || "Select to start conversation"}
+        </TI_Subtitle>
+      </TI_Text>
+      <TI_Arrow src={BackImg} alt=">" />
+    </TI_Card>
+  );
+};
+
 
 // --- 로딩 애니메이션 ---
 const LoadingAnimation = () => (
@@ -151,7 +156,8 @@ export default function ChatLoading() {
           return;
         }
         const topicsData = await fetchAiTopics(category);
-        setTopics(topicsData);
+        console.log("[ChatLoading] topicsData:", topicsData);
+        setTopics(topicsData.all || []);   // ✅ 이렇게 배열만 세팅
       } catch (error) {
         console.error("Failed to fetch topics:", error);
       } finally {
@@ -167,8 +173,25 @@ export default function ChatLoading() {
     }
   }, [store]);
 
+
   const handleTopicSelect = (topic) => {
-    navigate("/chat/simulator", { state: { store, topic } });
+    const storeWithId = { 
+      ...store, 
+      id: store.store_id, 
+      store_id: store.store_id 
+    };
+    
+    navigate("/chat/simulator", {
+      state: {
+        store: storeWithId,
+        topic: {
+          id: topic.id,          // 내부 클라에서 필요하면 사용
+          topic: topic.topic,    // 서버 전송용 (텍스트)
+          caption: topic.caption // 화면 표시용
+        },
+        topics,
+      },
+    });
   };
 
   return (
@@ -238,6 +261,7 @@ const TopicListContainer = styled.div`
   flex-direction: column; 
   gap: 8px; 
 `;
+
 const TI_Card = styled.div` 
   display: flex; 
   align-items: center; 
@@ -248,15 +272,29 @@ const TI_Card = styled.div`
   transition: background-color 0.2s; 
   &:hover { background-color: #f0f0f0; } 
 `;
-const TI_Icon = styled.img` 
-  width: 40px; 
-  height: 40px; 
-  margin-right: 16px; 
-  border-radius: 8px; 
-  background-color: #e0e0e0; 
+
+const TI_Icon = styled.div`
+  width: 27px;
+  height: 27px;
+  margin-right: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
 `;
+
 const TI_Text = styled.div` flex: 1; `;
-const TI_Title = styled.div` font-size: 16px; font-weight: 600; `;
+const TI_Title = styled.div` font-size: 15px; font-weight: 600; `;
 const TI_Subtitle = styled.div` font-size: 13px; color: #666; margin-top: 2px; `;
 const TI_Arrow = styled.img` 
   width: 20px; 

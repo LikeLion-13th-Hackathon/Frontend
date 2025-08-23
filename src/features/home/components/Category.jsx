@@ -1,69 +1,113 @@
-import React from 'react'
-import styled from 'styled-components'
-import PinIcon from "@/assets/icons/main_pin.png";
-import HorizontalScroll from "@/components/common/HorizontalScroll";
+import React, { useEffect, useState } from "react";
+import styled from "styled-components";
+import { fetchStores } from "@/shared/api/store";
 
-const Category = ( { selectedId, onSelect }) => {
-    const categories = [
-        { id: 1, label: 'Fresh', icon: PinIcon },
-        { id: 2, label: 'Snacks', icon: PinIcon },
-        { id: 3, label: 'Goods', icon: PinIcon },
-        { id: 4, label: 'Restaurants', icon: PinIcon },
-    ]
+// 카테고리 순서 고정
+const FIXED_ORDER = ["Fresh", "Snacks", "Goods", "Restaurants"];
+
+// 카테고리별 아이콘 매핑
+import TagFresh from "@/assets/icons/tag_fresh.svg?react";
+import TagSnacks from "@/assets/icons/tag_snacks.svg?react";
+import TagGoods from "@/assets/icons/tag_goods.svg?react";
+import TagRestaurants from "@/assets/icons/tag_restaurants.svg?react";
+
+const CATEGORY_ICONS = {
+  Fresh: TagFresh,
+  Snacks: TagSnacks,
+  Goods: TagGoods,
+  Restaurants: TagRestaurants,
+};
+
+const Category = ({ selectedId, onSelect }) => {
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    fetchStores()
+      .then((res) => {
+        const uniqueCats = [...new Set(res.data.map((s) => s.category))];
+
+        // 고정 순서대로 정렬
+        const orderedCats = FIXED_ORDER.filter((cat) =>
+          uniqueCats.includes(cat)
+        );
+
+        setCategories(orderedCats);
+      })
+      .catch((err) => console.error("❌ 카테고리 로드 실패:", err));
+  }, []);
 
   return (
     <Wrapper>
-        {categories.map((cat) => (
-            <CategoryItem 
-                key = {cat.id}
-                $active = {cat.id === selectedId}
-                onClick={() => onSelect(cat.id)} 
-            >
-                <Icon src={cat.icon} alt="" />
-                <Label $active={cat.id === selectedId}>{cat.label}</Label>
-            </CategoryItem>
-        ))}
+      {categories.map((cat) => {
+        const IconComp = CATEGORY_ICONS[cat];
+        const ActiveSvg = makeStyledSvg(IconComp); // 여기서 styled 생성
+
+        return (
+          <CategoryItem
+            key={cat}
+            $active={cat === selectedId}
+            onClick={() => onSelect(cat)}
+          >
+            <ActiveSvg $active={cat === selectedId} />
+            <Label $active={cat === selectedId}>{cat}</Label>
+          </CategoryItem>
+        );
+      })}
     </Wrapper>
-  )
-}
+  );
+};
 
-export default Category
+export default Category;
 
+// === styled ===
 const Wrapper = styled.div`
-    display: inline-flex;
-    align-items: flex-start;
-    gap: 10px;
+  display: flex;
+  overflow-x: auto;
+  gap: 10px;
+  margin: 30px 20px 0;
+  padding-bottom: 4px;
 
-    margin: 30px 20px 0;
-    /* padding: 0 16px; */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 const CategoryItem = styled.div`
-    display: flex;
-    height: 36px;
-    padding: 0 14px 0 10px;
-    justify-content: center;
-    align-items: center;
-    gap: 6px;
-
-    border-radius: 8px;
-    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.10);
-    cursor: pointer;
-
-    background: ${p => (p.$active ? 'var(--pri, #6D6D6D)' : '#FFF')};
-`
-const Icon = styled.img`
-  width: 16px;
-  height: 16px;
+  display: flex;
+  height: 36px;
+  padding: 0 14px 0 10px;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  background: ${(p) => (p.$active ? "var(--pri, #ff6900)" : "#ffedd4")};
 `;
 
 const Label = styled.span`
-    text-align: center;
-    font-family: Pretendard;
-    font-size: 12px;
-    line-height: 150%; /* 18px */
-    letter-spacing: -0.24px;
+  font-size: 12px;
+  line-height: 150%;
+  letter-spacing: -0.24px;
+  color: ${(p) => (p.$active ? "#fff" : "#707070")};
+  font-weight: ${(p) => (p.$active ? 600 : 400)};
+`;
 
-    color: ${p => (p.$active ? '#FFF' : '#707070')};
-    font-weight: ${p => (p.$active ? 600 : 400)};
-`
+const makeStyledSvg = (Comp) => styled(Comp)`
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+
+  path,
+  circle,
+  rect,
+  line,
+  polygon {
+    fill: currentColor !important;
+    stroke: currentColor !important;
+  }
+
+  color: ${(p) => (p.$active ? "#fff" : "#707070")};
+`;

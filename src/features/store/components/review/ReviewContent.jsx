@@ -5,7 +5,7 @@ import ThumbOff from '@/assets/icons/thumb/thumb-up_off.png';
 import ReviewTags from './ReviewTags';
 
 const ReviewContent = ({
-  avatar,                // ✅ 이름 맞춤 (StoreReview에서 내려주는 값)
+  avatar,                // 이름 맞춤 (StoreReview에서 내려주는 값)
   nickname = '',
   createdAt = new Date(),
   likes,
