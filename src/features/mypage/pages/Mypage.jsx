@@ -7,8 +7,8 @@ import Profile from '../components/Profile';
 import ProfileStatsRow from '../components/ProfileStatsRow';
 import TabBar from '../../../components/common/TabBar';
 import DetailButton from '../components/DetailButton';
-import { clearAuth, loadUser } from '@/shared/api/auth';
-
+import { clearAuth } from '@/shared/api/auth';
+import useMyPage from '@/hooks/useMyPage';
 import defaultAvatar from '@/assets/icons/basic_profile.png';
 
 function mapUserToProfile(results = {}) {
@@ -20,8 +20,10 @@ function mapUserToProfile(results = {}) {
 }
 
 const Mypage = () => {
-    //로그인시 저장된 유저 불러오기
-    const user = loadUser();
+    // account/mypage 사용해서 정보 받아오기
+    const { user, loading, error } = useMyPage();
+
+    
     const profileProps = mapUserToProfile(user || {});
     const rewards = user?.reward_count ?? 0;
     const visited = user?.visited_count ?? 0;
@@ -60,7 +62,7 @@ const Mypage = () => {
             <DetailButton
                 title="Rewards"
                 description="Redeem your rewards for a market gift card"
-                to="/mypage/rewards"
+                to="/reward"
             />
         </ButtonBox>
 
