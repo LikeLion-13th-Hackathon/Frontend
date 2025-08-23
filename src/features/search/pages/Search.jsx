@@ -54,7 +54,7 @@ export default function SearchPage() {
   const showDefault = !keyword.trim() && items.length === 0;
 
   return (
-    <Layout>
+    <Layout bottomPadding={66}>
       <LeftHeader
         title="Search"
         leftIcon={BackImg}

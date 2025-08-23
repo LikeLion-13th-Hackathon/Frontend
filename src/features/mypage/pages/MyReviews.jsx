@@ -19,15 +19,14 @@ const MyReviews = () => {
     const avatarUrl = /^https?:\/\//i.test(raw) ? raw : defaultAvatar;
 
     const name = (user?.nickname && user.nickname.trim()) || user?.username || 'User';
-    const sub =
-        user?.subtitle || user?.nationality || user?.email || '';
+    const sub = user?.subtitle || user?.email || '';
 
     // 방문 수(있으면 사용, 없으면 0)
     const visits = user?.visited_count ?? 0;
     const placesLabel = `${visits} ${visits === 1 ? 'place' : 'places'}`;
 
   return (
-    <Layout overlapHeader>
+    <Layout overlapHeader bottomPadding={66}>
         <Background>
             <LeftHeader
                 title="My Reviews"

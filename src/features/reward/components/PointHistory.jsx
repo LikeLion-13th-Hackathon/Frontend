@@ -1,35 +1,89 @@
-import React from 'react'
-import styled from 'styled-components'
-import PlusImg from '@/assets/icons/plus.png'
-import MinusImg from '@/assets/icons/minus.png'
+import React, { useEffect, useState } from 'react';
+import styled, { keyframes } from 'styled-components';
+import PlusImg from '@/assets/icons/plus.png';
+import MinusImg from '@/assets/icons/minus.png';
+import { getRewardHistory } from '@/shared/api/reward';
 
-const PointHistory = () => {
+const PointHistory = ({ refreshKey, onBalanceChange }) => {
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [err, setErr] = useState(null);
+  const [expanded, setExpanded] = useState(false);
+
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      try {
+        setLoading(true);
+        const rows = await getRewardHistory();
+        if (!alive) return;
+        setItems(rows);
+        console.log('[PointHistory] rows', rows); // 🔍 확인용
+        const latest =
+        rows?.[0]?.created > rows?.at(-1)?.created ? rows[0] : rows.at(-1);
+        onBalanceChange?.(latest?.balance ?? 0);
+      } catch (e) {
+        if (!alive) return;
+        setErr(e.message || 'Failed to load history');
+      } finally {
+        if (!alive) return;
+        setLoading(false);
+      }
+    })();
+    return () => { alive = false; };
+  }, [refreshKey]);
+
+  const fmt = (n) => Number(n).toLocaleString('ko-KR');
+  const top3 = items.slice(0, 3);
+  const list = expanded ? items : top3;
+
   return (
     <Wrap>
-        <Title>Redemption History</Title>
-
+      <Title>Redemption History</Title>
+      {loading && (<><Skeleton/><Skeleton/><Skeleton/></>)}
+      {!loading && err && (<EmptyText>{err}</EmptyText>)}
+      {!loading && !err && (
         <HistoryRow>
-            <ContentRow>
+          {items.length === 0 ? (
+            <EmptyText>No history ..</EmptyText>
+          ) : list.map(it => {
+            const plus = Number(it.point) >= 0;
+            return (
+              <ContentRow key={it.id}>
                 <RightContent>
-                    <Icon src={PlusImg}/>
-                    <TextBox>
-                        <HistoryTitle>Redeem Onnuri Gift Card</HistoryTitle>
-                        <HistoryMemo>5,000 won</HistoryMemo>
-                    </TextBox>
+                  <Icon src={plus ? PlusImg : MinusImg} alt={plus ? 'plus' : 'minus'} />
+                  <TextBox>
+                    <HistoryTitle>{it.caption}</HistoryTitle>
+                    <HistoryMemo>
+                      {plus ? `${fmt(it.point)} points added`
+                            : `${fmt(Math.abs(it.point))} points used`}
+                    </HistoryMemo>
+                  </TextBox>
                 </RightContent>
-
                 <LeftContent>
-                    <PointChange>- 5,000 points</PointChange>
-                    <PointRemain>150 points</PointRemain>
+                  <PointChange $plus={plus}>
+                    {plus ? '+' : '-'} {fmt(Math.abs(it.point))} points
+                  </PointChange>
+                  <PointRemain>{fmt(it.balance)} points</PointRemain>
                 </LeftContent>
-
-            </ContentRow>
+              </ContentRow>
+            );
+          })}
         </HistoryRow>
-
-        <ViewText>View all Redemption</ViewText>
+      )}
+      {items.length > 3 ? (
+        <ViewText
+            role="button"
+            tabIndex={0}
+            onClick={() => setExpanded((v) => !v)}
+            onKeyDown={(e)=> (e.key==='Enter'||e.key===' ') && setExpanded((v)=>!v)}
+        >
+            {expanded ? 'Collapse' : 'View all Redemption'}
+        </ViewText>
+    ) : <ViewText style={{opacity:.5}}>View all Redemption</ViewText>}
     </Wrap>
-  )
-}
+  );
+};
 
 export default PointHistory
 
@@ -122,7 +176,7 @@ const LeftContent = styled.div`
 `
 
 const PointChange = styled.div`
-    color: #FA684E;
+    color: ${({ $plus }) => ($plus ? '#FA684E' : '#3273FF')};
 
     /* body/body 2-em */
     font-family: Pretendard;
@@ -163,4 +217,32 @@ const ViewText = styled.div`
     text-decoration-thickness: auto;
     text-underline-offset: auto;
     text-underline-position: from-font;
+`
+
+const shimmer = keyframes`
+  0% { background-position: 100% 0; }
+  100% { background-position: 0 0; }
+`;
+
+const Skeleton = styled.div`
+  height: 52px;
+  width: 100%;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #f2f2f2 25%, #eee 37%, #f2f2f2 63%);
+  background-size: 400% 100%;
+  animation: ${shimmer} 1.4s ease infinite;
+`;
+
+const EmptyText = styled.div`
+    align-self: stretch;
+    color: #858585;
+    text-align: center;
+
+    /* caption/caption 1 */
+    font-family: Pretendard;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%; /* 18px */
+    letter-spacing: -0.24px;
 `

@@ -1,16 +1,50 @@
-import React from 'react'
+import React, { useCallback, useState } from 'react'
 import styled from 'styled-components'
 import GiftImg from '@/assets/icons/gift.png'
 import RedeemModal from './RedeemModal'
+import VoucherModal from './VoucherModal'
+
+import CardImg1 from '@/assets/icons/5000.png'
+import CardImg2 from '@/assets/icons/10000.png'
+import CardImg3 from '@/assets/icons/30000.png'
 
 const RedeemCard = () => {
+    const [redeemOpen, setRedeemOpen] = useState(false);
+    const [voucherOpen, setVoucherOpen] = useState(false);
+    const [selected, setSelected] = useState(null);
+    const [voucher, setVoucher] = useState(null);
+
+    const handleRedeem = useCallback((amount) => {
+        setSelected(amount);
+        setRedeemOpen(true);
+    }, []);
+
+    const generateCode = (amount) => {
+        // 예시 코드: ONN-5000-XXXX-XXXX
+        const rand = () => Math.floor(Math.random() * 9000 + 1000);
+        return `ONN-${amount}-${rand()}-${rand()}`;
+    };
+
+    const handleConfirm = useCallback(async (amount) => {
+        // TODO: 여기서 실제 교환 API 호출하고, 응답으로 바코드 URL/코드 수신
+        // const { code, barcodeUrl } = await redeemAPI(amount);
+
+        // 데모용 더미
+        const code = generateCode(amount);
+        const barcodeUrl = ''; // 실제 url 있으면 채우기
+
+        setVoucher({ code, barcodeUrl, amount });
+        setRedeemOpen(false);
+        setVoucherOpen(true);
+    }, []);
+
   return (
     <>
         <Wrap>
             {/* 5,000원 상품권 */}
             <FlexRow>
                 <CardContainer>
-                    <Rectangle />
+                    <GiftCardIcon src={CardImg1} />
 
                     <TextContainer>
                         <SubName>디지털 온누리상품권</SubName>
@@ -30,7 +64,7 @@ const RedeemCard = () => {
             {/* 10,000원 상품권 */}
             <FlexRow>
                 <CardContainer>
-                    <Rectangle />
+                    <GiftCardIcon src={CardImg2} />
 
                     <TextContainer>
                         <SubName>디지털 온누리상품권</SubName>
@@ -50,7 +84,7 @@ const RedeemCard = () => {
             {/* 30,000원 상품권 */}
             <FlexRow>
                 <CardContainer>
-                    <Rectangle />
+                    <GiftCardIcon src={CardImg3} />
 
                     <TextContainer>
                         <SubName>디지털 온누리상품권</SubName>
@@ -68,10 +102,21 @@ const RedeemCard = () => {
             </FlexRow>
         </Wrap>
 
+        {/* 1단계: 교환 확인 모달 */}
         <RedeemModal
-            open={open} 
-            onClose={() => setOpen(false)} 
-            onOpenApp={() => alert(`${selected}원 상품권 사용하기!`)} 
+            open={redeemOpen}
+            amount={selected}
+            onClose={() => setRedeemOpen(false)}
+            onConfirm={handleConfirm}
+        />
+
+        {/* 2단계: 바코드 모달 */}
+        <VoucherModal
+            open={voucherOpen}
+            amount={voucher?.amount}
+            code={voucher?.code}
+            barcodeUrl={voucher?.barcodeUrl}
+            onClose={() => setVoucherOpen(false)}
         />
     </>
   )
@@ -102,7 +147,7 @@ const CardContainer = styled.div`
     gap: 8px;
 `
 
-const Rectangle = styled.div`
+const GiftCardIcon = styled.img`
     width: 60px;
     height: 60px;
     flex-shrink: 0;
@@ -173,7 +218,7 @@ const GiftText = styled.div`
     letter-spacing: -0.24px;
 `
 
-const RedeemButton = styled.div`
+const RedeemButton = styled.button`
     display: flex;
     width: 72px;
     padding: 10px;
@@ -182,9 +227,9 @@ const RedeemButton = styled.div`
     gap: 10px;
     border-radius: 8px;
     border: 1px solid var(--gray-200, #E5E7EB);
-    background: var(--pri, #6D6D6D);
+    background: var(--pri, #E5E7EB);
 
-    color: var(--zinc-700, #3F3F47);
+    color: var(--zinc-700, #8D8D8D);
     text-align: center;
 
     /* body/body 2 */
