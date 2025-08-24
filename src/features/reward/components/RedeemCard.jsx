@@ -8,11 +8,21 @@ import CardImg1 from '@/assets/icons/5000.png'
 import CardImg2 from '@/assets/icons/10000.png'
 import CardImg3 from '@/assets/icons/30000.png'
 
-const RedeemCard = () => {
+import { postReward } from '@/shared/api/reward';
+
+const RedeemCard = ({ balance = 0, onRedeemed }) => {
     const [redeemOpen, setRedeemOpen] = useState(false);
     const [voucherOpen, setVoucherOpen] = useState(false);
     const [selected, setSelected] = useState(null);
     const [voucher, setVoucher] = useState(null);
+
+    const [redeeming, setRedeeming] = useState(false);
+
+    // 교환 티어 목록
+    const can5000  = balance >= 5000;
+    const can10000 = balance >= 10000;
+    const can30000 = balance >= 30000;
+
 
     const handleRedeem = useCallback((amount) => {
         setSelected(amount);
@@ -26,17 +36,39 @@ const RedeemCard = () => {
     };
 
     const handleConfirm = useCallback(async (amount) => {
-        // TODO: 여기서 실제 교환 API 호출하고, 응답으로 바코드 URL/코드 수신
-        // const { code, barcodeUrl } = await redeemAPI(amount);
+    // 안전 가드: 잔액 부족하면 중단
+    if (balance < amount) {
+        alert('포인트가 부족합니다.');
+        return;
+    }
+    if (redeeming) return;
 
-        // 데모용 더미
+    setRedeeming(true);
+    try {
+        // 1) 히스토리 차감 기록 (-amount)
+        //    서버에서 사용하는 필드명은 seedHistory와 동일하게 맞춤: { delta, caption }
+        await postReward({
+        delta: -amount,
+        caption: `온누리 ${amount.toLocaleString('ko-KR')}원 교환`,
+        });
+
+        // 2) (선택) 바우처 코드 생성/수신
         const code = generateCode(amount);
-        const barcodeUrl = ''; // 실제 url 있으면 채우기
+        const barcodeUrl = ''; // 서버가 주면 대체
 
+        // 3) 모달 전환
         setVoucher({ code, barcodeUrl, amount });
         setRedeemOpen(false);
         setVoucherOpen(true);
-    }, []);
+
+        // 4) 부모에게 알림 → PointHistory 새로고침 트리거
+        onRedeemed?.();
+    } catch (e) {
+        alert(e?.message || '교환에 실패했어요. 잠시 후 다시 시도해주세요.');
+    } finally {
+        setRedeeming(false);
+    }
+    }, [balance, onRedeemed, redeeming]);
 
   return (
     <>
@@ -56,7 +88,12 @@ const RedeemCard = () => {
                     </TextContainer>
                 </CardContainer>
 
-                <RedeemButton onClick={() => handleRedeem(5000)}>
+                <RedeemButton
+                    $active={can5000}
+                    disabled={!can5000}
+                    onClick={() => can5000 && handleRedeem(5000)}
+                    title={can5000 ? '' : '5,000 포인트 이상 필요'}
+                >
                     Redeem
                 </RedeemButton>
             </FlexRow>
@@ -76,7 +113,12 @@ const RedeemCard = () => {
                     </TextContainer>
                 </CardContainer>
 
-                <RedeemButton onClick={() => handleRedeem(10000)}>
+                <RedeemButton
+                    $active={can10000}
+                    disabled={!can10000}
+                    onClick={() => can10000 && handleRedeem(10000)}
+                    title={can10000 ? '' : '10,000 포인트 이상 필요'}
+                >
                     Redeem
                 </RedeemButton>
             </FlexRow>
@@ -96,7 +138,12 @@ const RedeemCard = () => {
                     </TextContainer>
                 </CardContainer>
 
-                <RedeemButton onClick={() => handleRedeem(30000)}>
+                <RedeemButton
+                    $active={can30000}
+                    disabled={!can30000}
+                    onClick={() => can30000 && handleRedeem(30000)}
+                    title={can30000 ? '' : '30,000 포인트 이상 필요'}
+                >
                     Redeem
                 </RedeemButton>
             </FlexRow>
@@ -226,12 +273,13 @@ const RedeemButton = styled.button`
     align-items: center;
     gap: 10px;
     border-radius: 8px;
+
     border: 1px solid var(--gray-200, #E5E7EB);
-    background: var(--pri, #E5E7EB);
 
-    color: var(--zinc-700, #8D8D8D);
+    background: ${({ $active }) => ($active ? '#FF6900' : 'var(--pri, #E5E7EB)')};
+    color: ${({ $active }) => ($active ? '#FFFFFF' : 'var(--zinc-700, #8D8D8D)')};
+    
     text-align: center;
-
     /* body/body 2 */
     font-family: Pretendard;
     font-size: 14px;
@@ -240,4 +288,13 @@ const RedeemButton = styled.button`
     line-height: 150%; /* 21px */
     letter-spacing: -0.28px;
 
+    cursor: ${({ $active }) => ($active ? 'pointer' : 'default')};
+
+    /* 선택사항: hover 효과 (활성일 때만) */
+    ${({ $active }) =>
+        $active &&
+        `
+        &:hover { filter: brightness(0.98); }
+        &:active { transform: scale(0.98); }
+    `}
 `

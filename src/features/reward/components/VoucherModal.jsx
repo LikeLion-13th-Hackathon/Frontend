@@ -4,7 +4,10 @@ import styled from 'styled-components';
 import { createPortal } from 'react-dom';
 import CommonButton from '@/components/common/CommonButton';
 
-export default function VoucherModal({ open, onClose, amount, code, barcodeUrl }) {
+//바코드 이미지
+import BarImg from '@/assets/icons/barcode.png'
+
+export default function VoucherModal({ open, onClose, amount, code }) {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
@@ -23,11 +26,12 @@ export default function VoucherModal({ open, onClose, amount, code, barcodeUrl }
 
   const onCopy = async () => {
     try {
-        await navigator.clipboard.writeText(code || '');
-        setCopied(true);
-        setTimeout(() => setCopied(false), 1000);
-    } catch {}
-        console.error('Copy failed', e);
+      await navigator.clipboard.writeText(code || '');
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1000);
+    } catch (e) {
+      console.error('Copy failed', e);
+    }
   };
 
   const modal = (
@@ -38,13 +42,10 @@ export default function VoucherModal({ open, onClose, amount, code, barcodeUrl }
         </Header>
 
         <BarcodeArea>
-          {barcodeUrl ? (
-            <BarcodeImg src={barcodeUrl} alt="voucher barcode" />
-          ) : (
-            // 임시 바코드(플레이스홀더). 실제 바코드 이미지를 받으면 barcodeUrl로 교체!
-            <FakeBarcode aria-label="barcode placeholder" />
-          )}
-          <CodeText aria-label="voucher code">{code}</CodeText>
+          <Rectangle>
+            <BarcodeImg src={BarImg} alt="voucher barcode" />
+            <CodeCaption aria-label="voucher code">{code}</CodeCaption>
+          </Rectangle>
         </BarcodeArea>
 
         <Sub>
@@ -61,14 +62,13 @@ export default function VoucherModal({ open, onClose, amount, code, barcodeUrl }
           <SizedButton variant="secondary" fullWidth={false} onClick={onClose}>
             Close
           </SizedButton>
-          <SizedButton
-            variant="primary"
+          <OrangeButton
             fullWidth={false}
             onClick={onCopy}
             disabled={!code}
           >
             {copied ? 'Copied!' : 'Copy'}
-          </SizedButton>
+          </OrangeButton>
         </ButtonRow>
       </Wrap>
     </Overlay>
@@ -152,43 +152,6 @@ const BarcodeArea = styled.div`
   gap: 12px;
 `;
 
-const BarcodeImg = styled.img`
-  width: 220px;
-  height: 80px;
-  object-fit: contain;
-`;
-
-const FakeBarcode = styled.div`
-  width: 220px;
-  height: 80px;
-  border: 1px solid #000;
-  border-radius: 6px;
-  background:
-    repeating-linear-gradient(
-      to right,
-      #000 0,
-      #000 2px,
-      #fff 2px,
-      #fff 4px
-    );
-`;
-
-const CodeText = styled.div`
-  font-family: Pretendard;
-  font-size: 18px;
-  font-weight: 700;
-  letter-spacing: 2px;
-`;
-
-const CopyBtn = styled.button`
-  border: 1px solid #e5e7eb;
-  background: #f5f5f5;
-  border-radius: 6px;
-  padding: 6px 10px;
-  font-size: 12px;
-  cursor: pointer;
-`;
-
 const ButtonRow = styled.div`
   position: absolute;
   left: 0;
@@ -203,4 +166,50 @@ const SizedButton = styled(CommonButton).attrs({ fullWidth: false })`
   width: 144px;
   height: 44px;
   border-radius: 8px;
+`;
+
+const OrangeButton = styled(SizedButton)`
+  background: #FF6900;
+  color: #FFF;
+  border: none;
+
+  &:hover {
+    filter: brightness(0.95);
+  }
+`;
+
+const Rectangle = styled.div`
+  box-sizing: border-box;
+  display: flex;
+  width: 280px;
+  height: 98px;
+  padding: 4px 14px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  background: #D9D9D9;
+  border-radius: 8px;
+  overflow: hidden;
+`;
+
+
+
+const CodeCaption = styled.div`
+  color: #000;
+  text-align: center;
+
+  /* caption/caption 2 */
+  font-family: Pretendard;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 150%; /* 15px */
+  letter-spacing: -0.2px;
+`;
+
+const BarcodeImg = styled.img`
+  width: 252px;
+  height: 65px;
+  flex-shrink: 0;
 `;
