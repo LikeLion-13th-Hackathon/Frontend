@@ -43,7 +43,7 @@ const Card = styled.div`
     gap: 8px;
 
     border-radius: 12px;
-    background: #ECECEC;
+    background: #FFEDD4;
 `;
 
 const CardTitle = styled.div`
