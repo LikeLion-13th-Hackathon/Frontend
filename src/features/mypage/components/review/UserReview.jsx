@@ -50,7 +50,10 @@ const UserReview = ({ userId, onCountChange }) => {
           // 백엔드 응답 매핑
           // r: { id, store, comment, likes_count, liked, tags[], created, author{...} }
           const storeName =
-            r.store_name || r.store_name_en || (r.store_title) || `Store #${r.store}`; // 응답에 상점명이 없으면 임시표시
+            (r.store_name && r.store_english)
+            ? `${r.store_name} ${r.store_english}`
+            : (r.store_name || r.store_english || r.store_title || `Store #${r.store}`);
+
           const createdAt = r.created; // ISO string
           const likes = r.likes_count ?? 0;
           const liked = !!r.liked;
@@ -60,7 +63,7 @@ const UserReview = ({ userId, onCountChange }) => {
           return (
             <ReviewContent
               key={r.id}
-              avatarUrl={r.author?.profile_image || ''} // 필요 시 가게 썸네일로 교체
+              avatarUrl={r.store_image || ''}
               nickname={storeName}                     // 가게명으로 노출
               createdAt={createdAt}
               likes={likes}

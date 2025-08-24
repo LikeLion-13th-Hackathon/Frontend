@@ -20,7 +20,6 @@ const StoreItem = ({ store }) => {
             <StoreImage src={image} />
 
             <TextBox>
-                {/* <StoreTitle>수목식당 Sumok Sikdang</StoreTitle> */}
                 <StoreTitle>
                     <span className="ko">{nameKo}</span>
                     {nameEn && <span className="en"> {nameEn}</span>}
@@ -66,6 +65,7 @@ const StoreImage = styled.img`
     width: 72px;
     height: 72px;
     background: #D9D9D9;
+    border-radius: 8px;
 `
 
 const TextBox = styled.div`
