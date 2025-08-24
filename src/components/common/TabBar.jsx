@@ -12,7 +12,7 @@ import MypageSelected from '@/assets/icons/tabbar/mypage.png';
 import Mypage from '@/assets/icons/tabbar/mypage_gray.png';
 
 const TABS = [
-  { key: 'home',    label: 'Home',    path: '/',           icon: Home,    iconActive: HomeSelected },
+  { key: 'home',    label: 'Home',    path: '/home',           icon: Home,    iconActive: HomeSelected },
   { key: 'search',  label: 'Search',  path: '/search',     icon: Search,  iconActive: SearchSelected },
   { key: 'reward',  label: 'Reward',  path: '/reward',     icon: Reward,  iconActive: RewardSelected },
   { key: 'mypage',  label: 'Mypage',  path: '/mypage',     icon: Mypage,  iconActive: MypageSelected },
