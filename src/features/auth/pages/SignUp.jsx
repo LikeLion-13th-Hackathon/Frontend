@@ -1,5 +1,5 @@
 // src/pages/SignUp.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FiUser, FiLock, FiEye, FiEyeOff } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
@@ -11,10 +11,15 @@ import PwImg from '@/assets/icons/login/password.png'
 import EyeImg from '@/assets/icons/login/eyes.png'
 import EyeCloseImg from '@/assets/icons/login/eye_close.png'
 
+import { checkEmailDup } from "@/shared/api/auth";
+
 export default function SignUp() {
   const navigate = useNavigate();
 
+  //이메일 중복 체크
   const [email, setEmail] = useState("");
+  const [isChecking, setIsChecking] = useState(false);
+
   const [pw, setPw] = useState("");
   const [showPw, setShowPw] = useState(false);
   const [touched, setTouched] = useState({ email: false, pw: false });
@@ -25,19 +30,45 @@ export default function SignUp() {
   // 비밀번호 규칙(필요시 변경)
   const pwOk = pw.length >= 6;
 
-  // 데모용 중복 이메일 체크 (실서비스에선 API 교체)
-  const checkEmail = (v) => {
-    if (!isValidEmail(v)) return setEmailInUse(false);
-    setEmailInUse(v.toLowerCase() === "likelion13@cau.ac.kr");
+  const checkEmail = async (v) => {
+    if (!isValidEmail(v)) { setEmailInUse(false); return; }
+    try {
+      setIsChecking(true);
+      console.log('[checkEmail] request:', v);
+      const res = await checkEmailDup(v.trim());
+      console.log('[checkEmail] response:', res);
+      const inUse =
+        res?.hasOwnProperty("available") ? !res.available :
+        res?.hasOwnProperty("exists")    ? !!res.exists   :
+        false;
+        console.log('[checkEmail] inUse:', inUse);
+        setEmailInUse(inUse);
+      } catch (e){
+        // 실패 시 과도한 차단을 피하려면 false, 보수적으로 막으려면 true
+        console.error('[checkEmail] error:', e);
+        setEmailInUse(false);
+        } finally {
+          setIsChecking(false);
+        }
   };
 
-  const disabled = !isValidEmail(email) || !pwOk || emailInUse;
+  const disabled = isChecking || !isValidEmail(email) || !pwOk || emailInUse;
 
   const onSubmit = (e) => {
     e.preventDefault();
     if (disabled) return;
     navigate("/signup/profile", { state: { email, pw } });
   };
+
+  // 이메일이 바뀌면 300ms 뒤 자동으로 중복 체크 (형식이 유효할 때만)
+  useEffect(() => {
+    if (!email || !isValidEmail(email)) { 
+      setEmailInUse(false);
+      return;
+    }
+    const id = setTimeout(() => { checkEmail(email); }, 300);
+    return () => clearTimeout(id);
+  }, [email]); 
 
   return (
     <Layout>
@@ -50,7 +81,7 @@ export default function SignUp() {
           <Label htmlFor="email">Email address</Label>
           <Field
             className={
-              touched.email && (!isValidEmail(email) || emailInUse) ? "error" : ""
+              emailInUse || (touched.email && !isValidEmail(email)) ? "error" : ""
             }
           >
             <IconLeft>
@@ -64,7 +95,6 @@ export default function SignUp() {
               onChange={(e) => setEmail(e.target.value)}
               onBlur={() => {
                 setTouched((t) => ({ ...t, email: true }));
-                checkEmail(email);
               }}
               autoComplete="email"
               aria-invalid={touched.email && (!isValidEmail(email) || emailInUse)}
@@ -73,7 +103,10 @@ export default function SignUp() {
           {touched.email && !isValidEmail(email) && (
             <Help>올바른 이메일 형식을 입력해 주세요.</Help>
           )}
-          {touched.email && isValidEmail(email) && emailInUse && (
+          {isValidEmail(email) && isChecking && (
+            <Help>이메일 확인 중…</Help>
+          )}
+          {isValidEmail(email) && emailInUse && (
             <Help>이미 사용 중인 이메일입니다.</Help>
           )}
 

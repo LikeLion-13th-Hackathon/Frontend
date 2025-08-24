@@ -12,7 +12,10 @@ export const joinRequest = (payload) =>
   apiClient.post("/account/join/", payload).then((r) => r.data);
 
 export const logoutRequest = () =>
-  api.post('/account/logout/').then(r => r.data);
+  apiClient.post('/account/logout/').then(r => r.data);
+
+// export const checkEmailDup = (email) =>
+//   apiClient.post("/account/check/", { email }).then((r) => r.data);
 
 // ---- 내부 유틸: 서버에 저장된 내 프로필 이미지 가져와 로컬에 캐시
 export async function fetchAndMergeProfileImage() {
@@ -44,6 +47,18 @@ export async function saveAuth({ user, token } = {}) {
   const hasAvatar = !!user?.profile_image || !!loadUser()?.profile_image;
   if (!hasAvatar) {
     await fetchAndMergeProfileImage().catch(() => {});
+  }
+}
+
+// 200 => 사용 가능 / 400 => 이미 사용 중
+export const checkEmailDup = async (email) => {
+  try {
+    const { data } = await apiClient.post("/account/check/", { email });
+    return { exists: false, ...data }; // 성공이면 사용 가능
+  } catch (e) {
+    const status = e?.response?.status;
+    if (status === 400) return { exists: true }; // 백 규칙 반영
+    throw e; // 그 외 에러는 그대로 올림
   }
 }
 
