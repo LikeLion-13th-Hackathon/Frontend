@@ -78,20 +78,30 @@ export default function SignUpComplete() {
       setLoading(true);
       setError("");
 
+      // let imageUrl = '';
+
+      // if (file) {
+      //   const { uploadURL, fileURL } = await getPresign(file.name);
+      //   await putFileToS3(uploadURL, file);   // S3 업로드
+
+      //   // (백엔드 가이드에 맞게) 업로드된 s3_url을 서버에 저장
+      //   try {
+      //     const savedUrl = await saveS3ImageUrl(fileURL);
+      //     imageUrl = savedUrl;                // 서버가 정규화한 최종 URL 사용
+      //   } catch (e) {
+      //     // 저장 API가 인증 필요 등으로 실패하면 S3 URL이라도 사용
+      //     imageUrl = fileURL;
+      //   }
+      // }
+
+      // 업로드만 먼저 하고 URL 보관 → 회원가입 payload에 바로 사용
+      let uploadedUrl = '';
       let imageUrl = '';
-
       if (file) {
-        const { uploadURL, fileURL } = await getPresign(file.name);
-        await putFileToS3(uploadURL, file);   // S3 업로드
-
-        // (백엔드 가이드에 맞게) 업로드된 s3_url을 서버에 저장
-        try {
-          const savedUrl = await saveS3ImageUrl(fileURL);
-          imageUrl = savedUrl;                // 서버가 정규화한 최종 URL 사용
-        } catch (e) {
-          // 저장 API가 인증 필요 등으로 실패하면 S3 URL이라도 사용
-          imageUrl = fileURL;
-        }
+        const { uploadURL, fileURL } = await getPresign(file.name, file.type);
+        await putFileToS3(uploadURL, file);
+        uploadedUrl = fileURL; // 가입 후 saveS3ImageUrl에 사용할 수 있음(선택)
+        imageUrl = fileURL;    // 가입 payload에 바로 전달
       }
 
       const email = prev.email;
@@ -107,9 +117,16 @@ export default function SignUpComplete() {
         ...(imageUrl ? { profile_image: imageUrl } : {}),     // URL 문자열만 전송
       };
 
+      // const data = await joinRequest(payload);
+      // saveAuth(data);
       const data = await joinRequest(payload);
-      saveAuth(data);
+      await saveAuth(data); // 토큰 저장
 
+      // (선택) 토큰 생겼으니 이제 서버에 최종 URL 저장 시도
+      if (uploadedUrl) {
+        try { await saveS3ImageUrl(uploadedUrl); } catch {}
+      }
+      
       nav("/onboarding-end", {
         state: { 
           username: data.user?.username || username,

@@ -82,7 +82,7 @@ const Background = styled.div`
     width: 100%;
     height: 333px;
     flex-shrink: 0;
-    background: #DDD;
+    background: #FFF7ED;
 
     /* 프로필 중앙 정렬 */
     display: flex;
