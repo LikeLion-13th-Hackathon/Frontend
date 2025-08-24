@@ -6,6 +6,11 @@ import CommonButton from '@/components/common/CommonButton';
 
 import StarImg from '@/assets/icons/star.png'
 
+//
+const FALLBACK_IMG =
+  'data:image/svg+xml;utf8,' +
+  encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="72" height="72"><rect width="100%" height="100%" fill="#D9D9D9"/></svg>');
+
 export default function ReceiptMatchModal({
   open,
   onClose,
@@ -48,6 +53,8 @@ export default function ReceiptMatchModal({
           {list.map((c, idx) => {
             const isFirst = idx === 0;
             const isLast = idx === list.length - 1;
+            const imgSrc = c.store_image || c.image_url || '';
+
             return (
               <StoreItem
                 key={c.id}
@@ -58,12 +65,12 @@ export default function ReceiptMatchModal({
                 onClick={() => setSelectedId(c.id)}
                 onKeyDown={(e)=> (e.key==='Enter'||e.key===' ') && setSelectedId(c.id)}
               >
-                {/* 썸네일 */}
-                {c.image_url ? (
-                  <Thumb src={c.image_url} alt={`${c.store_name} thumbnail`} />
-                ) : (
-                  <Thumb as="div" aria-label="store thumbnail placeholder" />
-                )}
+              
+              <Thumb
+                src = {imgSrc || FALLBACK_IMG}
+                alt={`${c.store_name} thumbnail`}
+                onError={(e) => { e.currentTarget.src = FALLBACK_IMG; }} 
+              />
 
                 {/* 텍스트 영역 */}
                 <ItemRight>
