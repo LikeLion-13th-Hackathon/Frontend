@@ -9,6 +9,8 @@ import Stepper from "@/components/Stepper";
 import BackImg from "@/assets/icons/header_back.png";
 
 import { fetchReviewTags } from "@/shared/api/review";
+import { createReview } from "@/shared/api/review";
+import { postReward } from "@/shared/api/reward";
 
 /* ===== 디자인 토큰 ===== */
 const tone = {
@@ -21,7 +23,9 @@ const MAX_REVIEW_LEN = 3000;
 export default function ReviewRestaurant() {
   const nav = useNavigate();
   const { state } = useLocation();
-  const storeId = state?.store?.id;
+  const isReceiptFlow = state?.source === "receipt";
+  
+  const storeId = state?.storeId ?? state?.store?.id;
 
   const [tags, setTags] = useState([]);
   const [selectedTags, setSelectedTags] = useState({});
@@ -62,10 +66,47 @@ export default function ReviewRestaurant() {
     });
   };
 
+  const REVIEW_REWARD = 500;
+
   // 리뷰 저장 API 호출 제거 → draft만 다음 페이지로 전달
-  const onNext = () => {
+  const onNext = async () => {
     if (!canNext) return;
     const tag_ids = Object.values(selectedTags).flat().filter(Boolean);
+
+  // 영수증 플로우면: 리뷰 즉시 생성 → 리워드 페이지로 이동
+        if (state?.source === "receipt") {
+          try {
+            if (!storeId) {
+              alert("가게 정보가 없어요. 다시 시도해 주세요.");
+              return;
+            }
+            const res = await createReview(storeId, { tag_ids, comment: text });
+            const created = res?.data ?? res;
+
+            const reward = await postReward({
+              delta: REVIEW_REWARD,
+              caption: "Receipt Review",
+            });
+    
+            // 리워드 페이지 라우트
+            nav("/review/complete", {
+              state: {
+                ...state,
+                source: "receipt",
+                storeId,
+                review: created,
+                reward,
+                storeName: state?.storeName,
+                category: state?.category,
+              },
+              replace: true,
+            });
+          } catch (e) {
+            console.error("리뷰 생성 실패:", e);
+            alert(e?.message || "리뷰 저장에 실패했어요.");
+          }
+          return;
+        }
 
     nav("/review/conversation", {
       state: {
@@ -88,7 +129,7 @@ export default function ReviewRestaurant() {
       />
 
       <Page>
-        <Stepper current={1} total={4} />
+        <Stepper current={1} total={isReceiptFlow ? 2 : 4} />
 
         <Title>Share Your Thoughts{"\n"}About This Store</Title>
         <Sub>You can leave a quick review using tags or text.</Sub>

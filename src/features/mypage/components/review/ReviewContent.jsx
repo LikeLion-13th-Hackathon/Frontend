@@ -6,7 +6,8 @@ import ReviewTags from './ReviewTags';
 
 const ReviewContent = ({
   avatarUrl,
-  nickname = '',
+  storeKorean,
+  storeEnglish,
   createdAt = new Date(),
   likes,
   onLikeClick,
@@ -25,14 +26,16 @@ const ReviewContent = ({
             <Profile>
               <Avatar
                 src={avatarUrl || "https://via.placeholder.com/42x42.png?text=👤"}
-                alt={`${nickname} 프로필 이미지`}
                 onError={(e) => {
                   e.currentTarget.src = "https://via.placeholder.com/42x42.png?text=👤";
                 }}
               />
 
               <Meta>
-                <Nickname title={nickname}>{nickname}</Nickname>
+                <StoreNames>
+                  <StoreName>{storeKorean}</StoreName>
+                  {storeEnglish && <StoreEnglish>{storeEnglish}</StoreEnglish>}
+                </StoreNames>
                 <DateBox>{dateText}</DateBox>
               </Meta>
             </Profile>
@@ -116,21 +119,6 @@ const Meta = styled.div`
   gap: 0; /* 디자인상 붙여 보임 */
 `
 
-const Nickname = styled.div`
-  color: #000;
-  text-align: left;
-  font-family: Pretendard;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 150%; /* 24px */
-  letter-spacing: -0.32px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 240px; /* 필요시 조정 */
-`
-
 const DateBox = styled.div`
   color: #858585;
   text-align: left;
@@ -202,3 +190,28 @@ function formatDateYYMMDD(v) {
   const dd = String(d.getDate()).padStart(2, '0')
   return `${yy}.${mm}.${dd}`
 }
+
+const StoreNames = styled.div`
+  display: flex;
+  flex-direction: column; /* 한국어, 영어를 위아래로 쌓되 */
+  align-items: flex-start;
+`;
+
+const StoreName = styled.div`
+  font-size: 16px;
+  font-weight: 600;
+  color: #000;
+  white-space: normal;   /* 줄바꿈 허용 -> 세로로 길게 */
+  word-break: keep-all;  /* 한국어 자연 줄바꿈 */
+`;
+
+const StoreEnglish = styled.div`
+  font-size: 12px;
+  color: #888;
+  white-space: normal;   /* 줄바꿈 허용 */
+  word-break: break-word; /* 긴 단어는 강제로 개행 */
+  margin-top: 2px;       /* 위 한글명과 간격 */
+`;
+
+
+

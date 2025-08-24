@@ -12,6 +12,7 @@ import LikeIcon from "@/assets/icons/review_like.svg?react";
 import DislikeIcon from "@/assets/icons/review_dislike.svg?react";
 
 import { createReview, createConversation, createFeedback } from "@/shared/api/review";
+import { postReward } from "@/shared/api/reward";
 
 const MAX_LEN = 500;
 
@@ -27,6 +28,8 @@ export default function ReviewFeedback() {
   const canNext = useMemo(() => {
     return choice !== null;
   }, [choice]);
+
+  const REVIEW_REWARD = 300;
 
   // 서버 저장 (최종 단계)
 const onNext = async () => {
@@ -56,6 +59,11 @@ const onNext = async () => {
 
     await createFeedback(feedbackPayload);
 
+    const reward = await postReward({
+        delta: REVIEW_REWARD,
+        caption: "Chat Review",
+    });
+
 
     // 완료 페이지 이동
     nav("/review/complete", {
@@ -63,6 +71,7 @@ const onNext = async () => {
         store: state?.store,
         reviewId: reviewRes.data.id,
         conversationId: convRes.id,
+        reward,
       },
     });
   } catch (err) {

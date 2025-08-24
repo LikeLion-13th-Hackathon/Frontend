@@ -48,13 +48,9 @@ const UserReview = ({ userId, onCountChange }) => {
       <Wrap>
         {reviews.map((r) => {
           // 백엔드 응답 매핑
-          // r: { id, store, comment, likes_count, liked, tags[], created, author{...} }
-          const storeName =
-            (r.store_name && r.store_english)
-            ? `${r.store_name} ${r.store_english}`
-            : (r.store_name || r.store_english || r.store_title || `Store #${r.store}`);
-
-          const createdAt = r.created; // ISO string
+          const storeKorean = r.store_name || r.store_title || `Store #${r.store}`;
+          const storeEnglish = r.store_english || '';
+          const createdAt = r.created;
           const likes = r.likes_count ?? 0;
           const liked = !!r.liked;
           const tagItems = Array.isArray(r.tags) ? r.tags : [];
@@ -64,13 +60,12 @@ const UserReview = ({ userId, onCountChange }) => {
             <ReviewContent
               key={r.id}
               avatarUrl={r.store_image || ''}
-              nickname={storeName}                     // 가게명으로 노출
+              storeKorean={storeKorean}
+              storeEnglish={storeEnglish}
               createdAt={createdAt}
               likes={likes}
               liked={liked}
               onLikeClick={() => {
-                // TODO: 좋아요 토글 API 연동
-                // optimistic UI: 로컬만 즉시 반영
                 setReviews(prev => prev.map(x => {
                   if (x.id !== r.id) return x;
                   const nowLiked = !liked;
