@@ -1,7 +1,10 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import ThumbOn from '@/assets/icons/thumb/thumb-up_on.png';
 import ThumbOff from '@/assets/icons/thumb/thumb-up_off.png';
+import ModifyImg from '@/assets/icons/modify.png'
+import DeleteImg from '@/assets/icons/delete.png'
+import defaultAvatar from '@/assets/icons/basic_profile.png';
 import ReviewTags from './ReviewTags';
 
 const ReviewContent = ({
@@ -17,17 +20,56 @@ const ReviewContent = ({
   tagItems = [],
 
   text = '',
+  onEdit,
+  onDelete,
+  onSave,
 }) => {
     const dateText = formatDateYYMMDD(createdAt)
+
+
+    const [isEditing, setIsEditing] = useState(false);
+    const [draft, setDraft] = useState(text);
+    const [busy, setBusy] = useState(false);
+
+    const startEdit = () => {
+      setDraft(text);
+      setIsEditing(true);
+    };
+
+    const cancelEdit = () => {
+      setDraft(text);
+      setIsEditing(false);
+    };
+
+    const handleSave = async () => {
+      const v = draft.trim();
+      if (!v) { alert('Comment cannot be empty.'); return; }
+      try {
+        setBusy(true);
+        await onSave?.(v);
+        setIsEditing(false);
+      } catch (e) {
+        console.error(e);
+        alert('Failed to save the review.');
+      } finally {
+        setBusy(false);
+      }
+    };
 
   return (
     <Wrap>
         <ReviewHeader>
             <Profile>
               <Avatar
-                src={avatarUrl || "https://via.placeholder.com/42x42.png?text=👤"}
+                src={(avatarUrl && String(avatarUrl).trim()) || defaultAvatar}
+                alt={storeKorean || 'store'}
+                loading="lazy"
+                decoding="async"
                 onError={(e) => {
-                  e.currentTarget.src = "https://via.placeholder.com/42x42.png?text=👤";
+                  // 기본이미지로 안전하게 폴백(무한 onError 방지)
+                  if (!e.currentTarget.src.includes('basic_profile')) {
+                    e.currentTarget.src = defaultAvatar;
+                  }
                 }}
               />
 
@@ -63,8 +105,53 @@ const ReviewContent = ({
             defaultOpen={false} //기본 접힘(default)
         />
 
-        {/* text가 있을 때만 ! 요소 생성 */}
-        {text && <ReviewText>{text}</ReviewText>}
+        {!isEditing ? (
+          text && <ReviewText>{text}</ReviewText>
+        ) : (
+          <EditorArea>
+            <EditTextarea
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              maxLength={1000}
+              disabled={busy}
+              placeholder="Write your review..."
+            />
+            <CharCounter>{draft.length}/1000</CharCounter>
+          </EditorArea>
+        )}
+
+        <ReviewTool>
+          {!isEditing ? (
+            <>
+              <ToolBtn
+                type="button"
+                onClick={() => { startEdit(); onEdit?.(); }}
+                aria-label="Edit review"
+                title="Edit"
+                disabled={busy}
+              >
+                <ToolIcon src={ModifyImg} alt="" />
+              </ToolBtn>
+              <ToolBtn
+                type="button"
+                onClick={() => {
+                  if (confirm('Are you sure you want to delete this review?')) onDelete?.();
+                }}
+                aria-label="Delete review"
+                title="Delete"
+                disabled={busy}
+              >
+                <ToolIcon src={DeleteImg} alt="" />
+              </ToolBtn>
+            </>
+          ) : (
+            <>
+              <PrimaryBtn type="button" onClick={handleSave} disabled={busy}>Save</PrimaryBtn>
+              <GhostBtn type="button" onClick={cancelEdit} disabled={busy}>Cancel</GhostBtn>
+            </>
+          )}
+        </ReviewTool>
+
     </Wrap>
   )
 }
@@ -75,7 +162,7 @@ const Wrap = styled.div`
     display: flex;
     width: 335px;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: flex-end;
     gap: 12px;
     margin: 22px 20px 0 20px;
 `
@@ -93,7 +180,6 @@ const Profile = styled.div`
     gap: 10px;
 `
 
-{/* 프로필 이미지(백엔드 연동 필요) */}
 const Avatar = styled.img`
   width: 42px;
   height: 42px;
@@ -211,6 +297,75 @@ const StoreEnglish = styled.div`
   white-space: normal;   /* 줄바꿈 허용 */
   word-break: break-word; /* 긴 단어는 강제로 개행 */
   margin-top: 2px;       /* 위 한글명과 간격 */
+`;
+
+const ReviewTool = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 16px;
+`
+
+const ToolIcon = styled.img`
+  width: 24px;
+  height: 24px;
+`
+
+const ToolBtn = styled.button`
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+`;
+
+const EditorArea = styled.div`
+  position: relative;
+  width: 100%;
+`;
+
+const EditTextarea = styled.textarea`
+  width: 100%;
+  min-height: 88px;
+  resize: vertical;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #e5e5e5;
+  font-family: Pretendard;
+  font-size: 14px;
+  line-height: 1.5;
+  outline: none;
+  &:focus { border-color: #111; }
+`;
+
+const CharCounter = styled.div`
+  position: absolute;
+  right: 10px;
+  bottom: 8px;
+  font-size: 11px;
+  color: #999;
+`;
+
+const PrimaryBtn = styled.button`
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 0;
+  background: #111;
+  color: #fff;
+  font-size: 12px;
+  cursor: pointer;
+`;
+
+const GhostBtn = styled.button`
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background: #fff;
+  color: #333;
+  font-size: 12px;
+  cursor: pointer;
 `;
 
 
