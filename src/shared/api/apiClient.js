@@ -26,6 +26,13 @@ apiClient.interceptors.response.use(
   }
 );
 
+// 토큰 자동 첨부
+apiClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem('access_token'); // saveAuth 기준 키
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
+
 // export 방식 2가지 지원
 export const api = apiClient;   // named export
 export default apiClient;       // default export
