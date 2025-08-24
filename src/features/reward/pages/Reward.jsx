@@ -136,7 +136,7 @@ const Reward = () => {
     <Layout overlapHeader bottomPadding={66}>
         <Background>
             <LeftHeader
-                title="My Reviews"
+                title="Rewards"
                 leftIcon={BackImg}
                 rightIcon={SearchImg}
                 overlay
@@ -269,7 +269,7 @@ const Background = styled.div`
     width: 100%;
     height: 175px;
     flex-shrink: 0;
-    background: #DDD;
+    background: #FFF7ED;
 `
 
 const Card = styled.div`
@@ -286,7 +286,7 @@ const Card = styled.div`
     align-items: center;
 
     border-radius: 12px;
-    background: #ECECEC;
+    background: #FFEDD4;
 `
 
 const CardTitle = styled.div`
