@@ -49,8 +49,6 @@ export async function searchStores({ keyword, signal } = {}) {
     signal,
   });
 
-  console.log("🔥 서버 원본 응답:", JSON.stringify(data, null, 2));
-
   // 백엔드 응답 매핑
   return (data.results || data || []).map((x) => ({
     id: x.store_id,

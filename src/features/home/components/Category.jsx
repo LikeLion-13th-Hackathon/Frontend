@@ -66,7 +66,7 @@ const Category = ({ selectedId, onSelect }) => {
   return (
     <Wrapper>
       {categories.map((cat) => {
-        const Icon = STYLED_ICONS[cat]; // ✅ 렌더에서는 참조만
+        const Icon = STYLED_ICONS[cat]; // 렌더에서는 참조만
         const active = cat === selectedId;
         return (
           <CategoryItem

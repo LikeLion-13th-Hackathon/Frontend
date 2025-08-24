@@ -9,8 +9,6 @@ export async function fetchAiTopics(category = "fresh") {
   const { data } = await apiClient.get(`/ai/topics`, {
     params: { category },
   });
-
-  console.log("[fetchAiTopics] response:", data);
   
   return data;
 }
@@ -44,8 +42,6 @@ export async function postChatMessage({
     role,
     message,
   };
-
-  console.log("[postChatMessage] 보내는 body:", body);
 
   const { data } = await apiClient.post(`/ai/chat/`, body);
   return data;

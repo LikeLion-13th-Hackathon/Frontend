@@ -223,8 +223,8 @@ export default function AIChatSimulatorChat() {
         <ControlsContainer>
           <OptionHeader>
             {loading 
-              ? '생성 중…' 
-              : `아래 카드 중 ${currentTurnRole === 'store' ? '사장님' : '손님'} 대사를 선택하세요.`
+              ? 'Creating…' 
+              : `Select the ${currentTurnRole === 'store' ? 'owner’s' : 'customer’s'} line.`
             }
           </OptionHeader>
           <PhraseRow>
@@ -304,22 +304,28 @@ export const ChatStage = styled.div`
   flex: 1;
   overflow-y: auto;
   min-height: 100px;
-  margin: 16px clamp(16px, 4vw, 20px) 12px;
-  border-radius: 12px;
-  background: #f9f9f9;
+  margin: 12px clamp(16px, 4vw, 20px); 
   display: flex;
 `;
+
 
 export const Messages = styled.div`
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: 10px;
-  padding: 12px;
+
+  /* 좌우 padding 제거 */
+  padding: 12px 0;
   width: 100%;
 `;
 
 const bubbleBase = `
-  max-width: 78%;
+  display: inline-block;     /* 부모 폭 따라가지 않고 글자수에 맞게 */
+  width: auto;
+  max-width: 78%;            /* 너무 길면 여기서 줄바꿈 */
+  min-width: 40px;
+
   padding: 10px 12px;
   border-radius: 12px;
   white-space: pre-wrap;
@@ -328,18 +334,17 @@ const bubbleBase = `
   line-height: 1.4;
   box-shadow: 0 0 10px rgba(0,0,0,.06);
 `;
-
 export const BubbleBot = styled.div`
   ${bubbleBase}
   background: #dfdfdf;
-  border-bottom-right-radius: 12px;
+  border-bottom-left-radius: 0px;
 `;
 
 export const BubbleUser = styled.div`
   ${bubbleBase}
-  background: #e5e7eb;
+  background: #FFF7ED;
   margin-left: auto;
-  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 0px;
 `;
 
 export const ErrorBox = styled.div`
@@ -379,7 +384,7 @@ export const PhraseCard = styled.div`
   width: ${CARD_W};
   min-height: 142px;
   padding: 10px;
-  background: #dfdfdf;
+  background: #FFF7ED;
   border-radius: 12px;
   box-shadow: 0 0 10px rgba(0,0,0,.10);
   display: flex;
@@ -517,23 +522,6 @@ export const ScenarioTitle = styled.div`
 export const ScenarioSub = styled.div`
   font-size: 12px;
   color: #404040;
-`;
-
-const SelectedTopicBox = styled.div`
-  margin: 12px 20px;
-  padding: 10px 14px;
-  border-radius: 8px;
-  background: #f0f0f0;
-  font-size: 14px;
-  color: #333;
-
-  span {
-    color: #666;
-    margin-right: 6px;
-  }
-  strong {
-    font-weight: 600;
-  }
 `;
 
 export const BubbleEn = styled.div`

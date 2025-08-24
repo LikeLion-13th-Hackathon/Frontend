@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import apiClient from "@/shared/api/apiClient";
-import { useNavigate } from "react-router-dom"; 
+import { useNavigate } from "react-router-dom";
+import ReviewIcon from "@/assets/icons/review.png";
+import MenuImg from "@/assets/icons/tag_restaurants.png";
 
 export default function TrendingNow() {
   const [stores, setStores] = useState([]);
@@ -14,57 +16,45 @@ export default function TrendingNow() {
           params: { sort_by: "reviews", limit: 4 },
         });
 
-        const formatted = (res.data?.results || res.data || []).map((s) => ({
-          id: s.store_id,
-          name: s.store_name,
-          englishName: s.store_english,
-          imageUrl: s.store_image,
-          reviewCount: s.review_count || 0,
-          firstMenu: s.menu_list?.[0] || null,
-        }));
-
-        setStores(formatted.slice(0, 4)); // ✅ 무조건 4개만
+        const list = res.data?.results || res.data || [];
+        setStores(list.slice(0, 4));
       } catch (err) {
-        console.error("❌ TrendingNow 가게 불러오기 실패:", err);
+        console.error("❌ TrendingNow fetch 실패:", err);
       }
     }
     loadTrendingStores();
   }, []);
 
-
   return (
     <Wrap>
       <Title>Trending Now</Title>
       <List>
-        {stores.map((store) => (
+        {stores.map((s) => (
           <Row
-            key={store.id}
-            onClick={() => navigate(`/store/${store.id}`)}
+            key={s.store_id}
+            onClick={() => navigate(`/store/${s.store_id}`)}
           >
-            <Thumb
-              style={{
-                backgroundImage: store.imageUrl
-                  ? `url(${store.imageUrl})`
-                  : undefined,
-              }}
-            />
-            <Col>
-              <Top>
-                <Name>
-                  {store.name} <EngName>{store.englishName}</EngName>
-                </Name>
-              </Top>
+            <Thumb src={s.store_image} alt={s.store_name} />
+            <Info>
+              <Name>{s.store_name}</Name>
+              {s.store_english && <EngName>{s.store_english}</EngName>}
 
-              {store.firstMenu && (
-                <MenuInfo>
-                  {store.firstMenu.korean} · {store.firstMenu.price}
-                </MenuInfo>
-              )}
+              <MetaRow>
+                <MenuBox>
+                  <MenuIcon src={MenuImg} alt="메뉴" />
+                  <MenuText>
+                    {s.menu_list?.[0]?.korean || "-"}{" "}
+                    {s.menu_list?.[0]?.price &&
+                      `· ${s.menu_list[0].price}`}
+                  </MenuText>
+                </MenuBox>
 
-              <Meta>
-                <span>리뷰 {store.reviewCount}개</span>
-              </Meta>
-            </Col>
+                <ReviewBox>
+                  <Icon src={ReviewIcon} alt="리뷰" />
+                  <ReviewNum>{s.review_count ?? 0}</ReviewNum>
+                </ReviewBox>
+              </MetaRow>
+            </Info>
           </Row>
         ))}
       </List>
@@ -72,18 +62,15 @@ export default function TrendingNow() {
   );
 }
 
-/* === styled === */
+/* === styled-components === */
 const Wrap = styled.section`
   margin: 20px 0;
 `;
 
 const Title = styled.div`
-  color: #000;
   font-size: 20px;
   font-weight: 600;
-  line-height: 125%;
-  letter-spacing: -0.4px;
-  padding-bottom: 12px;
+  margin-bottom: 12px;
 `;
 
 const List = styled.div`
@@ -94,59 +81,92 @@ const List = styled.div`
 
 const Row = styled.div`
   display: flex;
-  gap: 10px;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 8px 4px;
+  border-radius: 6px;
   cursor: pointer;
+
   &:hover {
     background: #f9f9f9;
   }
-  border-radius: 6px;
-  padding: 6px 4px;
 `;
 
-const Thumb = styled.div`
-  width: 56px;
-  height: 56px;
-  flex: 0 0 56px;
+const Thumb = styled.img`
+  width: 64px;
+  height: 64px;
   border-radius: 8px;
-  background: #EAEAEA center/cover no-repeat;
+  background: #eaeaea;
+  object-fit: cover;
+  flex-shrink: 0;
 `;
 
-const Col = styled.div`
+const Info = styled.div`
   flex: 1;
   min-width: 0;
-`;
-
-const Top = styled.div`
   display: flex;
-  align-items: center;
-  gap: 6px;
+  flex-direction: column;
+  gap: 4px;
 `;
 
 const Name = styled.div`
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 600;
   color: #111;
+  line-height: 1.4;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 `;
 
-const EngName = styled.span`
+const EngName = styled.div`
   font-size: 13px;
   font-weight: 400;
   color: #666;
-  margin-left: 4px;
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
-const MenuInfo = styled.div`
-  margin-top: 2px;
+const MetaRow = styled.div`
+  display: flex;
+  justify-content: space-between; /* 메뉴 왼쪽, 리뷰 오른쪽 */
+  align-items: center;
+`;
+
+const MenuBox = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+`;
+
+const MenuIcon = styled.img`
+  width: 16px;
+  height: 16px;
+`;
+
+const MenuText = styled.div`
   font-size: 13px;
-  font-weight: 500;
   color: #444;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
-const Meta = styled.div`
-  margin-top: 2px;
+const ReviewBox = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+`;
+
+const Icon = styled.img`
+  width: 16px;
+  height: 16px;
+`;
+
+const ReviewNum = styled.div`
   font-size: 12px;
-  color: #999;
+  color: #858585;
 `;
