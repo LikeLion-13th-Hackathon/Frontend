@@ -1,8 +1,11 @@
 // src/features/home/components/MarketInfo.jsx
 import React from 'react'
 import styled from 'styled-components'
+import { useNavigate } from 'react-router-dom'
 
 const MarketInfo = ({ infos = [] }) => {
+
+  const navigate = useNavigate();
 
   // 시장별 설명 하드코딩 매핑
   const descMap = {
@@ -23,6 +26,7 @@ const MarketInfo = ({ infos = [] }) => {
             subtitle={`– ${info.market_english}`}
             description={descMap[info.market_id] ?? ""}
             image={info.market_image}
+            onClick={() => navigate(`/market?market=${info.market_id}`)}
           />
         ))}
       </Wrapper>
@@ -32,12 +36,12 @@ const MarketInfo = ({ infos = [] }) => {
 
 export default MarketInfo
 
-const InfoCard = ({ title, subtitle, description, image }) => {
+const InfoCard = ({ title, subtitle, description, image, onClick }) => {
 
   const safeImage = image?.endsWith(".jpg") ? image.replace(".jpg", ".png") : image;
     
   return (
-    <Card>
+    <Card onClick={onClick}>
       <ImageBox $image={image} />
       <TextBox>
         <TitleText>
@@ -73,6 +77,9 @@ const Card = styled.div`
   align-items: center;
   gap: 8px;
   align-self: stretch;
+  cursor: pointer;
+  &:hover {
+    opacity: 0.8;
 `
 
 const ImageBox = styled.div`

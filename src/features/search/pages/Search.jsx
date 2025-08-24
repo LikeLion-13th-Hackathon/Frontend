@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { searchStores, fetchDiscover, fetchTrendingAll } from "@/shared/api/searchAll";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 import Layout from "@/components/common/Layout";
 import LeftHeader from "@/components/common/header/LeftHeader";
@@ -9,24 +9,34 @@ import BackImg from "@/assets/icons/header_back.png";
 import SearchImg from "@/assets/icons/search.png";
 import CheckThisOut from "@/features/search/components/CheckThisOut";
 import TrendingNow from "@/features/search/components/TrendingNow";
-import StoreCard from "@/features/home/components/StoreCard";
 import TabBar from '../../../components/common/TabBar';
 
 export default function SearchPage() {
-  const [keyword, setKeyword] = useState("");
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+
+  // URL 파라미터에서 keyword 읽기
+  const initialKeyword = searchParams.get("keyword") || "";
+
+  const [keyword, setKeyword] = useState(initialKeyword);
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const [discover, setDiscover] = useState([]);
   const [trending, setTrending] = useState([]);
 
-  const navigate = useNavigate();
-
   // 기본 데이터
   useEffect(() => {
     fetchDiscover().then(setDiscover).catch(console.error);
     fetchTrendingAll().then(setTrending).catch(console.error);
   }, []);
+
+  // keyword가 변경되면 자동 검색
+  useEffect(() => {
+    if (initialKeyword) {
+      handleSearch(initialKeyword);
+    }
+  }, [initialKeyword]);
 
   const handleSearch = async () => {
     if (!keyword.trim()) {
@@ -39,7 +49,8 @@ export default function SearchPage() {
 
       // store_name 안에 검색어 포함 여부 확인 (list는 이미 매핑된 name 사용 가능)
       const filtered = list.filter((x) =>
-        x.name?.toLowerCase().includes(keyword.toLowerCase())
+        x.name?.toLowerCase().includes(keyword.toLowerCase()) ||
+        x.marketName?.toLowerCase().includes(keyword.toLowerCase())
       );
 
       setItems(filtered);

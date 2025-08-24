@@ -10,8 +10,9 @@ export const fetchStoreDetail = (id) => api.get(`store/${id}/`);
 // 검색
 export const searchStores = (keyword) => api.get(`store/?search_by=${keyword}`);
 
-// 카테고리 필터링
-export const filterStoresByCategory = (category) => api.get(`store/?category=${category}`);
+// 카테고리 필터링 (리뷰 많은 순으로 정렬)
+export const filterStoresByCategory = (category) =>
+  api.get(`store/?sort_by=reviews&category=${category}`);
 
 // 정렬
 export const sortStores = (type) => api.get(`store/?sort_by=${type}`);
