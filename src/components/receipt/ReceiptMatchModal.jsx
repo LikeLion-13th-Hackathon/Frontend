@@ -1,10 +1,14 @@
 // src/components/receipt/ReceiptMatchModal.jsx
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { createPortal } from 'react-dom';
 import CommonButton from '@/components/common/CommonButton';
+import { useNavigate } from 'react-router-dom';
 
 import StarImg from '@/assets/icons/star.png'
+
+//가게 세부 정보
+import { fetchStoreDetail } from '@/shared/api/store';
 
 //
 const FALLBACK_IMG =
@@ -19,7 +23,11 @@ export default function ReceiptMatchModal({
   candidates = [],
   onSelect,
 }) {
+  const normalizeDetail = (d) => (d && d.data) ? d.data : d;
+  const navigate = useNavigate();
   const [selectedId, setSelectedId] = useState(null);
+  const [catById, setCatById] = useState({});   // { [storeId]: "Snacks" }
+  const [catLoading, setCatLoading] = useState(false);
 
   useEffect(() => {
     if (!open) return;
@@ -31,11 +39,63 @@ export default function ReceiptMatchModal({
   // 모달 열릴 때 초기화
   useEffect(() => { if (open) setSelectedId(null); }, [open]);
 
-  if (!open) return null;
-
   // 항상 Top 3만 사용 (뷰올 X)
-  const list = candidates.slice(0, 3);
+  const list = useMemo(() => candidates.slice(0, 3), [candidates]);
+
+  // 탑3 가게 카테고리 조회 
+  useEffect(() => {
+    if (!open || list.length === 0) return;
+    let aborted = false;
+    (async () => {
+      try {
+        setCatLoading(true);
+        const results = await Promise.all(
+          list.map(async (c) => {
+            try {
+              const d = await fetchStoreDetail(c.id);
+              const detail = normalizeDetail(d);
+              return [c.id, detail?.category ?? null];
+
+            } catch {
+              return [c.id, null];
+            }
+          })
+        )
+        if (!aborted) {
+          setCatById((prev) => ({...prev, ...Object.fromEntries(results)}))
+        }
+      } finally {
+        if (!aborted) setCatLoading(false);
+      }
+    }) ();
+    return () => {aborted = true;}
+  }, [open, list]);
+
   const selected = candidates.find((c) => c.id === selectedId) || null;
+
+  // Start review 클릭 -> 콘솔에 카테고리만 출력
+  const handleStart = async () => {
+    if (!selected) return;
+    const storeId = selected.id;
+    let category = catById[storeId];
+
+    // 아직 못 받아왔으면 단건 조회로 보강
+    if (!category) {
+      try {
+        const d = await fetchStoreDetail(storeId);
+        category = d?.category || null;
+        if (category) {
+          setCatById((prev) => ({ ...prev, [storeId]: category }));
+        }
+      } catch (e) {
+        // 실패 시 category는 null/undefined로 남음
+      }
+    }
+
+    console.log('[StoreCategory]', { storeId, category });
+  };
+
+  if (!open) return null;
 
   const modal = (
     <Overlay role="dialog" aria-modal="true" onClick={onClose}>
@@ -54,6 +114,7 @@ export default function ReceiptMatchModal({
             const isFirst = idx === 0;
             const isLast = idx === list.length - 1;
             const imgSrc = c.store_image || c.image_url || '';
+            const category = catById[c.id];
 
             return (
               <StoreItem
@@ -116,7 +177,7 @@ export default function ReceiptMatchModal({
             as="button"
             type="button"
             $enabled={!!selected}
-            onClick={() => selected && onSelect?.(selected)}
+            onClick={handleStart}
             aria-disabled={!selected}
           >
             Start review

@@ -94,7 +94,7 @@ const Profile = styled.div`
 const Avatar = styled.img`
   width: 42px;
   height: 42px;
-  border-radius: 42px;
+  border-radius: 8px;
   object-fit: cover;
   display: block;
   background: #d9d9d9;
