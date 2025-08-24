@@ -138,10 +138,8 @@ const Reward = () => {
             <LeftHeader
                 title="Rewards"
                 leftIcon={BackImg}
-                rightIcon={SearchImg}
                 overlay
                 onLeftClick={() => window.history.back()}
-                onRightClick={() => console.log("검색 클릭")}
             />
 
             <ReviewProfile
