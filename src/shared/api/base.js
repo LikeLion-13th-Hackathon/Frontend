@@ -21,9 +21,18 @@ api.interceptors.response.use(
 
 // 요청 시 토큰 자동 첨부
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("access_token");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+  // const token = localStorage.getItem("access_token");
+  // if (token) {
+  //   config.headers.Authorization = `Bearer ${token}`;
+  // }
+  const url = new URL(config.url, api.defaults.baseURL).pathname;
+  const JOIN_NO_AUTH = url.startsWith('/account/join/');
+
+  if (JOIN_NO_AUTH) {
+    if (config.headers?.Authorization) delete config.headers.Authorization;
+  } else {
+    const token = localStorage.getItem('access_token');
+    if (token) config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
 });
