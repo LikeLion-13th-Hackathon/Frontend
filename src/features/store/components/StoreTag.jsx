@@ -1,18 +1,18 @@
 import React from 'react'
 import styled from 'styled-components'
 
-import SubwayIcon from '@/assets/icons/pin_gray.png';
-import FreshIcon from '@/assets/icons/tag_fresh.png'
-import SnacksIcon from '@/assets/icons/tag_snacks.png'
-import GoodsIcon from '@/assets/icons/tag_goods.png'
-import RestaurantsIcon from '@/assets/icons/tag_restaurants.png'
+import SubwayIcon from "@/assets/icons/location.svg?react";   // ✅ 시장 아이콘
+import TagFresh from "@/assets/icons/tag_fresh.svg?react";
+import TagSnacks from "@/assets/icons/tag_snacks.svg?react";
+import TagGoods from "@/assets/icons/tag_goods.svg?react";
+import TagRestaurants from "@/assets/icons/tag_restaurants.svg?react";
 
 // API에서 내려주는 값 그대로 매핑
 const CATEGORY_ICON = {
-  Fresh: FreshIcon,
-  Snacks: SnacksIcon,
-  Goods: GoodsIcon,
-  Restaurants: RestaurantsIcon,
+  Fresh: TagFresh,
+  Snacks: TagSnacks,
+  Goods: TagGoods,
+  Restaurants: TagRestaurants,
 };
 
 const CATEGORY_LABEL = {
@@ -29,7 +29,6 @@ const MARKET_MAP = {
 };
 
 const StoreTag = ({ store }) => {
-  // market_id 기반 시장명
   const lineLabel = MARKET_MAP[store?.market_id] ?? '시장';
   const catKey = store?.category ?? 'Restaurants';
   const catIcon = CATEGORY_ICON[catKey];
@@ -39,18 +38,23 @@ const StoreTag = ({ store }) => {
     <TagBox>
       {/* 시장 태그 */}
       <TagPill>
-        <TagIcon src={SubwayIcon} alt="" aria-hidden />
+        <TagIcon>
+          <SubwayIcon />
+        </TagIcon>
         <TagText>{lineLabel}</TagText>
       </TagPill>
 
       {/* 카테고리 태그 */}
       <TagPill>
-        {catIcon && <TagIcon src={catIcon} alt="" aria-hidden />}
+        <TagIcon>
+          {React.createElement(catIcon)}
+        </TagIcon>
         <TagText>{catLabel}</TagText>
       </TagPill>
     </TagBox>
   )
 }
+
 export default StoreTag
 
 const TagBox = styled.div`
@@ -65,23 +69,40 @@ const TagPill = styled.div`
   gap: 2px;
   padding: 4px 6px;
   border-radius: 6px;
-  background: #ffb86a;;
+  background: #FFF7ED;  /* 배경색 */
   line-height: 1;
+  color: #FF8904;       /* 글자/아이콘 색 */
 `;
 
-const TagIcon = styled.img`
-  width: 14px;
-  height: 14px;
-  display: block;
-  filter: brightness(0) saturate(100%);
+const TagIcon = styled.div`
+  display: flex;
+  align-items: center;
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+
+   /* 바깥 path는 주황색 */
+  svg path {
+    fill: currentColor !important;
+    stroke: currentColor !important;
+  }
+
+  /* 안쪽 점(circle)은 투명 */
+  svg circle {
+    fill: transparent !important;
+    stroke: none !important;
+  }
 `;
+
 
 const TagText = styled.span`
-  color: #000;
+  color: currentColor;   /* TagPill의 color 상속 */
   font-family: Pretendard;
   font-size: 10px;
-  font-style: normal;
   font-weight: 400;
-  line-height: 150%; /* 15px */
+  line-height: 150%;
   letter-spacing: -0.2px;
 `;
+

@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import styled, { css } from "styled-components";
-
+import { useNavigate, useLocation } from "react-router-dom";
+import styled from "styled-components";
 
 import Layout from "@/components/common/Layout";
 import LeftHeader from "@/components/common/header/LeftHeader";
@@ -9,38 +8,70 @@ import CommonButton from "@/components/common/CommonButton";
 import Stepper from "@/components/Stepper";
 
 import BackImg from "@/assets/icons/header_back.png";
-import LikeIcon from "@/assets/icons/review_like.svg";
-import DislikeIcon from "@/assets/icons/review_dislike.svg";
+import LikeIcon from "@/assets/icons/review_like.svg?react";
+import DislikeIcon from "@/assets/icons/review_dislike.svg?react";
 
-import { createFeedback } from "@/shared/api/review";
+import { createReview, createConversation, createFeedback } from "@/shared/api/review";
 
 const MAX_LEN = 500;
 
 export default function ReviewFeedback() {
   const nav = useNavigate();
+  const { state } = useLocation();
+
   const [feedback, setFeedback] = useState("");
   const [choice, setChoice] = useState(null); // "up" | "down"
+  const [loading, setLoading] = useState(false);
 
-  // Next 버튼 활성 조건
+  // 👍/👎만 선택해도 Next 가능
   const canNext = useMemo(() => {
-    return choice !== null && feedback.trim().length >= 2;
-  }, [choice, feedback]);
+    return choice !== null;
+  }, [choice]);
 
-  // 서버 저장 + 다음 단계 이동
-  const onNext = async () => {
-    if (!canNext) return;
-    try {
-      const body = {
-        thumbs: choice === "up", // true = 좋아요, false = 싫어요
-        comment: feedback.trim(),
-      };
+  // 서버 저장 (최종 단계)
+const onNext = async () => {
+  if (!canNext) return;
+  setLoading(true);
 
-      await createFeedback(body);
-      nav("/review/complete");
-    } catch (err) {
-      alert("피드백 저장 실패: " + err.message);
-    }
-  };
+  try {
+    // 1) review 저장
+    const reviewRes = await createReview(state?.store?.id, state.reviewDraft);
+
+    // 2) conversation 저장 (topics 배열 + comment)
+    const conversationPayload = {
+      review_id: reviewRes.data.id,
+      topics: state.conversationDraft?.topics || [],   // 원래 서버가 받던 필드명
+      comment: state.conversationDraft?.comment || "", // 빈 문자열이라도 전달
+    };
+
+    const convRes = await createConversation(conversationPayload);
+
+    // 3) feedback 저장 (comment 없으면 제외)
+    const feedbackPayload = {
+    thumbs: choice === "up",
+    conversation_id: convRes.id,
+    comment: feedback.trim() || "", // ❗ 항상 포함시키기 (빈 문자열이라도)
+    };
+    console.log("👉 createFeedback payload:", feedbackPayload);
+
+    await createFeedback(feedbackPayload);
+
+
+    // 완료 페이지 이동
+    nav("/review/complete", {
+      state: {
+        store: state?.store,
+        reviewId: reviewRes.data.id,
+        conversationId: convRes.id,
+      },
+    });
+  } catch (err) {
+    console.error("저장 실패:", err);
+    alert("저장 실패: " + err.message);
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <Layout>
@@ -55,28 +86,23 @@ export default function ReviewFeedback() {
         <Stepper current={3} total={4} />
 
         <Title>How helpful was{"\n"}the AI chat simulator?</Title>
-        <Sub>Your feedback* helps us make the simulator better.</Sub>
+        <Sub>Your feedback helps us make the simulator better.</Sub>
 
         <ChoiceRow>
-          <ChoiceBtn
-            $active={choice === "up"}
-            onClick={() => setChoice("up")}
-          >
-            <img src={LikeIcon} alt="Like" width={40} height={40} />
+          <ChoiceBtn $active={choice === "up"} onClick={() => setChoice("up")}>
+            <StyledLike $active={choice === "up"} width={40} height={40} />
           </ChoiceBtn>
-          <ChoiceBtn
-            $active={choice === "down"}
-            onClick={() => setChoice("down")}
-          >
-            <img src={DislikeIcon} alt="Dislike" width={40} height={40} />
-          </ChoiceBtn>
-        </ChoiceRow>
 
-        <Sub>Your feedback helps us make the simulator better.</Sub>
+          <ChoiceBtn $active={choice === "down"} onClick={() => setChoice("down")}>
+            <StyledDislike $active={choice === "down"} width={40} height={40} />
+          </ChoiceBtn>
+
+
+        </ChoiceRow>
 
         <TextareaWrap>
           <Textarea
-            placeholder="Write a feedback of AI Chat Simulator"
+            placeholder="Write a feedback of AI Chat Simulator (optional)"
             value={feedback}
             onChange={(e) => setFeedback(e.target.value.slice(0, MAX_LEN))}
           />
@@ -89,17 +115,17 @@ export default function ReviewFeedback() {
           <CommonButton
             variant="secondary-dim"
             fullWidth={false}
-            onClick={() => nav(-1)} // 이전 단계로 이동
+            onClick={() => nav(-1)}
           >
             Back to Review
           </CommonButton>
 
           <CommonButton
             variant={canNext ? "primary" : "secondary"}
-            disabled={!canNext}
+            disabled={!canNext || loading}
             onClick={onNext}
           >
-            Next
+            {loading ? "Saving..." : "Next"}
           </CommonButton>
         </ButtonRow>
       </Page>
@@ -139,8 +165,8 @@ const ChoiceBtn = styled.button`
   height: 100px;
   margin: 25px 0 25px 0;
   border-radius: 12px;
-  border: 1px solid ${({ $active }) => ($active ? "#818181" : "transparent")};;
-  background: ${({ $active }) => ($active ? "#bcbcbc" : "#F8F8F8")};
+  border: 1px solid ${({ $active }) => ($active ? "#FF6900" : "transparent")};;
+  background: ${({ $active }) => ($active ? "#FFF3E0" : "#F8F8F8")};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -181,3 +207,12 @@ const ButtonRow = styled.div`
     flex: 1; /* 버튼을 동일한 너비로 */
   }
 `;
+
+const StyledLike = styled(LikeIcon)`
+  color: ${({ $active }) => ($active ? "#FF6900" : "#6B6F76")};
+`;
+
+const StyledDislike = styled(DislikeIcon)`
+  color: ${({ $active }) => ($active ? "#FF6900" : "#6B6F76")};
+`;
+

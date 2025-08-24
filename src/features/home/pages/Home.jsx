@@ -53,7 +53,7 @@ export default function Home() {
   }, [selectedId]);
 
   return (
-    <Layout overlapHeader bottomPadding={66}>
+    <Layout overlapHeader bottomPadding={88}>
       <HomeHeader />
       <ImageSlider markets={markets} />
       <Category selectedId={selectedId} onSelect={setSelectedId} />

@@ -34,14 +34,11 @@ export default function SignUp() {
     if (!isValidEmail(v)) { setEmailInUse(false); return; }
     try {
       setIsChecking(true);
-      console.log('[checkEmail] request:', v);
       const res = await checkEmailDup(v.trim());
-      console.log('[checkEmail] response:', res);
       const inUse =
         res?.hasOwnProperty("available") ? !res.available :
         res?.hasOwnProperty("exists")    ? !!res.exists   :
         false;
-        console.log('[checkEmail] inUse:', inUse);
         setEmailInUse(inUse);
       } catch (e){
         // 실패 시 과도한 차단을 피하려면 false, 보수적으로 막으려면 true

@@ -16,7 +16,7 @@ const MarketInfo = ({ infos = [] }) => {
 
   return (
     <>
-      <Title>Learn more about the market</Title>
+      <Title>Explore more about the market</Title>
 
       <Wrapper>
         {infos.map(info => (
@@ -37,8 +37,6 @@ const MarketInfo = ({ infos = [] }) => {
 export default MarketInfo
 
 const InfoCard = ({ title, subtitle, description, image, onClick }) => {
-
-  const safeImage = image?.endsWith(".jpg") ? image.replace(".jpg", ".png") : image;
     
   return (
     <Card onClick={onClick}>
@@ -60,12 +58,12 @@ const Title = styled.div`
   font-weight: 600;
   line-height: 125%;
   letter-spacing: -0.4px;
-  padding: 20px 26px 16px;
+  padding: 20px 20px 16px;
 `
 
 const Wrapper = styled.div`
   display: flex;
-  width: 335px;
+  width: 100%;
   flex-direction: column;
   align-items: flex-start;
   gap: 16px;
@@ -80,6 +78,7 @@ const Card = styled.div`
   cursor: pointer;
   &:hover {
     opacity: 0.8;
+  }
 `
 
 const ImageBox = styled.div`
@@ -128,7 +127,7 @@ const DescText = styled.div`
   align-self: stretch;
   color: #858585;
   font-family: Pretendard;
-  font-size: 10px;            /* 조금 작게 */
+  font-size: 12px;            /* 조금 작게 */
   font-weight: 400;
   line-height: 150%;
   letter-spacing: -0.2px;

@@ -94,7 +94,10 @@ export default function AIChatSimulatorChat() {
       ...prev,
       { 
         sender: currentTurnRole,
-        text: `${item.korean}\n${item.romanization ?? ""}`.trim() 
+        text: `${item.korean}\n${item.romanization ?? ""}`.trim(),
+        english: item.english_gloss ?? "",
+        korean: item.korean,
+        roman: item.romanization ?? ""
       }
     ]);
     setLoading(true);
@@ -199,8 +202,16 @@ export default function AIChatSimulatorChat() {
           <Messages>
             {messages.map((m, i) =>
               m.sender === 'user'
-                ? <BubbleUser key={i}>{m.text}</BubbleUser>
-                : <BubbleBot key={i}>{m.text}</BubbleBot>
+                ? <BubbleUser key={i}>
+              {m.english && <BubbleEn>{m.english}</BubbleEn>}
+              <div>{m.korean}</div>
+              {m.roman && <BubbleRoman>{m.roman}</BubbleRoman>}
+            </BubbleUser>
+          : <BubbleBot key={i}>
+              {m.english && <BubbleEn>{m.english}</BubbleEn>}
+              <div>{m.korean}</div>
+              {m.roman && <BubbleRoman>{m.roman}</BubbleRoman>}
+            </BubbleBot>
             )}
             <div ref={chatBottomRef} />
           </Messages>
@@ -212,8 +223,8 @@ export default function AIChatSimulatorChat() {
         <ControlsContainer>
           <OptionHeader>
             {loading 
-              ? '생성 중…' 
-              : `아래 카드 중 ${currentTurnRole === 'store' ? '사장님' : '손님'} 대사를 선택하세요.`
+              ? 'Creating…' 
+              : `Select the ${currentTurnRole === 'store' ? 'owner’s' : 'customer’s'} line.`
             }
           </OptionHeader>
           <PhraseRow>
@@ -293,22 +304,28 @@ export const ChatStage = styled.div`
   flex: 1;
   overflow-y: auto;
   min-height: 100px;
-  margin: 16px clamp(16px, 4vw, 20px) 12px;
-  border-radius: 12px;
-  background: #f9f9f9;
+  margin: 12px clamp(16px, 4vw, 20px); 
   display: flex;
 `;
+
 
 export const Messages = styled.div`
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: 10px;
-  padding: 12px;
+
+  /* 좌우 padding 제거 */
+  padding: 12px 0;
   width: 100%;
 `;
 
 const bubbleBase = `
-  max-width: 78%;
+  display: inline-block;     /* 부모 폭 따라가지 않고 글자수에 맞게 */
+  width: auto;
+  max-width: 78%;            /* 너무 길면 여기서 줄바꿈 */
+  min-width: 40px;
+
   padding: 10px 12px;
   border-radius: 12px;
   white-space: pre-wrap;
@@ -317,18 +334,17 @@ const bubbleBase = `
   line-height: 1.4;
   box-shadow: 0 0 10px rgba(0,0,0,.06);
 `;
-
 export const BubbleBot = styled.div`
   ${bubbleBase}
   background: #dfdfdf;
-  border-bottom-right-radius: 12px;
+  border-bottom-left-radius: 0px;
 `;
 
 export const BubbleUser = styled.div`
   ${bubbleBase}
-  background: #e5e7eb;
+  background: #FFF7ED;
   margin-left: auto;
-  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 0px;
 `;
 
 export const ErrorBox = styled.div`
@@ -368,7 +384,7 @@ export const PhraseCard = styled.div`
   width: ${CARD_W};
   min-height: 142px;
   padding: 10px;
-  background: #dfdfdf;
+  background: #FFF7ED;
   border-radius: 12px;
   box-shadow: 0 0 10px rgba(0,0,0,.10);
   display: flex;
@@ -429,14 +445,15 @@ export const BottomBar = styled.div`
 
 export const EndButton = styled.button`
   width: clamp(280px, 88vw, 520px);
-  padding: 10px 12px;
+  padding: 13px 12px;
   border-radius: 8px;
   font-size: 14px;
   font-weight: 600;
   cursor: ${({ disabled }) => (disabled ? "not-allowed" : "pointer")};
 
-  background: ${({ disabled }) => (disabled ? "#ccc" : "#6d6d6d")};
-  color: ${({ disabled }) => (disabled ? "#666" : "#000")};
+  background: ${({ disabled }) => (disabled ? "#E5E7EB" : "#ff6900")};
+  color: ${({ disabled }) => (disabled ? "#8D8D8D" : "#fff")};
+  border: none;
   transition: background 0.2s;
 `;
 
@@ -463,7 +480,7 @@ export const ScenarioCard = styled.div`
   gap: 10px;
   padding: 7px;
   border-radius: 12px;
-  background: ${({ $active }) => ($active ? '#ECECEC' : '#F8F8F8')};
+  background: ${({ $active }) => ($active ? '#fff7ed' : '#ECECEC')};
   ${({ $active }) => $active && `
     box-shadow: 0 0 10px rgba(0,0,0,.10);
     outline: 1px solid #E1E1E1;
@@ -507,19 +524,15 @@ export const ScenarioSub = styled.div`
   color: #404040;
 `;
 
-const SelectedTopicBox = styled.div`
-  margin: 12px 20px;
-  padding: 10px 14px;
-  border-radius: 8px;
-  background: #f0f0f0;
-  font-size: 14px;
-  color: #333;
+export const BubbleEn = styled.div`
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #000;
+`;
 
-  span {
-    color: #666;
-    margin-right: 6px;
-  }
-  strong {
-    font-weight: 600;
-  }
+export const BubbleRoman = styled.div`
+  font-size: 12px;
+  color: #555;
+  margin-top: 4px;
 `;

@@ -241,7 +241,7 @@ const Section = styled.section`
 `;
 const SectionTitle = styled.h2` 
   font-size: 18px; 
-  font-weight: 800; 
+  font-weight: 700; 
   margin-bottom: 12px; 
 `;
 const Subcopy = styled.p` 

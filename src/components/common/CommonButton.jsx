@@ -11,12 +11,12 @@ import styled, { css } from "styled-components";
  */
 const CommonButton = styled.button.withConfig({
   shouldForwardProp: (prop) => !['variant', 'fullWidth'].includes(prop),
-})
-`
-  --btn-primary: var(--pri, #6D6D6D);
-  --btn-primary-text: #000;
-  --btn-disabled: #e0e0e0;
-  --btn-disabled-text: #858585;
+})`
+  /* === 버튼 색상 토큰 === */
+  --btn-primary: #ff6900;       /* ✅ 활성 배경: 주황 */
+  --btn-primary-text: #fff;     /* ✅ 활성 글씨: 흰색 */
+  --btn-disabled: #E5E7EB;      /* ✅ 비활성 배경: 연회색 */
+  --btn-disabled-text: #8D8D8D; /* ✅ 비활성 글씨: 중간 회색 */
   --btn-secondary-bg: #d3d3d3;
   --btn-secondary-text: #000;
 
@@ -39,7 +39,7 @@ const CommonButton = styled.button.withConfig({
     if (variant === "secondary-dim") {
       return css`
         background: var(--btn-secondary-bg);
-        color: var(--btn-disabled-text); // 회색 글씨
+        color: var(--btn-disabled-text);
       `;
     }
     if (variant === "ghost") {
@@ -51,11 +51,11 @@ const CommonButton = styled.button.withConfig({
     }
     if (variant === "ai") {
       return css`
-      background: #ff8904;
+      background: #ff6900;
       color: #fff;
       `
     }
-    // primary (default)
+    // ✅ primary (default)
     return css`
       background: var(--btn-primary);
       color: var(--btn-primary-text);

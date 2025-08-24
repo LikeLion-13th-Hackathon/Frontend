@@ -13,8 +13,6 @@ export default function useMyPage() {
       try {
         setLoading(true);
         const res = await fetchMyPage();
-        console.log('[useMyPage] status:', res?.status);
-        console.log('[useMyPage] data:', res?.data);
 
         // 응답 형태: { results: {...} }
         const u = res?.data?.results ?? null;

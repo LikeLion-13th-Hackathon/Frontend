@@ -33,7 +33,7 @@ const Reward = () => {
     if (localStorage.getItem('reward_seeded') === '1') return alert('이미 시드됨');
     setSeeding(true);
     const steps = [
-        { delta: 1000, caption: '가입 보너스' },
+        { delta: 100000, caption: '가입 보너스' },
         { delta: 300,  caption: '리뷰 보너스' },
         { delta: 2000, caption: '이벤트 지급' },
         { delta: 150,  caption: '출석 보너스' },
@@ -218,7 +218,10 @@ const Reward = () => {
             usable at markets in Dongjak-gu.
         </InfoDescription>
         
-        <RedeemCard onRedeemed={() => setRefreshKey(k => k + 1)}/>
+        <RedeemCard 
+            balance={liveBalance ?? rewards}
+            onRedeemed={() => setRefreshKey(k => k + 1)}
+        />
 
         <PointHistory refreshKey={refreshKey} onBalanceChange={setLiveBalance}/>
 

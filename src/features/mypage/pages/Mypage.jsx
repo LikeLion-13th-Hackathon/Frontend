@@ -21,7 +21,7 @@ function mapUserToProfile(results = {}) {
 
 const Mypage = () => {
     // account/mypage 사용해서 정보 받아오기
-    const { user, loading, error } = useMyPage();
+    const { user } = useMyPage();
 
     
     const profileProps = mapUserToProfile(user || {});
@@ -29,7 +29,7 @@ const Mypage = () => {
     const visited = user?.visited_count ?? 0;
 
   return (
-    <Layout overlapHeader>
+    <Layout overlapHeader bottomPadding={86}>
         <Background>
             <LeftHeader
                 title="Mypage"
@@ -95,7 +95,7 @@ const HeroOverlapSpacer = styled.div`
 `;
 
 const ButtonBox = styled.div`
-    margin: auto 0;
+    margin: 20px 0;
     display: flex;
     flex-direction: column;
     gap: 20px;            
@@ -103,10 +103,13 @@ const ButtonBox = styled.div`
 `
 
 const Logout = styled.button`
-  position: absolute;
+  /* position: absolute;
   top: 682px;          
   left: 50%;
-  transform: translateX(-50%); /* 가로 가운데 정렬 */
+  transform: translateX(-50%); 가로 가운데 정렬 */
+
+  align-self: center;
+  margin: 24px 0 calc(16px + env(safe-area-inset-bottom, 0px));;
   background: transparent;
   border: 0;
   cursor: pointer;
