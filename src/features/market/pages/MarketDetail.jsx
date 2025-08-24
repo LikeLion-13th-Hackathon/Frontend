@@ -16,7 +16,7 @@ const MarketDetail = () => {
     const navigate = useNavigate();
 
   return (
-    <Layout overlapHeader>
+    <Layout overlapHeader bottomPadding={66}>
         <LeftHeader
             title="Market"
             leftIcon={BackImg}

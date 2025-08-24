@@ -8,11 +8,7 @@
   font-family: 'Pretendard', sans-serif; /* 불러온 폰트 적용 */
 }
 
-html,
-body,
-#root {
-  min-height: 100vh;
-}
+html, body, #root { min-height: 100%; }
 
 body {
   background: #0b1016;
