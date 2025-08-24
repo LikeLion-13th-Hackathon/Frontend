@@ -63,6 +63,9 @@ const ReviewTags = ({
         });
     }, [category, items]);
 
+    // 아이템이 없으면 null 반환
+  if (!items || items.length === 0) return null;
+
   return (
     <Card $open={open}>
         {/* 받아온 태그들 */}

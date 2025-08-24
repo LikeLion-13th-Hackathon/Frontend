@@ -94,7 +94,10 @@ export default function AIChatSimulatorChat() {
       ...prev,
       { 
         sender: currentTurnRole,
-        text: `${item.korean}\n${item.romanization ?? ""}`.trim() 
+        text: `${item.korean}\n${item.romanization ?? ""}`.trim(),
+        english: item.english_gloss ?? "",
+        korean: item.korean,
+        roman: item.romanization ?? ""
       }
     ]);
     setLoading(true);
@@ -199,8 +202,16 @@ export default function AIChatSimulatorChat() {
           <Messages>
             {messages.map((m, i) =>
               m.sender === 'user'
-                ? <BubbleUser key={i}>{m.text}</BubbleUser>
-                : <BubbleBot key={i}>{m.text}</BubbleBot>
+                ? <BubbleUser key={i}>
+              {m.english && <BubbleEn>{m.english}</BubbleEn>}
+              <div>{m.korean}</div>
+              {m.roman && <BubbleRoman>{m.roman}</BubbleRoman>}
+            </BubbleUser>
+          : <BubbleBot key={i}>
+              {m.english && <BubbleEn>{m.english}</BubbleEn>}
+              <div>{m.korean}</div>
+              {m.roman && <BubbleRoman>{m.roman}</BubbleRoman>}
+            </BubbleBot>
             )}
             <div ref={chatBottomRef} />
           </Messages>
@@ -429,14 +440,15 @@ export const BottomBar = styled.div`
 
 export const EndButton = styled.button`
   width: clamp(280px, 88vw, 520px);
-  padding: 10px 12px;
+  padding: 13px 12px;
   border-radius: 8px;
   font-size: 14px;
   font-weight: 600;
   cursor: ${({ disabled }) => (disabled ? "not-allowed" : "pointer")};
 
-  background: ${({ disabled }) => (disabled ? "#ccc" : "#6d6d6d")};
-  color: ${({ disabled }) => (disabled ? "#666" : "#000")};
+  background: ${({ disabled }) => (disabled ? "#E5E7EB" : "#ff6900")};
+  color: ${({ disabled }) => (disabled ? "#8D8D8D" : "#fff")};
+  border: none;
   transition: background 0.2s;
 `;
 
@@ -463,7 +475,7 @@ export const ScenarioCard = styled.div`
   gap: 10px;
   padding: 7px;
   border-radius: 12px;
-  background: ${({ $active }) => ($active ? '#ECECEC' : '#F8F8F8')};
+  background: ${({ $active }) => ($active ? '#fff7ed' : '#ECECEC')};
   ${({ $active }) => $active && `
     box-shadow: 0 0 10px rgba(0,0,0,.10);
     outline: 1px solid #E1E1E1;
@@ -522,4 +534,17 @@ const SelectedTopicBox = styled.div`
   strong {
     font-weight: 600;
   }
+`;
+
+export const BubbleEn = styled.div`
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #000;
+`;
+
+export const BubbleRoman = styled.div`
+  font-size: 12px;
+  color: #555;
+  margin-top: 4px;
 `;

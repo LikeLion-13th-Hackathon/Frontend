@@ -7,7 +7,8 @@ import LeftHeader from "@/components/common/header/LeftHeader";
 import CommonButton from "@/components/common/CommonButton";
 import Stepper from "@/components/Stepper";
 import BackImg from "@/assets/icons/header_back.png";
-import { fetchReviewTags, createReview } from "@/shared/api/review";
+
+import { fetchReviewTags } from "@/shared/api/review";
 
 /* ===== 디자인 토큰 ===== */
 const tone = {
@@ -26,13 +27,10 @@ export default function ReviewGoods() {
   const [selectedTags, setSelectedTags] = useState({});
   const [text, setText] = useState("");
 
-  // Next 활성: 최소 1개의 태그 선택 + 텍스트 2자 이상
-  const canNext = useMemo(() => {
-    const picked = Object.values(selectedTags).some(
-      (arr) => Array.isArray(arr) ? arr.length > 0 : arr !== null
-    );
-    return picked && text.trim().length >= 2;
-  }, [selectedTags, text]);
+  // 텍스트만 1자 이상이면 Next 버튼 활성화
+    const canNext = useMemo(() => {
+      return text.trim().length >= 1;
+    }, [text]);
 
   // 태그 불러오기
   useEffect(() => {
@@ -64,26 +62,20 @@ export default function ReviewGoods() {
     });
   };
 
-  // 리뷰 저장
-  const onNext = async () => {
+  // 리뷰 저장 API 호출 제거 → draft만 다음 페이지로 전달
+  const onNext = () => {
     if (!canNext) return;
-    try {
-      const tag_ids = Object.values(selectedTags).flat().filter(Boolean);
-      const res = await createReview(storeId, {
-        tag_ids,
-        comment: text,
-      });
+    const tag_ids = Object.values(selectedTags).flat().filter(Boolean);
 
-      nav("/review/conversation", {
-        state: {
-          store: state?.store,
-          reviewId: res.data.id,
-          tags, // 태그 리스트도 전달
+    nav("/review/conversation", {
+      state: {
+        ...state,
+        reviewDraft: {
+          tag_ids,
+          comment: text,
         },
-      });
-    } catch (err) {
-      alert("리뷰 저장 실패: " + err.message);
-    }
+      },
+    });
   };
 
   return (
@@ -113,7 +105,7 @@ export default function ReviewGoods() {
             const type = groupName === "Review Tags" ? "multi" : "single";
 
             return (
-              <div key={groupName}>
+              <div key={groupName} style={{ marginTop: groupName === "Review Tags" ? 0 : "16px" }}>
                 <FieldLabel>{groupName}</FieldLabel>
                 <ChipRow>
                   {list.map((t) => {
@@ -223,7 +215,7 @@ const MultiChoiceChip = styled.button`
       margin: -2px; 
       background: #bcbcbc;
       color: var(--primary);
-      border: 2px solid #555555;
+      border: 1px solid #555555;
       font-weight: 600;
     `}
 `;
@@ -244,7 +236,7 @@ const SingleChoiceChip = styled.button`
       margin: -1px; 
       background: #BCBCBC;
       color: var(--primary);
-      border: 2px solid #555555;
+      border: 1px solid #555555;
       font-weight: 600;
     `}
 `;

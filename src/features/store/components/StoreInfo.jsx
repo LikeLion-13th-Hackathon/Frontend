@@ -60,9 +60,12 @@ const StoreTitle = styled.div`
 const TitleKO = styled.h2`
   font-size: 20px;
   font-weight: bold;
+  white-space: nowrap;
 `;
 
 const TitleEN = styled.h3`
   font-size: 14px;
   color: #777;
+  white-space: nowrap;
+  font-weight: 400;
 `;

@@ -9,7 +9,7 @@ import Stepper from "@/components/Stepper";
 import BackImg from "@/assets/icons/header_back.png";
 
 import { fetchAiTopics } from "@/shared/api/ai";
-import { createConversation } from "@/shared/api/review";
+// import { createConversation } from "@/shared/api/review"; // ❌ 더 이상 사용 안 함
 
 const MAX_REVIEW_LEN = 500;
 
@@ -29,10 +29,9 @@ export default function ReviewConversation() {
   const [text, setText] = useState("");
 
   const canNext = useMemo(() => {
-    return selectedTopics.length > 0 || text.trim().length >= 2;
-  }, [selectedTopics, text]);
+    return selectedTopics.length > 0;
+  }, [selectedTopics]);
 
-  
 
   // 토픽 불러오기
   useEffect(() => {
@@ -47,9 +46,6 @@ export default function ReviewConversation() {
       .catch((err) => console.error("토픽 불러오기 실패:", err));
   }, [state?.store?.category]);
 
-
-
-
   // 토픽 선택 토글
   const toggleTopic = (id) => {
     setSelectedTopics((prev) =>
@@ -57,25 +53,20 @@ export default function ReviewConversation() {
     );
   };
 
-  // 서버 저장
-  const onNext = async () => {
+  // 👉 서버 저장 제거, draft만 전달
+  const onNext = () => {
     if (!canNext) return;
-    try {
-      const body = {
-        topics: selectedTopics,
-        comment: text.trim() || null,
-      };
-
-      const res = await createConversation(body); // res === data
-
-      nav("/review/feedback", {
-        state: { conversationId: res.id, conversation: res },
-      });
-    } catch (err) {
-      alert("Conversation 저장 실패: " + err.message);
-    }
+    const conversationDraft = {
+      topics: selectedTopics,
+      comment: text.trim() || null,
+    };
+    nav("/review/feedback", {
+      state: {
+        ...state,
+        conversationDraft,
+      },
+    });
   };
-
 
   return (
     <Layout>

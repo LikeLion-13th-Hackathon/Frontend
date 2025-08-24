@@ -32,19 +32,19 @@ const baseSvgStyle = `
 const STYLED_ICONS = {
   Fresh: styled(TagFresh)`
     ${baseSvgStyle}
-    color: ${(p) => (p.$active ? "#fff" : "#707070")};
+    color: ${(p) => (p.$active ? "#fff" : "#ff8904")};
   `,
   Snacks: styled(TagSnacks)`
     ${baseSvgStyle}
-    color: ${(p) => (p.$active ? "#fff" : "#707070")};
+    color: ${(p) => (p.$active ? "#fff" : "#ff8904")};
   `,
   Goods: styled(TagGoods)`
     ${baseSvgStyle}
-    color: ${(p) => (p.$active ? "#fff" : "#707070")};
+    color: ${(p) => (p.$active ? "#fff" : "#ff8904")};
   `,
   Restaurants: styled(TagRestaurants)`
     ${baseSvgStyle}
-    color: ${(p) => (p.$active ? "#fff" : "#707070")};
+    color: ${(p) => (p.$active ? "#fff" : "#ff8904")};
   `,
 };
 
@@ -108,7 +108,6 @@ const CategoryItem = styled.div`
   align-items: center;
   gap: 6px;
   border-radius: 8px;
-  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
   cursor: pointer;
   background: ${(p) => (p.$active ? "var(--pri, #ff6900)" : "#ffedd4")};
 `;
@@ -117,6 +116,6 @@ const Label = styled.span`
   font-size: 12px;
   line-height: 150%;
   letter-spacing: -0.24px;
-  color: ${(p) => (p.$active ? "#fff" : "#707070")};
+  color: ${(p) => (p.$active ? "#fff" : "#ff8904")};
   font-weight: ${(p) => (p.$active ? 600 : 400)};
 `;
