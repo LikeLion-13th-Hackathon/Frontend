@@ -5,7 +5,11 @@ import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import CommonButton from "../../../components/common/CommonButton";
 import Layout from "../../../components/common/Layout";
-import CenterHeader from "../../../components/common/header/CenterHeader";
+
+import EmailImg from '@/assets/icons/login/email.png'
+import PwImg from '@/assets/icons/login/password.png'
+import EyeImg from '@/assets/icons/login/eyes.png'
+import EyeCloseImg from '@/assets/icons/login/eye_close.png'
 
 export default function SignUp() {
   const navigate = useNavigate();
@@ -37,10 +41,7 @@ export default function SignUp() {
 
   return (
     <Layout>
-      <CenterHeader title = "logo" />
-      
       <Card>
-        <DecorCircle />
         <Title>Welcome!</Title>
         <Sub>Let’s set up your profile.</Sub>
 
@@ -52,8 +53,8 @@ export default function SignUp() {
               touched.email && (!isValidEmail(email) || emailInUse) ? "error" : ""
             }
           >
-            <IconLeft aria-hidden>
-              <FiUser />
+            <IconLeft>
+              <img src={EmailImg} alt="이메일 아이콘" />
             </IconLeft>
             <input
               id="email"
@@ -79,8 +80,8 @@ export default function SignUp() {
           {/* 비밀번호 */}
           <Label htmlFor="password">Password</Label>
           <Field className={touched.pw && !pwOk ? "error" : ""}>
-            <IconLeft aria-hidden>
-              <FiLock />
+            <IconLeft>
+              <img src={PwImg} alt="비밀번호 아이콘" />
             </IconLeft>
             <input
               id="password"
@@ -96,14 +97,15 @@ export default function SignUp() {
               onClick={() => setShowPw((s) => !s)}
               aria-label={showPw ? "비밀번호 숨기기" : "비밀번호 보기"}
             >
-              {showPw ? <FiEyeOff /> : <FiEye />}
+              <img src={showPw ? EyeCloseImg : EyeImg} alt="" />
             </IconRightBtn>
           </Field>
           {touched.pw && !pwOk && <Help>비밀번호는 6자 이상 입력해 주세요.</Help>}
 
-          <CommonButton type="submit" disabled={disabled}>
+          <SignButton type="submit" disabled={disabled}>
             Next
-          </CommonButton>
+          </SignButton>
+
         </Form>
       </Card>
     </Layout>
@@ -122,21 +124,11 @@ const Wrap = styled.div`
   font-family: Pretendard, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
 `;
 
-const Header = styled.header`
-  width: 100%;
-  max-width: 375px;
-  display: grid;
-  place-items: center;
-  font-size: 14px;
-  font-weight: 600;
-  color: #000;
-`;
-
 const Card = styled.main`
   position: relative; /* 장식 원(DecorCircle)의 기준 컨테이너 */
   width: 100%;
   max-width: 375px;
-  margin-top: 8px;
+  margin-top: 68px;
   padding: 24px;
   /* border-radius: 16px; */
   /* border: 1px solid #eee; */
@@ -179,7 +171,7 @@ const Field = styled.div`
   align-items: center;
   height: 44px;
   padding: 0 40px 0 36px; /* 아이콘 공간 */
-  background: #eaeaea;
+  background: #fff;
   border: 1px solid #d9d9d9;
   border-radius: 8px;
 
@@ -202,8 +194,15 @@ const Field = styled.div`
 const IconLeft = styled.span`
   position: absolute;
   left: 12px;
-  font-size: 18px;
-  color: #818181;
+  display: flex;
+  align-items: center;
+
+  img {
+    width: 14px;
+    height: 14px;
+    display: block;
+    object-fit: contain;
+  }
 `;
 
 const IconRightBtn = styled.button`
@@ -217,6 +216,12 @@ const IconRightBtn = styled.button`
   background: transparent;
   color: #818181;
   cursor: pointer;
+
+  img {
+    display: block;
+    width: 24px;
+    height: 24px;
+  }
 `;
 
 const Help = styled.p`
@@ -226,15 +231,9 @@ const Help = styled.p`
   color: #d33;
 `;
 
-// 우상단 장식 원 (decorative circle)
-const DecorCircle = styled.div`
-  position: absolute;
-  top: -90px;    /* 화면 밖으로 살짝 */
-  right: -20px;  /* 화면 밖으로 살짝 */
-  width: 130px;
-  height: 130px;
-  border-radius: 50%;
-  background: #D9D9D9;   /* 회색(Gray) */
-  pointer-events: none;   /* 클릭 방해 X */
-  /* z-index 지정 안 해도 DOM 순서상 아래에 깔림(Decor가 먼저 그려지고, 뒤 요소들이 위에 옴) */
+const SignButton = styled(CommonButton)`
+  background-color: ${({ disabled }) =>
+    disabled ? '#E5E7EB' : '#FF6900'};
+  color: ${({ disabled }) =>
+    disabled ? '#888' : '#fff'};
 `;
