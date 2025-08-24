@@ -104,7 +104,6 @@ const MarketInfo = () => {
         <MarketTitle onClick={() => setOpen((v) => !v)}>
           <Title>{title}</Title>
           <Icon src={DropDwonIcon} alt="드롭다운" />
-        </MarketTitle>
 
         {open && (
           <Popover>
@@ -115,6 +114,7 @@ const MarketInfo = () => {
             />
           </Popover>
         )}
+        </MarketTitle>
       </Container>
 
       {/* 설명 (옵션) */}
@@ -159,6 +159,9 @@ const MarketTitle = styled.div`
   display: flex;
   align-items: center;
   gap: 16px;
+  //
+  position: relative;
+  cursor: pointer;
 `;
 
 const Title = styled.div`
@@ -174,9 +177,13 @@ const Icon = styled.img`
   height: 16px;
 `;
 const Popover = styled.div`
-  position: absolute;
+  /* position: absolute;
   top: 110px;
-  left: 80px;
+  left: 80px; */
+  position: absolute;
+  top: calc(100% + 8px);
+  left:0;
+
   z-index: 1000;
   border: 1px solid #d5d5d5;
   border-radius: 12px;
