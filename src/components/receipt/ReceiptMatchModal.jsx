@@ -5,12 +5,11 @@ import { createPortal } from 'react-dom';
 import CommonButton from '@/components/common/CommonButton';
 import { useNavigate } from 'react-router-dom';
 
-import StarImg from '@/assets/icons/star.png'
+import StarImg from '@/assets/icons/star.png';
 
-//가게 세부 정보
+// 가게 세부 정보
 import { fetchStoreDetail } from '@/shared/api/store';
 
-//
 const FALLBACK_IMG =
   'data:image/svg+xml;utf8,' +
   encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="72" height="72"><rect width="100%" height="100%" fill="#D9D9D9"/></svg>');
@@ -21,9 +20,19 @@ export default function ReceiptMatchModal({
   onRetake,
   receipt,
   candidates = [],
-  onSelect,
 }) {
   const normalizeDetail = (d) => (d && d.data) ? d.data : d;
+
+  // 카테고리 → 라우트 경로 고정 매핑 (라우터와 정확히 맞춰야 함)
+  const categoryToPath = (raw) => {
+    const s = String(raw || '').toLowerCase();
+    if (s.includes('snack')) return 'snack';
+    if (s.includes('restaurant')) return 'restaurant';
+    if (s.includes('fresh')) return 'fresh';
+    if (s.includes('goods') || s.includes('product')) return 'goods';
+    return null;
+  };
+
   const navigate = useNavigate();
   const [selectedId, setSelectedId] = useState(null);
   const [catById, setCatById] = useState({});   // { [storeId]: "Snacks" }
@@ -39,10 +48,10 @@ export default function ReceiptMatchModal({
   // 모달 열릴 때 초기화
   useEffect(() => { if (open) setSelectedId(null); }, [open]);
 
-  // 항상 Top 3만 사용 (뷰올 X)
-  const list = useMemo(() => candidates.slice(0, 3), [candidates]);
+  // 항상 Top 3만 사용
+  const list = candidates.slice(0, 3);
 
-  // 탑3 가게 카테고리 조회 
+  // 탑3 가게 카테고리 조회
   useEffect(() => {
     if (!open || list.length === 0) return;
     let aborted = false;
@@ -55,25 +64,26 @@ export default function ReceiptMatchModal({
               const d = await fetchStoreDetail(c.id);
               const detail = normalizeDetail(d);
               return [c.id, detail?.category ?? null];
-
             } catch {
               return [c.id, null];
             }
           })
-        )
+        );
         if (!aborted) {
-          setCatById((prev) => ({...prev, ...Object.fromEntries(results)}))
+          setCatById((prev) => ({ ...prev, ...Object.fromEntries(results) }));
         }
       } finally {
         if (!aborted) setCatLoading(false);
       }
-    }) ();
-    return () => {aborted = true;}
+    })();
+    return () => { aborted = true; };
   }, [open, list]);
 
   const selected = candidates.find((c) => c.id === selectedId) || null;
 
-  // Start review 클릭 -> 콘솔에 카테고리만 출력
+  if (!open) return null;
+
+  // Start review 클릭 -> 카테고리 확인 후 해당 리뷰 페이지로 이동
   const handleStart = async () => {
     if (!selected) return;
     const storeId = selected.id;
@@ -83,38 +93,52 @@ export default function ReceiptMatchModal({
     if (!category) {
       try {
         const d = await fetchStoreDetail(storeId);
-        category = d?.category || null;
+        const detail = normalizeDetail(d);
+        category = detail?.category ?? null;
         if (category) {
           setCatById((prev) => ({ ...prev, [storeId]: category }));
         }
-      } catch (e) {
-        // 실패 시 category는 null/undefined로 남음
-      }
+      } catch {}
     }
 
-    console.log('[StoreCategory]', { storeId, category });
-  };
+    if (!category) {
+      console.warn('No category. Cannot route to review.');
+      return;
+    }
 
-  if (!open) return null;
+    const path = categoryToPath(category);
+    if (!path) {
+      console.warn('Unknown category:', category);
+      return;
+    }
+
+    sessionStorage.setItem('flow', 'receipt');
+
+    navigate(`/review/${path}`, {
+      state: {
+        source: 'receipt',
+        storeId,                               // 리뷰를 해당 가게에 연결할 핵심 값
+        category,                              // 원본 카테고리(표시용)
+        storeName: selected.store_name || '',
+        address: selected.road_address || selected.street_address || '',
+      },
+      replace: false,
+    });
+  };
 
   const modal = (
     <Overlay role="dialog" aria-modal="true" onClick={onClose}>
       <Wrap onClick={(e) => e.stopPropagation()}>
-        {/* 맨위 영역 */}
-        {/* <HeaderBar> */}
-          <HeaderCol>
-            <Title>Select the store for your review</Title>
-            {receipt?.store_address && <Sub>Detected: {receipt.store_address}</Sub>}
-          </HeaderCol>
-        {/* </HeaderBar> */}
+        <HeaderCol>
+          <Title>Select the store for your review</Title>
+          {receipt?.store_address && <Sub>Detected: {receipt.store_address}</Sub>}
+        </HeaderCol>
 
-        {/* 리스트 큰 배경 */}
         <ListWrap>
           {list.map((c, idx) => {
             const isFirst = idx === 0;
             const isLast = idx === list.length - 1;
             const imgSrc = c.store_image || c.image_url || '';
-            const category = catById[c.id];
 
             return (
               <StoreItem
@@ -124,16 +148,14 @@ export default function ReceiptMatchModal({
                 $isFirst={isFirst}
                 $isLast={isLast}
                 onClick={() => setSelectedId(c.id)}
-                onKeyDown={(e)=> (e.key==='Enter'||e.key===' ') && setSelectedId(c.id)}
+                onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setSelectedId(c.id)}
               >
-              
-              <Thumb
-                src = {imgSrc || FALLBACK_IMG}
-                alt={`${c.store_name} thumbnail`}
-                onError={(e) => { e.currentTarget.src = FALLBACK_IMG; }} 
-              />
+                <Thumb
+                  src={imgSrc || FALLBACK_IMG}
+                  alt={`${c.store_name} thumbnail`}
+                  onError={(e) => { e.currentTarget.src = FALLBACK_IMG; }}
+                />
 
-                {/* 텍스트 영역 */}
                 <ItemRight>
                   <NameRow>
                     <Name $selected={c.id === selectedId}>{c.store_name}</Name>
@@ -151,19 +173,18 @@ export default function ReceiptMatchModal({
         </ListWrap>
 
         <SubDes>
-            <StarIcon src={StarImg} />
-            <SubDesText>AI matched these from your receipt.</SubDesText>
+          <StarIcon src={StarImg} />
+          <SubDesText>AI matched these from your receipt.</SubDesText>
         </SubDes>
 
         <MainDesBox>
-            <MainDesTitle>Choose the store to review.</MainDesTitle>
-            <MainDesSub>
-                Make sure the info is correct— <br />
-                rewards may be taken back if it’s wrong.
-            </MainDesSub>
+          <MainDesTitle>Choose the store to review.</MainDesTitle>
+          <MainDesSub>
+            Make sure the info is correct— <br />
+            rewards may be taken back if it’s wrong.
+          </MainDesSub>
         </MainDesBox>
 
-        {/* 하단 버튼 */}
         <ButtonRow>
           <GhostButton
             as="button"
@@ -220,26 +241,23 @@ const HeaderCol = styled.div`
 `;
 
 const Title = styled.div`
-    color: #000;
-    text-align: center;
-
-    /* head/head 3-em */
-    font-family: Pretendard;
-    font-size: 18px;
-    font-style: normal;
-    font-weight: 600;
-    line-height: 125%; /* 22.5px */
-    letter-spacing: -0.36px;
+  color: #000;
+  text-align: center;
+  font-family: Pretendard;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 125%;
+  letter-spacing: -0.36px;
 `;
 
 const Sub = styled.div`
   color: #6D6D6D;
-  font-size: 12px; 
+  font-size: 12px;
   margin-top: 4px;
   text-align: center;
 `;
 
-/* 큰 리스트 배경 */
 const ListWrap = styled.div`
   display: flex;
   flex-direction: column;
@@ -247,10 +265,8 @@ const ListWrap = styled.div`
   align-self: stretch;
   border-radius: 8px;
   background: #F1F1F1;
-  /* padding: 8px; */
 `;
 
-/* 각 가게 행: 레이아웃 고정, 선택 시 '배경색만' 변경 + 라운드 조건부 */
 const StoreItem = styled.button`
   display: flex;
   padding: 10px;
@@ -259,18 +275,18 @@ const StoreItem = styled.button`
   align-self: stretch;
   width: 100%;
   border: 0;
-  background: ${({ $selected }) => ($selected ? '#CFCFCF' : 'transparent')};
+  background: ${({ $selected }) => ($selected ? '#FFEDD4' : 'transparent')};
   border-radius: ${({ $selected, $isFirst, $isLast }) => {
     if (!$selected) return '0';
-    if ($isFirst && $isLast) return '8px';           // 한 개만 있을 때
-    if ($isFirst) return '8px 8px 0 0';               // 첫 번째 선택
-    if ($isLast) return '0 0 8px 8px';                // 마지막 선택
-    return '0';                                       // 가운데 선택
+    if ($isFirst && $isLast) return '8px';
+    if ($isFirst) return '8px 8px 0 0';
+    if ($isLast) return '0 0 8px 8px';
+    return '0';
   }};
   cursor: pointer;
   text-align: left;
 
-  & + & { margin-top: 8px; } /* 아이템 간 세로 간격 */
+  & + & { margin-top: 8px; }
 `;
 
 const Thumb = styled.img`
@@ -334,88 +350,82 @@ const GhostButton = styled(CommonButton)`
   background-color: #E5E7EB;
 
   color: #8D8D8D;
-    text-align: center;
+  text-align: center;
 
-    /* body/body 2 */
-    font-family: Pretendard;
-    font-size: 14px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 150%; /* 21px */
-    letter-spacing: -0.28px;
+  font-family: Pretendard;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 150%;
+  letter-spacing: -0.28px;
 `;
 
 const StartButton = styled(CommonButton)`
-    width: 144px; height: 44px;
-    border-radius: ${(p) => (p.$enabled ? '8px' : '8px 8px 0 0')};
-    background: ${(p) => (p.$enabled ? 'var(--orange-500, #FF6900)' : '#CFCFCF')};
-    color: #fff;
-    pointer-events: ${(p) => (p.$enabled ? 'auto' : 'none')};
-    text-align: center;
+  width: 144px; height: 44px;
+  border-radius: ${(p) => (p.$enabled ? '8px' : '8px 8px 0 0')};
+  background: ${(p) => (p.$enabled ? 'var(--orange-500, #FF6900)' : '#CFCFCF')};
+  color: #fff;
+  pointer-events: ${(p) => (p.$enabled ? 'auto' : 'none')};
+  text-align: center;
 
-    /* body/body 2 */
-    font-family: Pretendard;
-    font-size: 14px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 150%; /* 21px */
-    letter-spacing: -0.28px;
+  font-family: Pretendard;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 150%;
+  letter-spacing: -0.28px;
 `;
 
 const SubDes = styled.div`
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 4px;
-`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+`;
 
 const StarIcon = styled.img`
-    width: 20px;
-    height: 20px;
-`
+  width: 20px;
+  height: 20px;
+`;
 
 const SubDesText = styled.div`
-    color: #7F7F7F;
-
-    /* caption/caption 2 */
-    font-family: Pretendard;
-    font-size: 10px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 150%; /* 15px */
-    letter-spacing: -0.2px;
-    text-align: center;
-`
+  color: #7F7F7F;
+  font-family: Pretendard;
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 150%;
+  letter-spacing: -0.2px;
+  text-align: center;
+`;
 
 const MainDesBox = styled.div`
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+`;
 
 const MainDesTitle = styled.div`
-    color: #000;
-    text-align: center;
+  color: #000;
+  text-align: center;
 
-    /* body/body 1 */
-    font-family: Pretendard;
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 150%; /* 24px */
-    letter-spacing: -0.32px;
-`
+  font-family: Pretendard;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 150%;
+  letter-spacing: -0.32px;
+`;
 
 const MainDesSub = styled.div`
-    color: #858585;
-    text-align: center;
+  color: #858585;
+  text-align: center;
 
-    /* caption/caption 1 */
-    font-family: Pretendard;
-    font-size: 12px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 150%; /* 18px */
-    letter-spacing: -0.24px;
-`
+  font-family: Pretendard;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 150%;
+  letter-spacing: -0.24px;
+`;

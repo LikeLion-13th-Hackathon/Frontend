@@ -1,7 +1,7 @@
 // src/features/review/pages/ReviewComplete.jsx
 import React, { useState, useEffect } from "react";
 import styled, { css } from "styled-components";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 /* 공용 스캐폴드 */
 import Layout from "@/components/common/Layout";
@@ -22,6 +22,16 @@ import { useWindowSize } from "react-use";
 export default function ReviewComplete() {
   const nav = useNavigate();
   const { width, height } = useWindowSize(); // 화면 크기 자동 반영
+  
+  const { state } = useLocation();
+  const isReceiptFlow =
+    state?.source === 'receipt' || sessionStorage.getItem('flow') === 'receipt';
+  
+  // 리워드 값
+  const rewardDelta   = state?.reward?.changed ?? state?.reward?.delta ?? 150;
+  const rewardCaption = state?.reward?.caption ?? "Review";
+  const rewardBalance = state?.reward?.balance;
+
   
   // confetti 상태 관리
   const [pieces, setPieces] = useState(1200);  // 시작할 때 훨씬 많이 (기존 800 → 1200)
@@ -58,7 +68,7 @@ export default function ReviewComplete() {
       />
 
       <Page>
-        <Stepper current={4} total={4} />
+        <Stepper current={isReceiptFlow ? 2 : 4} total={isReceiptFlow ? 2 : 4} />
 
         <Title>Congrats!{"\n"}You’ve earned a reward!</Title>
 
@@ -67,9 +77,15 @@ export default function ReviewComplete() {
         </IconWrap>
 
         <PointRow>
-          <Point>150</Point>
+          <Point>{rewardDelta}</Point>
           <span>points</span>
         </PointRow>
+
+        {/* {typeof rewardBalance === "number" && (
+          <div style={{ color:"#6B6F76", marginBottom: 12 }}>
+            New balance: {rewardBalance}
+          </div>
+        )} */}
 
         <ButtonRow>
           <CommonButton
