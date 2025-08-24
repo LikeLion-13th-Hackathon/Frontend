@@ -88,19 +88,21 @@ export default Category;
 // === styled ===
 const Wrapper = styled.div`
   display: flex;
-  overflow-x: auto;
-  gap: 10px;
-  margin: 30px 20px 0;
-  padding-bottom: 4px;
-
-  -ms-overflow-style: none;
+  align-items: center;
+  gap: 12px;                     /* 아이템 간 간격 */
+  width: 100%;
+  padding: 0 20px;               /* 좌우 여백 (필요 없으면 0으로) */
+  overflow-x: auto;              /* 가로 스크롤 허용 */
+  overflow-y: hidden;
+  margin-top: 20px;
+  flex-wrap: nowrap;             /* 한 줄로 쭉 이어짐 */
+  -webkit-overflow-scrolling: touch; /* 모바일 부드러운 스크롤 */
   scrollbar-width: none;
-  &::-webkit-scrollbar {
-    display: none;
-  }
+  &::-webkit-scrollbar { display: none; }
 `;
 
 const CategoryItem = styled.div`
+  flex: 0 0 auto;                 /* 줄바꿈 없이 이어짐 */
   display: flex;
   height: 36px;
   padding: 0 14px 0 10px;
@@ -111,6 +113,8 @@ const CategoryItem = styled.div`
   cursor: pointer;
   background: ${(p) => (p.$active ? "var(--pri, #ff6900)" : "#ffedd4")};
 `;
+
+
 
 const Label = styled.span`
   font-size: 12px;

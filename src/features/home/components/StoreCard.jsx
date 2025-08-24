@@ -114,6 +114,10 @@ const Title = styled.div`
   font-weight: 600;
   line-height: 150%;
   letter-spacing: -0.28px;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 const ReviewText = styled.div`
