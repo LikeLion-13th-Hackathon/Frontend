@@ -27,7 +27,7 @@ apiClient.interceptors.response.use(
 );
 
 // 토큰 자동 첨부
-api.interceptors.request.use((config) => {
+apiClient.interceptors.request.use((config) => {
   const token = localStorage.getItem('access_token'); // saveAuth 기준 키
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
