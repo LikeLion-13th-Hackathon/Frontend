@@ -32,10 +32,8 @@ export default function SignUpProfile() {
 
   return (
     <Layout>
-      <CenterHeader title = "logo" />
 
       <Card>
-        <DecorCircle />
         <Title>Welcome!</Title>
         <Sub>Let’s set up your profile.</Sub>
 
@@ -71,12 +69,12 @@ export default function SignUpProfile() {
           {!usernameOk && <Help>영문/숫자/._ 2–20자.</Help>}
 
           <Actions>
-            <CommonButton variant="secondary" type="button" onClick={() => nav(-1)}>
+            <BackButton type="button" onClick={() => nav(-1)}>
               Back
-            </CommonButton>
-            <CommonButton type="submit" disabled={nextDisabled}>
+            </BackButton>
+            <NextButton type="submit" disabled={nextDisabled}>
               Next
-            </CommonButton>
+            </NextButton>
           </Actions>
         </Form>
       </Card>
@@ -86,31 +84,11 @@ export default function SignUpProfile() {
 
 /* ---------------------- styled-components ---------------------- */
 
-const Wrap = styled.div`
-  min-height: 100vh;
-  background: #fff;
-  display: grid;
-  grid-template-rows: 56px 1fr;
-  justify-items: center;
-  padding: 0 16px 24px;
-  font-family: Pretendard, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-`;
-
-const Header = styled.header`
-  width: 100%;
-  max-width: 375px;
-  display: grid;
-  place-items: center;
-  font-size: 14px;
-  font-weight: 600;
-  color: #000;
-`;
-
 const Card = styled.main`
   position: relative; /* 장식 원(DecorCircle)의 기준 컨테이너 */
   width: 100%;
   max-width: 375px;
-  margin-top: 8px;
+  margin-top: 68px;
   padding: 24px;
   /* border-radius: 16px;
   border: 1px solid #eee;
@@ -154,7 +132,7 @@ const Field = styled.div`
   align-items: center;
   height: 44px;
   padding: 0 16px;
-  background: #eaeaea;
+  background: #fff;
   border: 1px solid #d9d9d9;
   border-radius: 8px;
 
@@ -181,15 +159,15 @@ const Actions = styled.div`
   gap: 18px;
 `;
 
-// 우상단 장식 원 (decorative circle)
-const DecorCircle = styled.div`
-  position: absolute;
-  top: -90px;    /* 화면 밖으로 살짝 */
-  right: -20px;  /* 화면 밖으로 살짝 */
-  width: 130px;
-  height: 130px;
-  border-radius: 50%;
-  background: #D9D9D9;   /* 회색(Gray) */
-  pointer-events: none;   /* 클릭 방해 X */
-  /* z-index 지정 안 해도 DOM 순서상 아래에 깔림(Decor가 먼저 그려지고, 뒤 요소들이 위에 옴) */
+const BackButton = styled(CommonButton)`
+  background-color: #fff;
+  border: 1px solid var(--gray-200, #E5E7EB);
+  color: #111;
+`;
+
+const NextButton = styled(CommonButton)`
+  background-color: ${({ disabled }) =>
+    disabled ? '#E5E7EB' : '#FF6900'};
+  color: ${({ disabled }) =>
+    disabled ? '#888' : '#fff'};
 `;

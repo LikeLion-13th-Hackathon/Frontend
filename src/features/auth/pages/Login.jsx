@@ -5,10 +5,16 @@ import { Link, useNavigate } from 'react-router-dom';
 import styled, { createGlobalStyle } from 'styled-components';
 import CommonButton from '../../../components/common/CommonButton';
 import Layout from '../../../components/common/Layout';
-import CenterHeader from '../../../components/common/header/CenterHeader';
 
 import { loginRequest, saveAuth, loadUser } from '@/shared/api/auth';
 import defaultAvatar from '@/assets/icons/basic_profile.png';
+
+//메인로고
+import LogoImg from '@/assets/icons/login_logo.png'
+import EmailImg from '@/assets/icons/login/email.png'
+import PwImg from '@/assets/icons/login/password.png'
+import EyeImg from '@/assets/icons/login/eyes.png'
+import EyeCloseImg from '@/assets/icons/login/eye_close.png'
 
 function Login() {
   const nav = useNavigate();
@@ -59,16 +65,18 @@ function Login() {
       <GlobalStyle />
       <Wrap>
         {/* <Header>logo</Header> */}
-        <CenterHeader title = "logo" />
+        {/* <CenterHeader title = "logo" /> */}
 
         <Card>
-          <LogoBox />
-          <LogoText>logo</LogoText>
+          <LogoBox src={LogoImg}/>
+          {/* <LogoText>logo</LogoText> */}
 
           <Form onSubmit={onSubmit} noValidate>
             <Label htmlFor="email">Email address</Label>
             <Field className={touched.email && !isValidEmail(email) ? 'error' : ''}>
-              <IconLeft><FiUser aria-hidden /></IconLeft>
+              <IconLeft>
+                <img src={EmailImg} alt="이메일 아이콘"/>
+              </IconLeft>
               <input
                 id="email"
                 type="email"
@@ -86,7 +94,9 @@ function Login() {
 
             <Label htmlFor="password">Password</Label>
             <Field className={touched.pw && pw.length === 0 ? 'error' : ''}>
-              <IconLeft><FiLock aria-hidden /></IconLeft>
+              <IconLeft>
+                <img src={PwImg} alt="비밀번호 아이콘" />
+              </IconLeft>
               <input
                 id="password"
                 type={showPw ? 'text' : 'password'}
@@ -101,7 +111,7 @@ function Login() {
                 onClick={() => setShowPw((s) => !s)}
                 aria-label={showPw ? '비밀번호 숨기기' : '비밀번호 보기'}
               >
-                {showPw ? <FiEyeOff /> : <FiEye />}
+                <img src={showPw ? EyeCloseImg : EyeImg} alt="" />
               </IconRightBtn>
             </Field>
 
@@ -109,9 +119,9 @@ function Login() {
             {errMsg && <Help role="alert">{errMsg}</Help>}
 
             {/* 공통 버튼 */}
-            <CommonButton type="submit" disabled={disabled}>
+            <LoginButton type="submit" disabled={disabled}>
               {loading ? 'Logging in…' : 'Login'}
-            </CommonButton>
+            </LoginButton>
           </Form>
 
           <Signup>
@@ -149,15 +159,6 @@ const Wrap = styled.div`
   /* padding: 0 16px 24px; */
 `;
 
-const Header = styled.header`
-  height: 56px;
-  display: grid;
-  place-items: center;
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--text);
-`;
-
 const Card = styled.main`
   width: 100%;
   margin: 8px auto 0;
@@ -174,19 +175,10 @@ const Card = styled.main`
   }
 `;
 
-const LogoBox = styled.div`
-  width: 138px; height: 133px;
-  margin: 8px auto 0;
-  background: #D9D9D9;
-  border-radius: 12px;
-`;
-
-const LogoText = styled.div`
-  margin-top: 10px;
-  text-align: center;
-  font-size: 32px;
-  line-height: 40px;
-  color: var(--text);
+const LogoBox = styled.img`
+  display: block;
+  width: 98.508px;
+  margin: 140px auto 90px;
 `;
 
 const Form = styled.form`
@@ -207,9 +199,9 @@ const Field = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
-  background: var(--bg-muted);
   border-radius: 8px;
-  border: 1px solid var(--stroke);
+  border: 1px solid #D9D9D9;
+  background: #FFF;
   padding: 10px 16px;
 
   &.error{
@@ -225,26 +217,42 @@ const Field = styled.div`
     font-size: 16px;
     color: var(--text);
     line-height: 24px;
-    padding: 4px 36px 4px 36px;
+    /* padding: 4px 36px 4px 36px; */
+    padding: 0 52px 0 8px;
   }
 `;
 
 const IconLeft = styled.div`
-  position: absolute;
-  left: 12px;
-  font-size: 18px;
-  color: var(--icon);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  & > img {
+    display: block;
+    width: 14px;
+    height: 14px;
+    object-fit: contain;
+  }
 `;
 
 const IconRightBtn = styled.button`
   position: absolute;
+  align-items: center;
+  justify-content: center;
   right: 10px;
-  width: 28px; height: 28px;
-  display: grid; place-items: center;
+  width: 28px; 
+  height: 28px;
+  display: flex;
   background: transparent;
   border: none;
   color: var(--icon);
   cursor: pointer;
+
+  img {
+    display: block;
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+  }
 `;
 
 const Help = styled.p`
@@ -259,10 +267,24 @@ const Signup = styled.p`
   font-size: 16px;
   color: var(--text);
 
+  /* body/body 1 */
+  font-family: Pretendard;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 380;
+  line-height: 150%; /* 24px */
+  letter-spacing: -0.32px;
+
   a {
     color: var(--text);
     text-decoration: underline;
   }
 `;
 
+const LoginButton = styled(CommonButton)`
+  background-color: ${({ disabled }) =>
+    disabled ? '#E5E7EB' : '#FF6900'};
+  color: ${({ disabled }) =>
+    disabled ? '#888' : '#fff'};
+`;
 
