@@ -18,10 +18,6 @@ export const fetchReviewsByUser = (userId) =>
 // 리뷰 단건
 export const fetchReviewDetail = (reviewId) =>
   api.get(`/reviews/${reviewId}/`);
-export const updateReview = (reviewId, data) =>
-  api.put(`/reviews/${reviewId}/`, data);
-export const deleteReview = (reviewId) =>
-  api.delete(`/reviews/${reviewId}/`);
 
 // 좋아요 토글
 export const toggleReviewLike = (reviewId) =>
@@ -41,3 +37,11 @@ export const fetchUserReviews = async (userId) => {
   const res = await api.get(`/reviews/user/${userId}/`);
   return res.data.results; // results 배열만 반환
 };
+
+//리뷰 수정
+export const updateReview = (reviewId, payload) =>
+  api.put(`/reviews/${reviewId}/`, payload).then(r => r.data);
+
+//리뷰 삭제
+export const deleteReview = (reviewId) =>
+  api.delete(`/reviews/${reviewId}/`).then(r => r.data);

@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import ReviewContent from './ReviewContent';
 import ScrollTopFab from '@/components/common/ScrollTopFab';
-import { fetchUserReviews } from '@/shared/api/review';
+import { fetchUserReviews, updateReview, deleteReview } from '@/shared/api/review';
 
 const UserReview = ({ userId, onCountChange }) => {
   const [reviews, setReviews] = useState([]);
@@ -41,7 +41,7 @@ const UserReview = ({ userId, onCountChange }) => {
   const content = useMemo(() => {
     if (status === 'loading') return <Info>불러오는 중…</Info>;
     if (status === 'error')   return <Info>리뷰를 불러오지 못했어요.</Info>;
-    if (status === 'empty')   return <Info>No reviews written yet.</Info>;
+    if (status === 'empty')   return <Info>No reviews yet. Share your experience ✨</Info>;
 
     // status === 'ok'
     return (
@@ -55,6 +55,7 @@ const UserReview = ({ userId, onCountChange }) => {
           const liked = !!r.liked;
           const tagItems = Array.isArray(r.tags) ? r.tags : [];
           const category = tagItems[0]?.category || 'others';
+          const tagIds = tagItems.map(t => t.id).filter(Boolean); // 태그 보존용
 
           return (
             <ReviewContent
@@ -79,6 +80,25 @@ const UserReview = ({ userId, onCountChange }) => {
               tagsCategory={category}
               tagItems={tagItems}
               text={r.comment || ''}
+
+              //리뷰 수정 저장
+              onSave={async (newComment) => {
+                // 공백 방지
+                const body = { comment: newComment.trim() };
+                // 태그 유지하려면 함께 보냄 (생략 시 태그가 모두 지워짐)
+                if (tagIds.length) body.tag_ids = tagIds;
+
+                await updateReview(r.id, body);
+                setReviews(prev => prev.map(x => (x.id === r.id ? { ...x, comment: newComment } : x)));
+              }}
+
+              // 리뷰 삭제
+              onDelete={async () => {
+                await deleteReview(r.id);
+                setReviews(prev => prev.filter(x => x.id !== r.id));
+                onCountChange?.(prev => (typeof prev === 'number' ? Math.max(0, prev - 1) : undefined));
+              }}
+
             />
           );
         })}
