@@ -6,8 +6,8 @@ import HomeSelected from '@/assets/icons/tabbar/home.png';
 import Home from '@/assets/icons/tabbar/home_gray.png';
 import SearchSelected from '@/assets/icons/tabbar/search.png';
 import Search from '@/assets/icons/tabbar/search_gray.png';
-import RewardSelected from '@/assets/icons/tabbar/reward_gray.png';
-import Reward from '@/assets/icons/tabbar/reward_gray.png'; //사진 수정 필요
+import RewardSelected from '@/assets/icons/tabbar/reward.png';
+import Reward from '@/assets/icons/tabbar/reward_gray.png';
 import MypageSelected from '@/assets/icons/tabbar/mypage.png';
 import Mypage from '@/assets/icons/tabbar/mypage_gray.png';
 

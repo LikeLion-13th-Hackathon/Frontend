@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Layout from '@/components/common/Layout';
 import LeftHeader from '../../../components/common/header/LeftHeader';
 import styled from 'styled-components';
@@ -25,6 +25,12 @@ const MyReviews = () => {
     const visits = user?.visited_count ?? 0;
     const placesLabel = `${visits} ${visits === 1 ? 'place' : 'places'}`;
 
+    //사용자 id
+    const userId = user?.id ?? user?.user_id;
+
+    //리뷰 개수
+    const [reviewCount, setReviewCount] = useState(0);
+
   return (
     <Layout overlapHeader bottomPadding={66}>
         <Background>
@@ -45,16 +51,18 @@ const MyReviews = () => {
 
             <Card>
                 <CardText>
-                    <CardTitle>My Visits</CardTitle>
+                    <CardTitle>My Reviews</CardTitle>
                     <Divider aria-hidden>|</Divider>
-                    <CardMeta>{placesLabel}</CardMeta>
+                    <CardMeta>
+                        {reviewCount} {reviewCount === 1 ? 'review' : 'reviews'}
+                    </CardMeta>
                 </CardText>
             </Card>
         </Background>
 
         <HeroOverlapSpacer height={40} />
 
-        <UserReview />
+        <UserReview userId={userId} onCountChange={setReviewCount} />
     </Layout>
   )
 }
