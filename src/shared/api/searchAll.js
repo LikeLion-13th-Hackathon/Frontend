@@ -18,7 +18,7 @@ export async function suggestAll(q, { signal } = {}) {
  * GET /search/trending?limit=8
  */
 export async function fetchTrendingAll({ limit = 8 } = {}) {
-  const { data } = await apiClient.get("/search/trending", {
+  const { data } = await apiClient.get("/search/trending/", {
     params: { limit },
   });
   return data;
@@ -29,7 +29,7 @@ export async function fetchTrendingAll({ limit = 8 } = {}) {
  * GET /search/discover?limit=10
  */
 export async function fetchDiscover({ limit = 10 } = {}) {
-  const { data } = await apiClient.get("/search/discover", {
+  const { data } = await apiClient.get("/search/discover/", {
     params: { limit },
   });
   // 기대 응답: [{ id, name, desc, thumbnailUrl, marketName, likes }]
