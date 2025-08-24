@@ -33,10 +33,8 @@ const Mypage = () => {
         <Background>
             <LeftHeader
                 title="Mypage"
-                rightIcon={SearchImg}
                 overlay
                 onLeftClick={() => window.history.back()}
-                onRightClick={() => console.log("검색 클릭")}
             />
 
         <Profile
