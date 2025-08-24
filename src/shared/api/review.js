@@ -36,4 +36,8 @@ export const createFeedback = (data) =>
   api.post(`/ai/feedback/`, data).then((res) => res.data);
 
 
-
+// 특정 유저의 리뷰 가져오기
+export const fetchUserReviews = async (userId) => {
+  const res = await api.get(`/reviews/user/${userId}/`);
+  return res.data.results; // results 배열만 반환
+};

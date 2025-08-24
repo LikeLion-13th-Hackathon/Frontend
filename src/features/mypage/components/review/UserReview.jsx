@@ -1,106 +1,114 @@
-import React, { useState } from 'react'
-import styled from 'styled-components'
-import ReviewContent from './ReviewContent'
+import React, { useEffect, useMemo, useState } from 'react';
+import styled from 'styled-components';
+import ReviewContent from './ReviewContent';
 import ScrollTopFab from '@/components/common/ScrollTopFab';
+import { fetchUserReviews } from '@/shared/api/review';
 
-const UserReview = () => {
-    // Mock 데이터
-    const reviews = [
-      {
-        id: 'r1',
-        user: { avatarUrl: '', nickname: '민정' }, //가게명으로 수정필요
-        createdAt: '2025-08-14T12:34:56Z',
-        likes: 12, liked: true,
-        category: 'snacks',
-        tags: [
-          { id: 39, category: 'snacks', group: 'Review Tags',  tag: 'Recommended' },
-          { id: 40, category: 'snacks', group: 'Review Tags',  tag: 'Clean' },
-          { id: 44, category: 'snacks', group: 'Portion Size', tag: 'Moderate' },
-          { id: 47, category: 'snacks', group: 'Spicy Level',  tag: 'Mild' },
-        ],
-        text: [
-          'Vegan, Pork-free, Beef-free, Mild/Medium/Spicy/Very spicy',
-          'Delicious / Clean / Recommended / Hard to find / Spacious / English spoken',
-          'text review'
-        ].join('\n'),
-      },
-      {
-        id: 'r2',
-        user: { avatarUrl: '', nickname: 'Riku' },
-        createdAt: '2025-08-17T09:20:00Z',
-        likes: 3, liked: false,
-        category: 'restaurants',
-        tags: [
-          { id: 71, category: 'restaurants', group: 'Review Tags',          tag: 'Delicious' },
-          { id: 72, category: 'restaurants', group: 'Review Tags',          tag: 'Spacious' },
-          { id: 73, category: 'restaurants', group: 'Dietary Restrictions', tag: 'Pork-free' },
-          { id: 74, category: 'restaurants', group: 'Dietary Restrictions', tag: 'Vegan' },
-          { id: 75, category: 'restaurants', group: 'Spicy Level',          tag: 'Medium' },
-        ],
-        text: [
-          'Vegan options available, Pork-free menu noted.',
-          'Place is spacious and the food was delicious.',
-          'medium spicy level was just right for me.'
-        ].join('\n'),
-      },
-    ];
+const UserReview = ({ userId, onCountChange }) => {
+  const [reviews, setReviews] = useState([]);
+  const [status, setStatus] = useState('idle'); // 'idle' | 'loading' | 'ok' | 'empty' | 'error'
+
+  useEffect(() => {
+    if (!userId) return;
+    let mounted = true;
+
+    (async () => {
+      try {
+        setStatus('loading');
+        const raw = await fetchUserReviews(userId);
+        const results = Array.isArray(raw) ? raw : (raw?.results ?? []);
+        const count   = typeof raw?.count === 'number' ? raw.count : results.length;
+        if (!mounted) return;
+
+        if (!results.length) {
+          setReviews([]);
+          setStatus('empty');
+          onCountChange?.(0);
+          return;
+        }
+        setReviews(results);
+        onCountChange?.(typeof count === 'number' ? count : results.length);
+        setStatus('ok');
+      } catch (e) {
+        console.error('리뷰 불러오기 실패:', e);
+        if (mounted) setStatus('error');
+      }
+    })();
+
+    return () => { mounted = false; };
+  }, [userId]);
+
+  const content = useMemo(() => {
+    if (status === 'loading') return <Info>불러오는 중…</Info>;
+    if (status === 'error')   return <Info>리뷰를 불러오지 못했어요.</Info>;
+    if (status === 'empty')   return <Info>No reviews written yet.</Info>;
+
+    // status === 'ok'
+    return (
+      <Wrap>
+        {reviews.map((r) => {
+          // 백엔드 응답 매핑
+          // r: { id, store, comment, likes_count, liked, tags[], created, author{...} }
+          const storeName =
+            r.store_name || r.store_name_en || (r.store_title) || `Store #${r.store}`; // 응답에 상점명이 없으면 임시표시
+          const createdAt = r.created; // ISO string
+          const likes = r.likes_count ?? 0;
+          const liked = !!r.liked;
+          const tagItems = Array.isArray(r.tags) ? r.tags : [];
+          const category = tagItems[0]?.category || 'others';
+
+          return (
+            <ReviewContent
+              key={r.id}
+              avatarUrl={r.author?.profile_image || ''} // 필요 시 가게 썸네일로 교체
+              nickname={storeName}                     // 가게명으로 노출
+              createdAt={createdAt}
+              likes={likes}
+              liked={liked}
+              onLikeClick={() => {
+                // TODO: 좋아요 토글 API 연동
+                // optimistic UI: 로컬만 즉시 반영
+                setReviews(prev => prev.map(x => {
+                  if (x.id !== r.id) return x;
+                  const nowLiked = !liked;
+                  return {
+                    ...x,
+                    liked: nowLiked,
+                    likes_count: (x.likes_count ?? 0) + (nowLiked ? 1 : -1)
+                  };
+                }));
+              }}
+              tagsCategory={category}
+              tagItems={tagItems}
+              text={r.comment || ''}
+            />
+          );
+        })}
+      </Wrap>
+    );
+  }, [reviews, status]);
 
   return (
     <>
-      <Wrap>
-        {reviews.map(r => (
-          <ReviewContent
-            key={r.id}
-            avatarUrl={r.user.avatarUrl}
-            nickname={r.user.nickname}
-            createdAt={r.createdAt}
-            likes={r.likes}
-            liked={r.liked}
-            onLikeClick={() => {/* 좋아요 토글 API */}}
-
-            tagsCategory={r.category}
-            tagItems={r.tags}
-
-            text={r.text}
-          />
-        ))}
-      </Wrap>
-
-      <ScrollTopFab offsetBottom={66} gap={12} right={12}/>
+      {content}
+      <ScrollTopFab offsetBottom={66} gap={12} right={12} />
     </>
+  );
+};
 
-  )
-}
+export default UserReview;
 
-export default UserReview
-
+/* styles */
 const Wrap = styled.div`
-    display: inline-flex;
-    /* height: 974px; */
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 32px;
-    flex-shrink: 0;
-`
-
-const BottomBar = styled.div`
-  position: sticky;         /* 스크롤해도 하단에 붙게 */
-  bottom: 0;
-  z-index: 5;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 66px;
-  width: 100%;              /* 부모(Inner 375px) 기준 100% */
-  background: #fff;
-  border-top: 1px solid #eee;
-  padding-bottom: env(safe-area-inset-bottom); /* iOS 홈바 대응 */
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 32px;
+  flex-shrink: 0;
 `;
 
-const BarInner = styled.div`
-  width: 335px;             /* 버튼 래퍼 폭 */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
+const Info = styled.div`
+  padding: 24px 20px;
+  color: #666;
+  font-size: 14px;
 `;
