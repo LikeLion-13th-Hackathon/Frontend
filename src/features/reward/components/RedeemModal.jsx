@@ -39,13 +39,9 @@ export default function RedeemModal({ open, onClose, amount, onConfirm }) {
           <SizedButton variant="secondary" fullWidth={false} onClick={onClose}>
             Close
           </SizedButton>
-          <SizedButton
-            variant="primary"
-            fullWidth={false}
-            onClick={() => onConfirm?.(amount)}
-          >
+          <OrangeButton onClick={() => onConfirm?.(amount)}>
             Yes, I'd like to
-          </SizedButton>
+          </OrangeButton>
         </ButtonRow>
       </Wrap>
     </Overlay>
@@ -141,4 +137,14 @@ const SizedButton = styled(CommonButton).attrs({ fullWidth: false })`
   width: 144px;
   height: 44px;
   border-radius: 8px;
+`;
+
+const OrangeButton = styled(SizedButton)`
+  background: #FF6900;
+  color: #FFF;
+  border: none;
+
+  &:hover {
+    filter: brightness(0.95);
+  }
 `;
