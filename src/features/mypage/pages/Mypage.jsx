@@ -12,10 +12,25 @@ import useMyPage from '@/hooks/useMyPage';
 import defaultAvatar from '@/assets/icons/basic_profile.png';
 
 function mapUserToProfile(results = {}) {
+  const avatar =
+    (results.profile_image && String(results.profile_image).trim()) || defaultAvatar;
+
+  const nickname = (results.username && results.username.trim()) || '';
+  const username = (results.fullName && results.fullName.trim()) || '';
+  const email    = (results.email && results.email.trim()) || '';
+  const subField = (results.subtitle && results.subtitle.trim()) || '';
+
+  // 위: 풀네임, 아래: 이메일(없으면 subtitle → username)
+  const name = nickname || username || 'User';
+  let subtitle = email || subField || username || '';
+
+  // 위/아래가 같으면 중복 제거
+  if (subtitle && subtitle === name) subtitle = '';
+
   return {
-    avatarUrl: (results.profile_image && String(results.profile_image).trim()) || defaultAvatar,
-    name: (results.nickname && results.nickname.trim()) || results.username || "User",
-    subtitle: results.subtitle || results.email || "", //미정
+    avatarUrl: avatar,
+    name,
+    subtitle,
   };
 }
 
