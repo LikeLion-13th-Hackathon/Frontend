@@ -41,7 +41,7 @@ const UserReview = ({ userId, onCountChange }) => {
   const content = useMemo(() => {
     if (status === 'loading') return <Info>불러오는 중…</Info>;
     if (status === 'error')   return <Info>리뷰를 불러오지 못했어요.</Info>;
-    if (status === 'empty')   return <Info>No reviews written yet.</Info>;
+    if (status === 'empty')   return <Info>No reviews yet. Share your experience ✨</Info>;
 
     // status === 'ok'
     return (
