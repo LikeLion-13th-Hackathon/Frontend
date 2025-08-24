@@ -47,7 +47,7 @@ export default function InfoModal({ open, onClose, onOpenApp }) {
             Close
           </SizedButton>
 
-          <SizedButton
+          <OrangeButton
             variant="primary"
             fullWidth={false}
             onClick={() => {
@@ -56,7 +56,7 @@ export default function InfoModal({ open, onClose, onOpenApp }) {
             }}
           >
             Open App
-          </SizedButton>
+          </OrangeButton>
         </ButtonRow>
       </Wrap>
     </Overlay>
@@ -175,3 +175,13 @@ const GiftCardBox = styled.img`
 const TextBox = styled.div`
     width: 252px;
 `
+
+const OrangeButton = styled(SizedButton)`
+  background: #FF6900;
+  color: #FFF;
+  border: none;
+
+  &:hover {
+    filter: brightness(0.95);
+  }
+`;

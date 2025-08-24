@@ -259,7 +259,7 @@ const StoreItem = styled.button`
   align-self: stretch;
   width: 100%;
   border: 0;
-  background: ${({ $selected }) => ($selected ? '#CFCFCF' : 'transparent')};
+  background: ${({ $selected }) => ($selected ? '#FFEDD4' : 'transparent')};
   border-radius: ${({ $selected, $isFirst, $isLast }) => {
     if (!$selected) return '0';
     if ($isFirst && $isLast) return '8px';           // 한 개만 있을 때
