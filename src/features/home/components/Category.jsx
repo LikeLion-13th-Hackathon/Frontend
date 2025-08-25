@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { fetchStores } from "@/shared/api/store";
+import { motion } from "framer-motion";
 
 const FIXED_ORDER = ["Fresh", "Snacks", "Goods", "Restaurants"];
 
@@ -73,6 +74,7 @@ const Category = ({ selectedId, onSelect }) => {
             key={cat}
             $active={active}
             onClick={() => onSelect(cat)}
+            animate={{ scale: active ? 1.1 : 1, transition: { type: "spring", stiffness: 300 } }}
           >
             <Icon $active={active} />
             <Label $active={active}>{cat}</Label>
@@ -105,6 +107,7 @@ const CategoryItem = styled.div`
   flex: 0 0 auto;                 /* 줄바꿈 없이 이어짐 */
   display: flex;
   height: 36px;
+  margin-top: 5px;
   padding: 0 14px 0 10px;
   justify-content: center;
   align-items: center;
@@ -112,9 +115,12 @@ const CategoryItem = styled.div`
   border-radius: 8px;
   cursor: pointer;
   background: ${(p) => (p.$active ? "var(--pri, #ff6900)" : "#ffedd4")};
+  transition: background 0.3s ease;  /* 색상 전환 부드럽게 */
+  
+  &:hover {
+    transform: translateY(-1px);  /* 마우스 올릴 때 살짝 올라옴 */
+  }
 `;
-
-
 
 const Label = styled.span`
   font-size: 12px;
@@ -122,4 +128,6 @@ const Label = styled.span`
   letter-spacing: -0.24px;
   color: ${(p) => (p.$active ? "#fff" : "#ff8904")};
   font-weight: ${(p) => (p.$active ? 600 : 400)};
+  transition: color 0.3s ease, opacity 0.3s ease;
+  opacity: ${(p) => (p.$active ? 1 : 0.8)};
 `;

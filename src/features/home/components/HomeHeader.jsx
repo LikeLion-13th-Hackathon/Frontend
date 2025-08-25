@@ -22,7 +22,7 @@ const HomeHeader = () => {
           <Input
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
-            placeholder="Heukseok Market"
+            placeholder="Search for stores..."
           />
           <Icon onClick={handleSearch}>
             <img src={SearchIcon} alt="검색" />
@@ -69,7 +69,7 @@ const Input = styled.input`
   border: none;
   outline: none;
   background: transparent;
-  font-size: 14px;
+  font-size: 12px;
   color: #333;
 
   ::placeholder {

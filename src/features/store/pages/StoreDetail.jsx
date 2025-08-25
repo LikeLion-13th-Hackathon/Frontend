@@ -1,7 +1,5 @@
 // src/features/store/pages/StoreDetail.jsx
-
 import React, { useEffect, useState } from 'react';
-// useNavigate 훅을 import 합니다.
 import { useParams, useNavigate } from "react-router-dom"; 
 import styled from 'styled-components';
 
@@ -22,6 +20,11 @@ const StoreDetail = () => {
 
   const [store, setStore] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  // 브라우저 탭 제목 설정
+  useEffect(() => {
+    document.title = "mapin | Store";
+  }, []);
 
   useEffect(() => {
     if (id) {

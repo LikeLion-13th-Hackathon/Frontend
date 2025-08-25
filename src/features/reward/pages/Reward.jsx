@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Layout from "@/components/common/Layout";
 import TabBar from '../../../components/common/TabBar';
 import styled from 'styled-components';
@@ -20,14 +20,16 @@ import ReceiptMatchModal from '@/components/receipt/ReceiptMatchModal';
 import { getReceiptMatches } from '@/shared/api/receipt';
 import { useNavigate } from 'react-router-dom';
 
-//
 import { postReward } from '@/shared/api/reward'; // base.js의 api 사용
 
 const Reward = () => {
-    //
     const [seeding, setSeeding] = useState(false);
 
-    //
+    // 브라우저 탭 제목 설정
+    useEffect(() => {
+        document.title = "mapin | Reward";  
+    }, []);
+
     async function seedHistory() {
     // 중복 시드를 막고 싶으면 localStorage 플래그 사용
     if (localStorage.getItem('reward_seeded') === '1') return alert('이미 시드됨');
@@ -83,7 +85,6 @@ const Reward = () => {
     const [matchOpen, setMatchOpen] = useState(false);
     const [matchData, setMatchData] = useState({ receipt: null, candidates: [] });
 
-    //
     // --- DEV용 모달 프리뷰 데이터 ---
     const MOCK_RECEIPT = {
     id: 9999,
@@ -136,7 +137,7 @@ const Reward = () => {
     <Layout overlapHeader bottomPadding={66}>
         <Background>
             <LeftHeader
-                title="Rewards"
+                title="Reward"
                 leftIcon={BackImg}
                 overlay
                 onLeftClick={() => window.history.back()}

@@ -25,6 +25,11 @@ export default function ReviewSnack() {
   const { state } = useLocation();
   const isReceiptFlow = state?.source === "receipt";
 
+  // 페이지 진입 시 탭 제목 변경
+  useEffect(() => {
+    document.title = "mapin | Review"; 
+  }, []);
+
   // ChatSimulator → Review 페이지에서 전달됨 (state?.store?.id)
   // 영수증 플로우에선 ReceiptMatchModal이 state.storeId 로 넘겨줌
   const storeId = state?.storeId ?? state?.store?.id;

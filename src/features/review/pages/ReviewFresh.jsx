@@ -24,6 +24,11 @@ export default function ReviewFresh() {
   const nav = useNavigate();
   const { state } = useLocation();
   const isReceiptFlow = state?.source === "receipt";
+
+  // 페이지 진입 시 탭 제목 변경
+  useEffect(() => {
+    document.title = "mapin | Review"; 
+  }, []);
   
   const storeId = state?.storeId ?? state?.store?.id;
 

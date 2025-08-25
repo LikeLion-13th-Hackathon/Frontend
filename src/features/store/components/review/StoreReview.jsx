@@ -124,7 +124,7 @@ const Header = styled.div`
   justify-content: center;
   align-items: center;
   flex: 1 0 0;
-  border-bottom: 2px solid var(--pri, #6D6D6D);
+  border-bottom: 0.5px solid var(--pri, #6D6D6D);
   margin-top: 6px;
 
   color: #000;

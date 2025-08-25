@@ -70,7 +70,11 @@ const ImageSlider = ({ markets = [] }) => {
 
       <IndicatorWrapper>
         {markets.map((_, index) => (
-          <Dot key={index} $active={index === currentIndex} />
+          <Dot 
+            key={index} 
+            $active={index === currentIndex} 
+            onClick={() => setCurrentIndex(index)}
+          />
         ))}
       </IndicatorWrapper>
     </>
@@ -145,15 +149,21 @@ const IndicatorWrapper = styled.div`
 `;
 
 const Dot = styled.div`
-  width: ${(props) => (props.$active ? '10px' : '8px')};
-  height: ${(props) => (props.$active ? '10px' : '8px')};
+  width: ${(props) => (props.$active ? "10px" : "8px")};
+  height: ${(props) => (props.$active ? "10px" : "8px")};
   border-radius: 50%;
   transition: all 0.3s ease;
-  background-color: ${(props) => (props.$active ? '#555' : '#bbb')};
+  background-color: ${(props) => (props.$active ? "#555" : "#bbb")};
   box-shadow: ${(props) =>
-    props.$active ? '0 0 8px rgba(0, 0, 0, 0.3)' : 'none'};
+    props.$active ? "0 0 8px rgba(0, 0, 0, 0.3)" : "none"};
   opacity: ${(props) => (props.$active ? 1 : 0.6)};
+  cursor: pointer; /* 손가락 커서 */
+  
+  &:hover {
+    transform: scale(1.2);   /* 마우스 올리면 살짝 커짐 */
+  }
 `;
+
 
 const SubwayWrapper = styled.div`
   display: flex;

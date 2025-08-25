@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import Layout from '@/components/common/Layout';
 import LeftHeader from '@/components/common/header/LeftHeader';
 import SearchImg from '@/assets/icons/search.png';
@@ -37,6 +37,11 @@ function mapUserToProfile(results = {}) {
 const Mypage = () => {
     // account/mypage 사용해서 정보 받아오기
     const { user } = useMyPage();
+
+    // 브라우저 탭 제목 설정
+    useEffect(() => {
+      document.title = "mapin | Mypage";
+    }, []);
 
     
     const profileProps = mapUserToProfile(user || {});

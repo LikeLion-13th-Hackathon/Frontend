@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import styled from 'styled-components';
 import { uploadReceiptFile } from '@/shared/api/receipt';
 import UploadImg from '@/assets/icons/upload.png';
+import StatusModal from './StatusModal';
 
 export default function ReceiptUploader({
   onUploaded,          // (savedReceipt) => void
@@ -10,6 +11,11 @@ export default function ReceiptUploader({
 }) {
   const fileRef = useRef(null);
   const [uploading, setUploading] = useState(false);
+  const [modal, setModal] = useState({ open: false, variant: 'loading', message: 'Uploading…' });
+  const openLoading = () => setModal({ open: true, variant: 'loading', message: 'Uploading…' });
+  const openSuccess = () => setModal({ open: true, variant: 'success', message: 'Upload complete!', autoHideMs: 900 });
+  const openError = (msg='Upload failed') => setModal({ open: true, variant: 'error', message: msg, autoHideMs: 1200 });
+  const closeModal = () => setModal(m => ({ ...m, open: false }));
 
   const clickInput = () => {
     if (uploading) return;
@@ -20,32 +26,23 @@ export default function ReceiptUploader({
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // ✅ 클라 검증: JPG + 1MB 이하
-    const isJpg = file.type === 'image/jpeg' || /\.jpe?g$/i.test(file.name);
-    if (!isJpg) {
-      alert('JPG 파일만 업로드할 수 있어요.');
-      e.target.value = '';
-      return;
-    }
-    if (file.size > 1024 * 1024) {
-      alert('파일 크기는 1MB 이하만 가능합니다.');
-      e.target.value = '';
-      return;
-    }
-
     try {
       setUploading(true);
+      openLoading();
+
       const data = await uploadReceiptFile(file);
 
       if (Array.isArray(data?.saved) && data.saved.length > 0) {
-        const saved = data.saved[0]; // { id, store_name, ... }
-        alert(`저장 완료!\n상호: ${saved.store_name}\n금액: ${saved.total_amount}\nID: ${saved.id}`);
+        const saved = data.saved[0];
+        openSuccess();
+        // alert(`저장 완료!\n상호: ${saved.store_name}\n금액: ${saved.total_amount}\nID: ${saved.id}`);
         onUploaded?.(saved);
       } else {
-        alert('저장 결과가 비어있어요. 다시 시도해 주세요.');
+        //alert('No result returned. Please try again.');
+        openError('No result returned. Please try again.');
       }
     } catch (err) {
-      alert(err?.message || '업로드 실패');
+      openError(err?.message || 'Upload failed');
     } finally {
       setUploading(false);
       e.target.value = ''; // 동일 파일 재업로드 대비 초기화
@@ -63,10 +60,18 @@ export default function ReceiptUploader({
       <input
         ref={fileRef}
         type="file"
-        accept="image/jpeg"     // 🔒 JPG만
+        // accept="image/jpeg"     // 🔒 JPG만
         capture="environment"   // 📸 모바일에서 후면 카메라 힌트
         style={{ display: 'none' }}
         onChange={onFileChange}
+      />
+
+      <StatusModal
+        open={modal.open}
+        variant={modal.variant}
+        message={modal.message}
+        autoHideMs={modal.autoHideMs}
+        onClose={closeModal}
       />
     </>
   );
