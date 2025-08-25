@@ -13,6 +13,7 @@ import DislikeIcon from "@/assets/icons/review_dislike.svg?react";
 
 import { createReview, createConversation, createFeedback } from "@/shared/api/review";
 import { postReward } from "@/shared/api/reward";
+import { fetchStoreDetail } from "@/shared/api/store";
 
 const MAX_LEN = 500;
 
@@ -30,6 +31,25 @@ export default function ReviewFeedback() {
   }, [choice]);
 
   const REVIEW_REWARD = 300;
+
+
+  //한/영 가게명
+  async function ensureStoreMeta() {
+    const storeId = state?.sotre?.id ?? state?.storeId ?? null;
+    let storeName = state?.storeName ?? state?.store?.store_name ?? "";
+    let storeEnglish = state?.storeEnglish ?? state?.store?.store_english ?? "";
+
+    if ((!storeName || !storeEnglish) && storeId) {
+      try {
+        const d = await fetchStoreDetail(storeId);
+        const detail = (d && d.data) ? d.data : d;
+        storeName = storeName || detail?.store_name || "";
+        storeEnglish = storeEnglish || detail?.store_english || "";
+      } catch {
+      }
+    }
+    return { storeName, storeEnglish, storeId };
+  }
 
   // 서버 저장 (최종 단계)
 const onNext = async () => {
@@ -59,19 +79,23 @@ const onNext = async () => {
 
     await createFeedback(feedbackPayload);
 
+    const { storeName, storeEnglish } = await ensureStoreMeta();
     const reward = await postReward({
         delta: REVIEW_REWARD,
-        caption: ["Chat Review", state?.storeName ?? "", state?.storeEnglish ?? ""].join("|"),
+        caption: ["Chat Review", storeName, storeEnglish].join("|"),
     });
 
 
     // 완료 페이지 이동
     nav("/review/complete", {
       state: {
+        // source: "chat",
         store: state?.store,
         reviewId: reviewRes.data.id,
         conversationId: convRes.id,
         reward,
+        storeName,
+        storeEnglish,
       },
     });
   } catch (err) {
