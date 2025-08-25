@@ -274,37 +274,24 @@ export default function AIChatSimulatorChat() {
               End Chat
             </EndChatButton>
             <ReviewButton
-              disabled={messages.length < 2}
+              disabled={messages.length < 1}
               onClick={() => {
-                const category = state?.store?.category?.toLowerCase();
-                const store = state?.store;   // store 객체 꺼내기
-
-                // store_id를 id로 변환
+                const store = state?.store;
                 const storeWithId = { ...store, id: store.id ?? store.store_id };
 
                 if (!storeWithId.id) {
                   alert("가게 ID가 없습니다. 백엔드 응답 확인 필요합니다.");
-                  console.log("현재 store 값:", store); // 디버깅
+                  console.log("현재 store 값:", store);
                   return;
                 }
 
-                const nextState = { ...state, store: storeWithId };
-
-                if (category === "restaurants") {
-                  navigate("/review/restaurant", { state: nextState });
-                } else if (category === "snacks") {
-                  navigate("/review/snack", { state: nextState });
-                } else if (category === "fresh") {
-                  navigate("/review/fresh", { state: nextState });
-                } else if (category === "goods") {
-                  navigate("/review/goods", { state: nextState });
-                } else {
-                  navigate("/review/restaurant", { state: nextState }); // fallback
-                }
+                // store 정보 포함해서 state로 전달
+                navigate("/select/chat", { state: { store: storeWithId } });
               }}
             >
               Claim Reward
             </ReviewButton>
+
           </BottomBar>
         </ControlsContainer>
       </PageContainer>

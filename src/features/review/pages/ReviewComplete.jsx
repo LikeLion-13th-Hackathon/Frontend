@@ -29,11 +29,12 @@ export default function ReviewComplete() {
   }, []);
 
   const { state } = useLocation();
+  console.log("[ReviewComplete] location state:", state);
   const isReceiptFlow =
     state?.source === 'receipt' || sessionStorage.getItem('flow') === 'receipt';
   
   // 리워드 값
-  const rewardDelta   = state?.reward?.changed ?? state?.reward?.delta ?? 150;
+  const rewardDelta   = state?.reward?.changed ?? state?.reward?.delta ?? 10;
   const rewardCaption = state?.reward?.caption ?? "Review";
   const rewardBalance = state?.reward?.balance;
 
