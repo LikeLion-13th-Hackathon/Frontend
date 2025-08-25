@@ -71,6 +71,19 @@ const Card = styled.div`
 
   /* 카드 높이 통일 */
   min-height: 180px;
+
+  /* 커서 변경 */
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-4px) scale(1.02); /* 살짝 위로 + 확대 */
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15); /* 그림자 강조 */
+  }
+
+  &:active {
+    transform: scale(0.98); /* 클릭할 때 살짝 눌리는 느낌 */
+  }
 `;
 
 

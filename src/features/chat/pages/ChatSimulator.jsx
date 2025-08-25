@@ -14,6 +14,11 @@ export default function AIChatSimulatorChat() {
   const { state } = useLocation();   // ChatLoading에서 받은 값
   const navigate = useNavigate();
 
+  // 브라우저 탭 제목 설정
+  useEffect(() => {
+    document.title = "mapin | Chat";
+  }, []);
+
   const [messages, setMessages] = useState([]);
   const chatBottomRef = useRef(null);
 

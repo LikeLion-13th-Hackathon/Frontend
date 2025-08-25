@@ -16,6 +16,11 @@ export default function Home() {
   const [markets, setMarkets] = useState([]);
   const [stores, setStores] = useState([]);
 
+  // 페이지 진입 시 탭 제목 변경
+  useEffect(() => {
+    document.title = "mapin | Home"; 
+  }, []);
+
   // 시장 리스트 불러오기
   useEffect(() => {
     apiClient.get("/market/list/").then(res => {
@@ -28,7 +33,6 @@ export default function Home() {
     async function loadStores() {
       try {
         const res = await filterStoresByCategory(selectedId);
-        console.log("📌 store API 응답:", res.data);
 
         const marketNameMap = {
           1: "흑석시장",
@@ -42,7 +46,7 @@ export default function Home() {
           desc: s.most_liked_review?.comment || null, 
           imageUrl: s.store_image,
           marketName: marketNameMap[s.market_id] || "알 수 없음",
-          likes: s.most_liked_review?.likes_count || 0,  // 여기 수정
+          likes: s.most_liked_review?.likes_count || 0, 
         }));
 
         setStores(formatted);

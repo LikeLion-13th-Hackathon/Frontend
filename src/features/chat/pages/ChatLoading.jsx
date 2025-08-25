@@ -24,6 +24,11 @@ import TopicIcon from "@/features/chat/components/TopicIcon";
 const StoreItem = ({ store, open, onToggle }) => {
   if (!store) return null;
 
+  // 브라우저 탭 제목 설정
+  useEffect(() => {
+    document.title = "mapin | Chat";
+  }, []);
+
   const { store_name, store_english, menu_list = [], road_address } = store;
   const firstMenu = menu_list.length > 0 ? menu_list[0] : null;
 

@@ -1,5 +1,4 @@
-import React from 'react'
-import styled from 'styled-components'
+import React, { useEffect, useState } from 'react';
 import BackImg from "@/assets/icons/header_back.png";
 import SearchImg from '@/assets/icons/search.png';
 import StoreList from '../components/StoreList';
@@ -10,10 +9,15 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import TabBar from '../../../components/common/TabBar';
 
 const MarketDetail = () => {
+    // 브라우저 탭 제목 설정
+    useEffect(() => {
+      document.title = "mapin | Market";  // 원하는 제목
+    }, []);
     const [searchParams] = useSearchParams();
     const marketId = Number(searchParams.get('market')) || 1;
 
     const navigate = useNavigate();
+    
 
   return (
     <Layout overlapHeader bottomPadding={66}>

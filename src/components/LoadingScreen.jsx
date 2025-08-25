@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import styled from "styled-components";
-import { motion, AnimatePresence } from "framer-motion"; // ✅ 애니메이션 추가
+import { motion, AnimatePresence } from "framer-motion"; 
 import LogoImg from "@/assets/icons/login_logo.png";
 import Layout from "@/components/common/Layout";
 

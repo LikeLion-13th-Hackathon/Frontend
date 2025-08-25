@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { searchStores, fetchDiscover, fetchTrendingAll } from "@/shared/api/searchAll";
+import { fetchStores } from "@/shared/api/store";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 import Layout from "@/components/common/Layout";
@@ -14,6 +15,11 @@ import TabBar from '../../../components/common/TabBar';
 export default function SearchPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+
+  // 페이지 진입 시 탭 제목 변경
+  useEffect(() => {
+    document.title = "mapin | Search"; 
+  }, []);
 
   // URL 파라미터에서 keyword 읽기
   const initialKeyword = searchParams.get("keyword") || "";
@@ -35,6 +41,7 @@ export default function SearchPage() {
   useEffect(() => {
     if (initialKeyword) {
       handleSearch(initialKeyword);
+      
     }
   }, [initialKeyword]);
 
@@ -43,17 +50,42 @@ export default function SearchPage() {
       setItems([]);
       return;
     }
+    setItems([]);
     setLoading(true);
     try {
-      const list = await searchStores({ keyword });
-
-      // store_name 안에 검색어 포함 여부 확인 (list는 이미 매핑된 name 사용 가능)
-      const filtered = list.filter((x) =>
-        x.name?.toLowerCase().includes(keyword.toLowerCase()) ||
-        x.marketName?.toLowerCase().includes(keyword.toLowerCase())
-      );
-
-      setItems(filtered);
+      // 전체 스토어 데이터 가져오기
+      const { data } = await fetchStores();
+  
+      const lowerKeyword = keyword.toLowerCase();
+      const filtered = (data.results || data || []).filter((x) => {
+        const matchName =
+          x.store_name?.toLowerCase().includes(lowerKeyword) ||
+          x.store_english?.toLowerCase().includes(lowerKeyword);
+  
+        const matchMenus = Array.isArray(x.menu_list)
+          ? x.menu_list.some(
+              (m) =>
+                m.korean?.toLowerCase().includes(lowerKeyword) ||
+                m.english?.toLowerCase().includes(lowerKeyword)
+            )
+          : false;
+  
+        return matchName || matchMenus;
+      });
+  
+      // 매핑 (기존 searchStores와 동일 포맷)
+      const mapped = filtered.map((x) => ({
+        id: x.store_id,
+        name: x.store_name,
+        desc: x.road_address ?? "",
+        thumbnailUrl: x.store_image ?? null,
+        marketName: x.store_english ?? "",
+        reviewCount: x.review_count ?? 0,
+        firstMenu: x.menu_list?.[0] || null,
+        menus: x.menu_list || [],
+      }));
+  
+      setItems(mapped);
     } catch (err) {
       console.error("검색 실패:", err);
       setItems([]);
@@ -61,6 +93,7 @@ export default function SearchPage() {
       setLoading(false);
     }
   };
+  
 
   const showDefault = !keyword.trim() && items.length === 0;
 

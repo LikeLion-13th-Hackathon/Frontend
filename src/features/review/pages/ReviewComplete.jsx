@@ -23,6 +23,11 @@ export default function ReviewComplete() {
   const nav = useNavigate();
   const { width, height } = useWindowSize(); // 화면 크기 자동 반영
   
+  // 페이지 진입 시 탭 제목 변경
+  useEffect(() => {
+    document.title = "mapin | Review"; 
+  }, []);
+
   const { state } = useLocation();
   const isReceiptFlow =
     state?.source === 'receipt' || sessionStorage.getItem('flow') === 'receipt';
@@ -89,14 +94,14 @@ export default function ReviewComplete() {
 
         <ButtonRow>
           <CommonButton
-            variant="secondary-dim"
-            onClick={() => nav("/home")}
+            variant="primary"
+            onClick={() => nav("/reward")}
           >
-            See what you can do next
+            See What You Can Do Next
           </CommonButton>
           <CommonButton
-            variant="primary"
-            onClick={() => nav("/")}
+            variant="secondary-dim"
+            onClick={() => nav("/home")}
           >
             Exit
           </CommonButton>
@@ -112,20 +117,6 @@ const Page = styled.div`
   color: #111;
   padding: 20px;
   text-align: center;
-`;
-
-const StepBar = styled.div`
-  display: flex;
-  justify-content: space-between;
-  margin: 0 20px 30px;
-`;
-
-const Dot = styled.div`
-  flex: 1;
-  height: 6px;
-  margin: 0 4px;
-  border-radius: 3px;
-  background: ${({ $done }) => ($done ? "#888" : "#ddd")};
 `;
 
 const Title = styled.h2`
@@ -163,22 +154,3 @@ const ButtonRow = styled.div`
   gap: 12px;
 `;
 
-const NextBtn = styled.button`
-  background: #bcbcbc;
-  border-radius: 10px;
-  padding: 14px;
-  font-size: 16px;
-  color: white;
-  font-weight: 600;
-  cursor: pointer;
-`;
-
-const ExitBtn = styled.button`
-  background: #333;
-  border-radius: 10px;
-  padding: 14px;
-  font-size: 16px;
-  color: white;
-  font-weight: 600;
-  cursor: pointer;
-`;
