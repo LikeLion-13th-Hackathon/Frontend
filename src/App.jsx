@@ -38,6 +38,7 @@ import ReviewComplete from '@/features/review/pages/ReviewComplete';
 
 // 가게
 import StoreDetail from '@/features/store/pages/StoreDetail';
+import SelectReviewType from '@/features/store/pages/SelectReviewType';
 
 // 마이페이지
 import Mypage from '@/features/mypage/pages/Mypage';
@@ -46,7 +47,7 @@ import MyReviews from '@/features/mypage/pages/MyReviews';
 // 검색/리워드
 import SearchPage from '@/features/search/pages/Search';
 import Reward from '@/features/reward/pages/Reward';
-import SelectMethod from './components/common/SelectMethod';
+
 
 /* ===== 라우트 가드 (간단 버전) ===== */
 const hasAccessToken = () => !!localStorage.getItem('access_token');
@@ -184,8 +185,8 @@ export default function App() {
         } />
 
         {/* 바로 리뷰 or 영수증 리뷰 선택  */}
-        <Route path="/select" element={
-          <ProtectedRoute><SelectMethod/></ProtectedRoute>
+        <Route path="/select/none" element={
+          <ProtectedRoute><SelectReviewType/></ProtectedRoute>
         } />
 
         {/* 없는 경로 → 로그인으로 */}
