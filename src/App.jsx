@@ -46,6 +46,7 @@ import MyReviews from '@/features/mypage/pages/MyReviews';
 // 검색/리워드
 import SearchPage from '@/features/search/pages/Search';
 import Reward from '@/features/reward/pages/Reward';
+import SelectMethod from './components/common/SelectMethod';
 
 /* ===== 라우트 가드 (간단 버전) ===== */
 const hasAccessToken = () => !!localStorage.getItem('access_token');
@@ -180,6 +181,11 @@ export default function App() {
         } />
         <Route path="/reward" element={
           <ProtectedRoute><Reward /></ProtectedRoute>
+        } />
+
+        {/* 바로 리뷰 or 영수증 리뷰 선택  */}
+        <Route path="/select" element={
+          <ProtectedRoute><SelectMethod/></ProtectedRoute>
         } />
 
         {/* 없는 경로 → 로그인으로 */}
