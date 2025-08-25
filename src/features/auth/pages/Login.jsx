@@ -54,9 +54,15 @@ function Login() {
         replace: true,
       });
     } catch (err) {
-      setErrMsg(err.message || '로그인에 실패했어요.');
-    } finally {
-      setLoading(false);
+      if (err.response?.status === 400) {
+        // 없는 계정
+        setErrMsg('Account does not exist.');
+      } else if (err.response?.status === 401) {
+        // 비밀번호 불일치
+        setErrMsg('Incorrect password.');
+      } else {
+        setErrMsg('Login failed. Please try again.');
+      }
     }
   };
 
@@ -82,7 +88,7 @@ function Login() {
                 type="email"
                 placeholder="likelion13@cau.ac.kr"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => { setEmail(e.target.value); if (errMsg) setErrMsg(''); if (loading) setLoading(false);}}
                 onBlur={() => setTouched((t) => ({ ...t, email: true }))}
                 autoComplete="email"
                 aria-invalid={touched.email && !isValidEmail(email)}
@@ -102,7 +108,7 @@ function Login() {
                 type={showPw ? 'text' : 'password'}
                 placeholder="· · · · · ·"
                 value={pw}
-                onChange={(e) => setPw(e.target.value)}
+                onChange={(e) => { setPw(e.target.value); if (errMsg) setErrMsg(''); if (loading) setLoading(false);} }
                 onBlur={() => setTouched((t) => ({ ...t, pw: true }))}
                 autoComplete="current-password"
               />

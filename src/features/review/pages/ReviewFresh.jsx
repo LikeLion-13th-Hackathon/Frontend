@@ -72,15 +72,12 @@ export default function ReviewFresh() {
     });
   };
 
-  const REVIEW_REWARD = 500;
-
-  // 리뷰 저장 API 호출 제거 → draft만 다음 페이지로 전달
   const onNext = async () => {
     if (!canNext) return;
     const tag_ids = Object.values(selectedTags).flat().filter(Boolean);
-
-    // 영수증 플로우면: 리뷰 즉시 생성 → 리워드 페이지로 이동
-    if (state?.source === "receipt") {
+  
+    // direct 모드 → 리뷰 작성 후 바로 complete
+    if (state?.mode === "direct") {
       try {
         if (!storeId) {
           alert("가게 정보가 없어요. 다시 시도해 주세요.");
@@ -88,37 +85,41 @@ export default function ReviewFresh() {
         }
         const res = await createReview(storeId, { tag_ids, comment: text });
         const created = res?.data ?? res;
-
+  
+        // direct 모드 포인트 구분
+        const isReceipt = state?.receipt != null; 
+        const delta = isReceipt ? 500 : 10;
+  
         const reward = await postReward({
-              delta: REVIEW_REWARD,
-              caption: [
-                "Receipt Review",
-                state?.storeName ?? "",
-                state?.storeEnglish ?? ""
-                ].join("|"),
-            });
-
-        // 리워드 페이지 라우트
+          delta,
+          caption: [
+            isReceipt ? "Direct Receipt Review" : "Direct Review",
+            state?.storeName ?? "",
+            state?.storeEnglish ?? ""
+          ].join("|"),
+        });
+  
         nav("/review/complete", {
           state: {
             ...state,
-            source: "receipt",
+            source: "direct",
             storeId,
             review: created,
             reward,
             storeName: state?.storeName,
-            storeEnglish: state?.storeEnglish || "",
             category: state?.category,
+            storeEnglish: state?.storeEnglish || "",
           },
           replace: true,
         });
       } catch (e) {
-        console.error("리뷰 생성 실패:", e);
+        console.error("리뷰 저장 실패:", e);
         alert(e?.message || "리뷰 저장에 실패했어요.");
       }
       return;
     }
-
+  
+    // 기본 chat 플로우 (receipt/normal → conversation으로 이동)
     nav("/review/conversation", {
       state: {
         ...state,
@@ -126,6 +127,7 @@ export default function ReviewFresh() {
           tag_ids,
           comment: text,
         },
+        source: state?.source ?? "normal",
       },
     });
   };
@@ -140,7 +142,10 @@ export default function ReviewFresh() {
       />
 
       <Page>
-        <Stepper current={1} total={isReceiptFlow ? 2 : 4} />
+      <Stepper 
+        current={1} 
+        total={state?.mode === "direct" ? 2 : 4}
+      />
 
         <Title>Share Your Thoughts{"\n"}About This Store</Title>
         <Sub>You can leave a quick review using tags or text.</Sub>

@@ -35,7 +35,7 @@ export default function ReviewFeedback() {
     return choice !== null;
   }, [choice]);
 
-  const REVIEW_REWARD = 300;
+  const REVIEW_REWARD = state?.source === "receipt" ? 500 : 10;
 
 
   //한/영 가게명
@@ -80,18 +80,18 @@ const onNext = async () => {
     conversation_id: convRes.id,
     comment: feedback.trim() || "", // ❗ 항상 포함시키기 (빈 문자열이라도)
     };
-    console.log("👉 createFeedback payload:", feedbackPayload);
-
     await createFeedback(feedbackPayload);
 
+    // 4) store 메타 확인
     const { storeName, storeEnglish } = await ensureStoreMeta();
+
+    // 5) 보상 지급
     const reward = await postReward({
         delta: REVIEW_REWARD,
         caption: ["Chat Review", storeName, storeEnglish].join("|"),
     });
 
-
-    // 완료 페이지 이동
+    // 6)완료 페이지 이동
     nav("/review/complete", {
       state: {
         // source: "chat",

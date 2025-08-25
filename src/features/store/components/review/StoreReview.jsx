@@ -9,6 +9,8 @@ import { fetchUserDetail } from "@/shared/api/user";
 import TooltipCTA from "../../../../components/common/TooltipCTA"; 
 import { useNavigate } from "react-router-dom";
 
+import ToReviewImg from '@/assets/icons/pencil.png'
+
 const StoreReview = ({ storeId, store }) => {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -50,7 +52,7 @@ const StoreReview = ({ storeId, store }) => {
 
         setReviews(enriched);
       })
-      .catch((err) => console.error("리뷰 불러오기 실패:", err))
+      .catch((err) => console.error("fail to load reviews:", err))
       .finally(() => setLoading(false));
   }, [storeId]);
 
@@ -71,7 +73,29 @@ const StoreReview = ({ storeId, store }) => {
 
   return (
     <>
-      <Header>Reviews</Header>
+      <Header>
+          Reviews
+          <ReviewIcon
+            src={ToReviewImg}
+            onClick={() => {
+              console.log("[StoreReview] navigate with state:", {
+                store,
+                storeId: store?.id,
+                category: store?.category,
+              });
+              navigate('/select/none', {
+                state: {
+                  store,
+                  storeId: store?.id,
+                  category: store?.category,
+                },
+              });
+            }}
+          />
+      </Header>
+
+
+
       <Wrap>
         {loading ? (
           <EmptyBox>Loading...</EmptyBox>
@@ -119,22 +143,31 @@ const StoreReview = ({ storeId, store }) => {
 export default StoreReview;
 
 const Header = styled.div`
+  position: relative;          /* 자식 absolute 기준 */
   display: flex;
-  padding: 12px 16px;
-  justify-content: center;
+  justify-content: center;     /* 가운데 정렬 */
   align-items: center;
-  flex: 1 0 0;
+  padding: 12px 16px;
   border-bottom: 0.5px solid var(--pri, #6D6D6D);
   margin-top: 6px;
 
   color: #000;
   font-family: Pretendard;
   font-size: 18px;
-  font-style: normal;
   font-weight: 600;
   line-height: 125%; 
   letter-spacing: -0.36px;
 `;
+
+const ReviewIcon = styled.img`
+  position: absolute;
+  right: 16px;      /* 오른쪽 끝에 고정 */
+  width: 18px;
+  height: 18px;
+  cursor: pointer;  /* 클릭 가능 */
+`;
+
+
 
 const Wrap = styled.div`
   display: flex;
@@ -174,4 +207,3 @@ const EmptyBox = styled.div`
     color: #999;
   }
 `;
-
