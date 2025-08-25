@@ -95,7 +95,7 @@ function Login() {
               />
             </Field>
             {touched.email && !isValidEmail(email) && (
-              <Help role="alert">올바른 이메일 형식을 입력해 주세요.</Help>
+              <Help role="alert">Please enter a valid email address.</Help>
             )}
 
             <Label htmlFor="password">Password</Label>
