@@ -74,15 +74,7 @@ export default function ReviewComplete() {
       />
 
       <Page>
-      <Stepper 
-        current={2} 
-        total={
-          state?.mode === "direct"
-            ? 2   // direct는 항상 2단계
-            : (state?.forceFourSteps ? 4 : 4) // chat(receipt/normal)은 4단계
-        }
-      />
-
+        <Stepper current={isReceiptFlow ? 2 : 4} total={isReceiptFlow ? 2 : 4} />
 
         <Title>Congrats!{"\n"}You’ve earned a reward!</Title>
 

@@ -274,7 +274,7 @@ export default function AIChatSimulatorChat() {
               End Chat
             </EndChatButton>
             <ReviewButton
-              disabled={messages.length < 1}
+              disabled={messages.length < 4}
               onClick={() => {
                 const store = state?.store;
                 const storeWithId = { ...store, id: store.id ?? store.store_id };
