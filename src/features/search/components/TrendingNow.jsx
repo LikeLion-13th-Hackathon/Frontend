@@ -64,7 +64,7 @@ export default function TrendingNow() {
 
 /* === styled-components === */
 const Wrap = styled.section`
-  margin: 20px 0;
+  margin: 0;
 `;
 
 const Title = styled.div`

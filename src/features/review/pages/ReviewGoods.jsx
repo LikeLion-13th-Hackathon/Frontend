@@ -85,7 +85,11 @@ export default function ReviewGoods() {
 
           const reward = await postReward({
               delta: REVIEW_REWARD,
-              caption: "Receipt Review",
+              caption: [
+                "Receipt Review",
+                state?.storeName ?? "",
+                state?.storeEnglish ?? ""
+                ].join("|"),
             });
   
           // 리워드 페이지 라우트
@@ -98,6 +102,7 @@ export default function ReviewGoods() {
               reward,
               storeName: state?.storeName,
               category: state?.category,
+              storeEnglish: state?.storeEnglish || "",
             },
             replace: true,
           });

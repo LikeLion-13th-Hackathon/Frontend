@@ -1,6 +1,10 @@
 // src/App.jsx
 import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import './App.css';
+
+// 로딩
+import LoadingScreen from '@/components/LoadingScreen';
 
 // 메인
 import Home from '@/features/home/pages/Home';
@@ -57,6 +61,17 @@ function PublicOnlyRoute({ children }) {
 /* ================================= */
 
 export default function App() {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 1500); // 2초 로딩
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading) {
+    return <LoadingScreen />;
+  }
+
   return (
     <BrowserRouter>
       <Routes>

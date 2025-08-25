@@ -2,23 +2,23 @@ import React from 'react'
 import styled from 'styled-components'
 import MapIcon from '@/assets/icons/map.png'
 
-// 네이버 지도 검색 URL 생성
-const buildNaverMapUrl = (roadAddress) =>
-  `https://map.naver.com/v5/search/${encodeURIComponent(roadAddress)}`
+// 네이버 지도 검색 URL 생성 (검색은 가게명으로)
+const buildNaverMapUrl = (storeName) =>
+  `https://map.naver.com/v5/search/${encodeURIComponent(storeName)}`
 
-const StoreLocation = ({ roadAddress }) => {
-  if (!roadAddress) return null
+const StoreLocation = ({ roadAddress, storeName }) => {
+  if (!roadAddress || !storeName) return null
 
   return (
     <Wrap
       as="a"
-      href={buildNaverMapUrl(roadAddress)}
+      href={buildNaverMapUrl(storeName)}   // 클릭 시 가게명 검색
       target="_blank"
       rel="noopener noreferrer"
-      aria-label={`네이버 지도에서 열기: ${roadAddress}`}
+      aria-label={`네이버 지도에서 열기: ${storeName}`}
     >
       <Icon src={MapIcon} alt="" aria-hidden />
-      <Addr title={roadAddress}>{roadAddress}</Addr>
+      <Addr title={roadAddress}>{roadAddress}</Addr> {/* 화면에는 주소 */}
     </Wrap>
   )
 }
@@ -40,8 +40,6 @@ const Icon = styled.img`
 
 const Addr = styled.span`
     color: #404040;
-
-    /* caption/caption 1 */
     font-family: Pretendard;
     font-size: 12px;
     font-style: normal;
@@ -49,9 +47,4 @@ const Addr = styled.span`
     line-height: 150%; /* 18px */
     letter-spacing: -0.24px;
     text-decoration-line: underline;
-    text-decoration-style: solid;
-    text-decoration-skip-ink: none;
-    text-decoration-thickness: auto;
-    text-underline-offset: auto;
-    text-underline-position: from-font;
-`;
+`

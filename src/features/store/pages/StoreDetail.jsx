@@ -15,11 +15,10 @@ import Divider from '../../../components/common/Divider';
 import StoreReview from '../components/review/StoreReview';
 
 import { fetchStoreDetail, fetchStores } from "@/shared/api/store";
-import StoreLocation from '../components/StoreLocation';
 
 const StoreDetail = () => {
   const { id } = useParams();
-  const nav = useNavigate(); // nav 변수에 useNavigate를 할당합니다.
+  const nav = useNavigate();
 
   const [store, setStore] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -48,9 +47,7 @@ const StoreDetail = () => {
       <LeftHeader
         title="Store" 
         leftIcon={BackImg}
-        rightIcon={SearchImg}
         onLeftClick={() => window.history.back()}
-        onRightClick={() => console.log("검색 클릭")}
       />
 
       {/* 대표 이미지 */}
@@ -76,10 +73,3 @@ const StoreDetail = () => {
 
 export default StoreDetail;
 
-const StoreImg = styled.div`
-  width: 100%;
-  height: 180px;
-  background: #EAEAEA;
-  background-size: cover;
-  background-position: center;
-`;

@@ -28,6 +28,7 @@ export default function Home() {
     async function loadStores() {
       try {
         const res = await filterStoresByCategory(selectedId);
+        console.log("📌 store API 응답:", res.data);
 
         const marketNameMap = {
           1: "흑석시장",
@@ -37,8 +38,8 @@ export default function Home() {
 
         const formatted = res.data.map((s) => ({
           id: s.store_id,
-          title: s.store_name,
-          desc: s.most_liked_review?.comment || "등록된 리뷰가 없습니다.", 
+          title: s.store_english,
+          desc: s.most_liked_review?.comment || null, 
           imageUrl: s.store_image,
           marketName: marketNameMap[s.market_id] || "알 수 없음",
           likes: s.most_liked_review?.likes_count || 0,  // 여기 수정

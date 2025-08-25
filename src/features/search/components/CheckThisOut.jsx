@@ -19,10 +19,10 @@ export default function CheckThisOut() {
 
         const formatted = (res.data || []).map((s) => ({
           id: s.store_id,
-          title: s.store_name,
-          desc: s.most_liked_review?.comment || "등록된 리뷰가 없습니다.",
+          title: s.store_english,
+          desc: s.most_liked_review?.comment || "No reviews yet.",
           imageUrl: s.store_image,
-          marketName: marketNameMap[s.market_id] || "알 수 없음",
+          marketName: marketNameMap[s.market_id] || "Not available.",
           likes: s.most_liked_review?.likes_count || 0,
         }));
 
@@ -43,30 +43,46 @@ export default function CheckThisOut() {
   return (
     <Wrap>
       <Title>Check this place out</Title>
-      <CardOverride>
-        <StoreCard items={stores} />
-      </CardOverride>
+      <StoreCard items={stores}/>
     </Wrap>
   );
 }
 
 /* === styled === */
 const Wrap = styled.section`
-  margin: 20px 0;
+  margin: 0 -20px;
 `;
 
+
 const Title = styled.div`
+  padding: 0 20px;
   color: #000;
   font-size: 20px;
   font-weight: 600;
   line-height: 125%;
   letter-spacing: -0.4px;
+  margin-bottom: 4px;
 `;
 
-const CardOverride = styled.div`
-  /* StoreCard > Wrapper에 적용된 좌우 padding 무효화 */
-  & > div {
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-  }
-`;
+// const CardRow = styled.div`
+//   /* StoreCard > Wrapper에 들어간 좌우 padding만 제거 */
+//   & > div {
+//     padding-left: 0 !important;
+//     padding-right: 0 !important;
+//   }
+
+//   /* 마지막 카드 뒤 흰 여백 제거 */
+//   & > div > div:last-child {
+//     margin-right: 0 !important;
+//   }
+
+// `;
+
+
+// const CardOverride = styled.div`
+//   /* StoreCard > Wrapper에 적용된 좌우 padding 무효화 */
+//   & > div {
+//     padding-left: 0 !important;
+//     padding-right: 0 !important;
+//   }
+// `;

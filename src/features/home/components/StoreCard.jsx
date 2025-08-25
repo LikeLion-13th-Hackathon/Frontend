@@ -5,16 +5,16 @@ import LocationSvg from "@/assets/icons/location.svg?react";
 import LikeImg from "@/assets/icons/main_like.png";
 
 const StoreCard = ({ items = [] }) => {
-  const navigate = useNavigate();  // ✅ 추가
+  const navigate = useNavigate();  // 추가
 
   const handleClick = (id) => {
-    navigate(`/store/${id}`);  // ✅ 상세 페이지로 이동
+    navigate(`/store/${id}`);  // 상세 페이지로 이동
   };
 
   return (
     <Wrapper>
       {items.map(it => (
-        <Card key={it.id} onClick={() => handleClick(it.id)}> {/* ✅ 클릭 이벤트 추가 */}
+        <Card key={it.id} onClick={() => handleClick(it.id)}> {/* 클릭 이벤트 추가 */}
           <ImageBox>
             {it.imageUrl ? (
               <StoreImage src={it.imageUrl} alt={it.title} />
@@ -24,7 +24,7 @@ const StoreCard = ({ items = [] }) => {
           </ImageBox>
           <TextBox>
             <Title>{it.title}</Title>
-            <ReviewText>{it.desc || "등록된 리뷰가 없습니다."}</ReviewText>
+            <ReviewText>{it.desc || "No reviews yet."}</ReviewText>
             <BottomRow>
               <LocationContainer>
                 <PinIcon $active={true} />
@@ -108,14 +108,18 @@ margin-top: 6px;
 
 const Title = styled.div`
   color: #000;
-  text-align: center;
+  text-align: left;
   font-family: Pretendard;
   font-size: 14px;
   font-weight: 600;
   line-height: 150%;
   letter-spacing: -0.28px;
 
-  white-space: nowrap;
+  white-space: normal;           /* 줄바꿈 허용 */
+  word-break: break-word;        /* 단어 길면 강제 줄바꿈 */
+  display: -webkit-box;
+  -webkit-line-clamp: 1;         /* 최대 2줄까지만 */
+  -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
 `;
@@ -187,4 +191,3 @@ const LikeCount = styled.span`
   line-height: 150%;
   letter-spacing: -0.24px;
 `;
-

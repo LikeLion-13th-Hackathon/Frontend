@@ -69,9 +69,7 @@ export default function SearchPage() {
       <LeftHeader
         title="Search"
         leftIcon={BackImg}
-        rightIcon={SearchImg}
         onLeftClick={() => window.history.back()}
-        onRightClick={handleSearch}
       />
 
       <Content>
@@ -92,8 +90,7 @@ export default function SearchPage() {
         </SearchBox>
 
         {/* 검색 전 기본화면 */}
-        {showDefault && (
-          <>
+        {showDefault && (          <>
             <Section>
               <CheckThisOut items={discover} />
               <TrendingNow items={trending} />
@@ -104,9 +101,9 @@ export default function SearchPage() {
         {/* 검색 결과 */}
         {!showDefault && (
           <>
-            {loading && <Loading>검색중...</Loading>}
+            {loading && <Loading>Searching...</Loading>}
             {!loading && items.length === 0 && (
-              <Empty>검색 결과가 없습니다.</Empty>
+              <Empty>No results found.</Empty>
             )}
 
             <List>
@@ -169,7 +166,7 @@ const SearchBox = styled.div`
   border: 1px solid #ddd;
   border-radius: 7px;
   padding: 10px 10px;
-  margin-bottom: 24px;
+  margin-bottom: 30px;
   background: #fff;
 `;
 
@@ -201,13 +198,10 @@ const SearchButton = styled.button`
 
 const Section = styled.section`
   margin-bottom: 24px;
-`;
-
-const H2 = styled.h2`
-  font-size: 16px;
-  font-weight: 600;
-  margin-bottom: 12px;
-  color: #111;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 24px;
+  gap: 5px;
 `;
 
 const List = styled.div`
@@ -229,24 +223,37 @@ const Thumb = styled.div`
   width: 56px; height: 56px; flex: 0 0 56px;
   border-radius: 8px; background: #EAEAEA center/cover no-repeat;
 `;
-const Col = styled.div`flex: 1; min-width: 0;`;
-const Top = styled.div`display: flex; align-items: center; gap: 8px;`;
+
+const Col = styled.div`
+  flex: 1;
+  min-width: 0;`;
+
+const Top = styled.div`
+  display: flex; 
+  align-items: center; 
+  gap: 8px;`;
+
 const Name = styled.div`
   font-size: 14px; font-weight: 700; color: #111;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 `;
+
 const EngName = styled.span`
   font-size: 13px; font-weight: 400; color: #666; margin-left: 4px;
 `;
+
 const MenuInfo = styled.div`
   margin-top: 2px; font-size: 13px; font-weight: 500; color: #444;
 `;
+
 const Meta = styled.div`
   margin-top: 2px; font-size: 12px; color: #999; display: flex; gap: 10px;
 `;
+
 const Loading = styled.div`
   padding: 12px 0; text-align: center; font-size: 13px; color: #666;
 `;
+
 const Empty = styled.div`
   padding: 24px 0; text-align: center; font-size: 13px; color: #999;
 `;

@@ -5,8 +5,8 @@ import styled from "styled-components";
 import ReviewContent from "./ReviewContent";
 import { fetchReviewsByStore, toggleReviewLike } from "@/shared/api/review";
 import { fetchUserDetail } from "@/shared/api/user"; 
-import BottomCTA from "../../../../components/common/BottomCTA"; 
-import ScrollTopFab from "../../../../components/common/ScrollTopFab";
+// import BottomCTA from "../../../../components/common/BottomCTA"; 
+import TooltipCTA from "../../../../components/common/TooltipCTA"; 
 import { useNavigate } from "react-router-dom";
 
 const StoreReview = ({ storeId, store }) => {
@@ -74,7 +74,7 @@ const StoreReview = ({ storeId, store }) => {
       <Header>Reviews</Header>
       <Wrap>
         {loading ? (
-          <EmptyBox>리뷰 로딩중...</EmptyBox>
+          <EmptyBox>Loading...</EmptyBox>
         ) : reviews.length > 0 ? (
           reviews.map((r) => (
             <ReviewContent
@@ -92,14 +92,21 @@ const StoreReview = ({ storeId, store }) => {
           ))
         ) : (
           <EmptyBox>
-            <p>아직 작성된 리뷰가 없습니다.</p>
-            <span>첫 번째 리뷰를 남겨보세요 ✨</span>
+            <p>No reviews yet.</p>
+            <span>Be the first to review! ✨</span>
           </EmptyBox>
         )}
       </Wrap>
 
-      <BottomCTA
+      {/* <BottomCTA
         label="AI Chat Simulator"
+        onClick={handleStartChat}
+        bottomOffset={0}
+        variant="ai"
+      /> */}
+      <TooltipCTA
+        label="AI Chat Simulator"
+        tooltip={"Experience the AI chat simulator\n— leave a review and earn a reward."}
         onClick={handleStartChat}
         bottomOffset={0}
         variant="ai"
@@ -110,8 +117,6 @@ const StoreReview = ({ storeId, store }) => {
 
 
 export default StoreReview;
-
-/* ===================== styled ===================== */
 
 const Header = styled.div`
   display: flex;
@@ -169,5 +174,4 @@ const EmptyBox = styled.div`
     color: #999;
   }
 `;
-
 

@@ -35,8 +35,9 @@ export default function ReceiptMatchModal({
 
   const navigate = useNavigate();
   const [selectedId, setSelectedId] = useState(null);
-  const [catById, setCatById] = useState({});   // { [storeId]: "Snacks" }
-  const [catLoading, setCatLoading] = useState(false);
+  // const [catById, setCatById] = useState({});   // { [storeId]: "Snacks" }
+  const [detailById, setDetailById] = useState({}); // { [id]: { category, store_english, store_name } }
+  const [detailLoading, setDetailLoading] = useState(false);
 
   useEffect(() => {
     if (!open) return;
@@ -57,23 +58,36 @@ export default function ReceiptMatchModal({
     let aborted = false;
     (async () => {
       try {
-        setCatLoading(true);
+        setDetailLoading(true);
         const results = await Promise.all(
           list.map(async (c) => {
             try {
               const d = await fetchStoreDetail(c.id);
               const detail = normalizeDetail(d);
-              return [c.id, detail?.category ?? null];
+              return [
+                c.id, 
+                 { 
+                  category: detail?.category ?? null,
+                  store_english: detail?.store_english ?? '',
+                  store_name: detail?.store_name ?? c.store_name ?? '',
+                 },
+              ];
             } catch {
-              return [c.id, null];
+              return [c.id,
+                {
+                  category: null,
+                  store_english: '',
+                  store_name: c.store_name ?? '',
+                }
+              ];
             }
           })
         );
         if (!aborted) {
-          setCatById((prev) => ({ ...prev, ...Object.fromEntries(results) }));
+          setDetailById((prev) => ({ ...prev, ...Object.fromEntries(results) }));
         }
       } finally {
-        if (!aborted) setCatLoading(false);
+        if (!aborted) setDetailLoading(false);
       }
     })();
     return () => { aborted = true; };
@@ -87,7 +101,9 @@ export default function ReceiptMatchModal({
   const handleStart = async () => {
     if (!selected) return;
     const storeId = selected.id;
-    let category = catById[storeId];
+    let detail = detailById[storeId];
+    let category = detail?.category ?? null;
+    let english = detail?.store_english ?? '';
 
     // 아직 못 받아왔으면 단건 조회로 보강
     if (!category) {
@@ -95,9 +111,16 @@ export default function ReceiptMatchModal({
         const d = await fetchStoreDetail(storeId);
         const detail = normalizeDetail(d);
         category = detail?.category ?? null;
-        if (category) {
-          setCatById((prev) => ({ ...prev, [storeId]: category }));
+        english = detail?.store_english || selected?.store_english;
+
+        setDetailById((prev) => ({
+          ...prev,
+          [storeId]: {
+            category,
+            store_english: english,
+            store_name: detail?.store_name ?? selected.store_name ?? '',
         }
+      }));
       } catch {}
     }
 
@@ -121,6 +144,7 @@ export default function ReceiptMatchModal({
         category,                              // 원본 카테고리(표시용)
         storeName: selected.store_name || '',
         address: selected.road_address || selected.street_address || '',
+        storeEnglish: english,
       },
       replace: false,
     });
