@@ -135,9 +135,9 @@ const Eng = styled.div`
 `;
 
 const Kor = styled.div`
-  font-size: 18px;        /* ✅ 조금 더 작게 */
+  font-size: 18px;        
   font-weight: 400;
-  opacity: 0.85;          /* ✅ 연하게 */
+  opacity: 0.85;          
 `;
 
 

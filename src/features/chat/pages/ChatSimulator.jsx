@@ -40,9 +40,19 @@ export default function AIChatSimulatorChat() {
   const [lastRequest, setLastRequest] = useState(null); // 새로고침용
 
   const activeCardRef = useRef(null); // CARD CENTER
+  const firstLoad = useRef(true);
 
   useEffect(() => {
-    chatBottomRef.current?.scrollIntoView();
+    if (messages.length === 0) return; // 아직 메시지 없으면 무시
+  
+    if (firstLoad.current) {
+      // 첫 진입 → 맨 위로
+      window.scrollTo({ top: 0, behavior: "auto" });
+      firstLoad.current = false;
+    } else {
+      // 이후 메시지 추가 → 맨 아래로
+      chatBottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
   }, [messages]);
 
   // category 또는 topic이 바뀔 때마다 대화 초기화
@@ -249,7 +259,21 @@ export default function AIChatSimulatorChat() {
             )}
           </PhraseRow>
           <BottomBar>
-            <EndButton
+
+          {/* --- 버튼 --- */}
+            <EndChatButton
+              onClick={() => {
+                const storeId = state?.store?.id ?? state?.store?.store_id;
+                if (storeId) {
+                  navigate(`/store/${storeId}`);
+                } else {
+                  navigate("/home"); // fallback
+                }
+              }}
+            >
+              End Chat
+            </EndChatButton>
+            <ReviewButton
               disabled={messages.length < 2}
               onClick={() => {
                 const category = state?.store?.category?.toLowerCase();
@@ -279,8 +303,8 @@ export default function AIChatSimulatorChat() {
                 }
               }}
             >
-              End Chat &amp; Claim Reward
-            </EndButton>
+              Claim Reward
+            </ReviewButton>
           </BottomBar>
         </ControlsContainer>
       </PageContainer>
@@ -309,7 +333,7 @@ export const ChatStage = styled.div`
   flex: 1;
   overflow-y: auto;
   min-height: 100px;
-  margin: 12px clamp(16px, 4vw, 20px); 
+  margin: 12px clamp(16px, 4vw, 20px) 0; 
   display: flex;
 `;
 
@@ -339,6 +363,7 @@ const bubbleBase = `
   line-height: 1.4;
   box-shadow: 0 0 10px rgba(0,0,0,.06);
 `;
+
 export const BubbleBot = styled.div`
   ${bubbleBase}
   background: #dfdfdf;
@@ -442,14 +467,28 @@ export const PhraseRoman = styled.div`
   -webkit-box-orient: vertical;
 `;
 
-export const BottomBar = styled.div`
-  display: flex;
-  justify-content: center;
-  padding: 10px 16px calc(22px + env(safe-area-inset-bottom));
+const EndChatButton = styled.button`
+  flex: 1;
+  padding: 13px 12px;
+  border-radius: 8px;
+  border: none;
+  background: #E5E7EB;
+  color: #8D8D8D;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  
+  &:hover {
+    background: #d1d5db; /* hover 시 색상 변화 */
+  }
+
+  &:active {
+    transform: scale(0.98); /* 클릭 시 눌리는 효과 */
+  }
 `;
 
-export const EndButton = styled.button`
-  width: clamp(280px, 88vw, 520px);
+export const ReviewButton = styled.button`
+  flex: 1;
   padding: 13px 12px;
   border-radius: 8px;
   font-size: 14px;
@@ -459,9 +498,28 @@ export const EndButton = styled.button`
   background: ${({ disabled }) => (disabled ? "#E5E7EB" : "#ff6900")};
   color: ${({ disabled }) => (disabled ? "#8D8D8D" : "#fff")};
   border: none;
-  transition: background 0.2s;
+  transition: background 0.2s, transform 0.1s;
+
+  &:hover {
+    background: ${({ disabled }) => (disabled ? "#E5E7EB" : "#e85d00")};
+  }
+
+  &:active {
+    ${({ disabled }) =>
+      !disabled &&
+      `
+        transform: scale(0.97);
+        background: #d94f00;
+      `}
+  }
 `;
 
+export const BottomBar = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px 16px calc(16px + env(safe-area-inset-bottom));
+`;
 
 export const ScenarioRow = styled.div`
   margin-top: 12px;
@@ -485,6 +543,7 @@ export const ScenarioCard = styled.div`
   gap: 10px;
   padding: 7px;
   border-radius: 12px;
+  cursor: pointer;
   background: ${({ $active }) => ($active ? '#fff7ed' : '#ECECEC')};
   ${({ $active }) => $active && `
     box-shadow: 0 0 10px rgba(0,0,0,.10);
