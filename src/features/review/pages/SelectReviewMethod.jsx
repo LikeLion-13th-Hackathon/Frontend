@@ -40,9 +40,10 @@ const SelectMethod = () => {
       const nextState = { 
         store: storeWithId, 
         source: "receipt", 
-        receipt: res ,
-        forceFourSteps: true
-     };
+        receipt: res,
+        forceFourSteps: true,  // ✅ 스테퍼 4개
+        rewardPoint: 500,      // ✅ 사진 올리면 500
+      };
 
       console.log("➡️ navigate 실행:", category, nextState);
 
@@ -109,7 +110,8 @@ const SelectMethod = () => {
             const nextState = { 
                 store: storeWithId, 
                 source: "normal",
-                forceFourSteps: true
+                forceFourSteps: true, // ✅ 스테퍼 4개
+                rewardPoint: 10,      // ✅ 사진 안 올리면 10
             };
 
             if (category === "restaurants") {
@@ -137,6 +139,7 @@ const SelectMethod = () => {
 }
 
 export default SelectMethod
+
 
 /* ---------------- styled-components ---------------- */
 const PageTitle = styled.div`

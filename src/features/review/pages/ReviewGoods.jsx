@@ -75,7 +75,50 @@ export default function ReviewGoods() {
     if (!canNext) return;
     const tag_ids = Object.values(selectedTags).flat().filter(Boolean);
   
-    // receipt/normal 둘 다 다음 단계 = conversation 으로 이동
+    // direct 모드 → 리뷰 작성 후 바로 complete
+    if (state?.mode === "direct") {
+      try {
+        if (!storeId) {
+          alert("가게 정보가 없어요. 다시 시도해 주세요.");
+          return;
+        }
+        const res = await createReview(storeId, { tag_ids, comment: text });
+        const created = res?.data ?? res;
+  
+        // direct 모드 포인트 구분
+        const isReceipt = state?.receipt != null; 
+        const delta = isReceipt ? 500 : 10;
+  
+        const reward = await postReward({
+          delta,
+          caption: [
+            isReceipt ? "Direct Receipt Review" : "Direct Review",
+            state?.storeName ?? "",
+            state?.storeEnglish ?? ""
+          ].join("|"),
+        });
+  
+        nav("/review/complete", {
+          state: {
+            ...state,
+            source: "direct",
+            storeId,
+            review: created,
+            reward,
+            storeName: state?.storeName,
+            category: state?.category,
+            storeEnglish: state?.storeEnglish || "",
+          },
+          replace: true,
+        });
+      } catch (e) {
+        console.error("리뷰 저장 실패:", e);
+        alert(e?.message || "리뷰 저장에 실패했어요.");
+      }
+      return;
+    }
+  
+    // 기본 chat 플로우 (receipt/normal → conversation으로 이동)
     nav("/review/conversation", {
       state: {
         ...state,
@@ -83,7 +126,7 @@ export default function ReviewGoods() {
           tag_ids,
           comment: text,
         },
-        source: state?.source ?? "normal",   // receipt 도 그대로 유지
+        source: state?.source ?? "normal",
       },
     });
   };
@@ -102,7 +145,7 @@ export default function ReviewGoods() {
 
       <Stepper 
         current={1} 
-        total={state?.forceFourSteps ? 4 : (isReceiptFlow ? 2 : 4)} 
+        total={state?.mode === "direct" ? 2 : 4}
       />
 
 

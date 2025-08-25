@@ -87,9 +87,13 @@ const SelectReviewType = () => {
     try {
       setLoading(true);
       const result = await uploadReceiptFile(file); // 백엔드 응답(영수증 업로드 결과)
+
+      // ✅ direct 모드 + 500 포인트
       goToCategoryReview({
-        mode: 'receipt',
+        mode: 'direct',
         receipt: result,
+        receiptUploaded: true,
+        rewardPoint: 500,
       });
     } catch (err) {
       console.error(err);
@@ -106,9 +110,12 @@ const SelectReviewType = () => {
       alert('가게 정보가 없습니다. 이전 화면에서 다시 시도해 주세요.');
       return;
     }
+
+    // ✅ direct 모드 + 10 포인트
     goToCategoryReview({
-      mode: 'no_receipt',
-      category: storeCategory,
+      mode: 'direct',
+      receiptUploaded: false,
+      rewardPoint: 10,
     });
   };
 
