@@ -225,40 +225,6 @@ const Reward = () => {
         <PointHistory refreshKey={refreshKey} onBalanceChange={setLiveBalance}/>
 
         <InfoModal open={openInfo} onClose={() => setOpenInfo(false)} />
-
-        {/* JSX 어딘가(dev일 때만 보이게) */}
-        {import.meta.env.DEV && (
-        <div style={{padding: '0 20px 8px'}}>
-            <button onClick={seedHistory} disabled={seeding}>
-            {seeding ? 'Seeding…' : 'Seed test history'}
-            </button>
-        </div>
-        )}
-
-        {import.meta.env.DEV && (
-        <div style={{padding:'0 20px 8px'}}>
-            <button
-            onClick={() => { localStorage.removeItem('reward_seeded'); alert('플래그 삭제됨'); }}
-            >
-            Reset seed flag
-            </button>
-        </div>
-        )}
-
-        {import.meta.env.DEV && (
-        <div style={{ padding: '0 20px 8px' }}>
-            <button
-            onClick={() => {
-                setMatchData({ receipt: MOCK_RECEIPT, candidates: MOCK_CANDIDATES });
-                setMatchOpen(true);
-            }}
-            >
-            Preview match modal
-            </button>
-        </div>
-        )}
-
-
         <TabBar/>
     </Layout>
   )
