@@ -184,10 +184,6 @@ const Card = styled.button`
 
   transition: background 0.2s;
   &:hover { background: #f0f0f0; }
-
-  /* 버튼 기본 스타일 제거 */
-  border: none;
-  outline: none;
 `;
 
 const CardContainer = styled.div`
