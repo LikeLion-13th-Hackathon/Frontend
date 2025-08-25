@@ -191,4 +191,3 @@ const LikeCount = styled.span`
   line-height: 150%;
   letter-spacing: -0.24px;
 `;
-
