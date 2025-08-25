@@ -10,6 +10,14 @@ const PointHistory = ({ refreshKey, onBalanceChange }) => {
   const [err, setErr] = useState(null);
   const [expanded, setExpanded] = useState(false);
 
+  //리뷰/챗 리뷰 가게명 파싱
+  const parseCaption = (caption) => {
+    const [title, ko, en] = String(caption ?? "")
+      .split("|")
+      .map((s) => s?.trim());
+    return {title, ko, en };
+  };
+
   useEffect(() => {
     let alive = true;
     (async () => {
@@ -48,15 +56,18 @@ const PointHistory = ({ refreshKey, onBalanceChange }) => {
             <EmptyText>No history ..</EmptyText>
           ) : list.map(it => {
             const plus = Number(it.point) >= 0;
+            const { title, ko, en } = parseCaption(it.caption);
+
             return (
               <ContentRow key={it.id}>
                 <RightContent>
                   <Icon src={plus ? PlusImg : MinusImg} alt={plus ? 'plus' : 'minus'} />
                   <TextBox>
-                    <HistoryTitle>{it.caption}</HistoryTitle>
+                    <HistoryTitle>{title || it.caption}</HistoryTitle>
                     <HistoryMemo>
-                      {plus ? `${fmt(it.point)} points added`
-                            : `${fmt(Math.abs(it.point))} points used`}
+                      {plus 
+                        ? ([ko, en].filter(Boolean).join(" | ") || `${fmt(it.point)} points added`)
+                        : `${fmt(Math.abs(it.point))} won`}
                     </HistoryMemo>
                   </TextBox>
                 </RightContent>

@@ -47,9 +47,7 @@ const StoreDetail = () => {
       <LeftHeader
         title="Store" 
         leftIcon={BackImg}
-        rightIcon={SearchImg}
         onLeftClick={() => window.history.back()}
-        onRightClick={() => console.log("검색 클릭")}
       />
 
       {/* 대표 이미지 */}

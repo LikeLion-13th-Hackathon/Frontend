@@ -69,9 +69,7 @@ export default function SearchPage() {
       <LeftHeader
         title="Search"
         leftIcon={BackImg}
-        rightIcon={SearchImg}
         onLeftClick={() => window.history.back()}
-        onRightClick={handleSearch}
       />
 
       <Content>
@@ -92,8 +90,7 @@ export default function SearchPage() {
         </SearchBox>
 
         {/* 검색 전 기본화면 */}
-        {showDefault && (
-          <>
+        {showDefault && (          <>
             <Section>
               <CheckThisOut items={discover} />
               <TrendingNow items={trending} />

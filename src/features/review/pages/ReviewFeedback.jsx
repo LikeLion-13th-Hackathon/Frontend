@@ -61,7 +61,7 @@ const onNext = async () => {
 
     const reward = await postReward({
         delta: REVIEW_REWARD,
-        caption: "Chat Review",
+        caption: ["Chat Review", state?.storeName ?? "", state?.storeEnglish ?? ""].join("|"),
     });
 
 

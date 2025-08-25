@@ -49,7 +49,7 @@ const RedeemCard = ({ balance = 0, onRedeemed }) => {
         //    서버에서 사용하는 필드명은 seedHistory와 동일하게 맞춤: { delta, caption }
         await postReward({
         delta: -amount,
-        caption: `온누리 ${amount.toLocaleString('ko-KR')}원 교환`,
+        caption: `Redeem Onnuri Gift Card`,
         });
 
         // 2) (선택) 바우처 코드 생성/수신
