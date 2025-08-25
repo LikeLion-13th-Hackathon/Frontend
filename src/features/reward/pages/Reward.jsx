@@ -137,7 +137,7 @@ const Reward = () => {
     <Layout overlapHeader bottomPadding={66}>
         <Background>
             <LeftHeader
-                title="Rewards"
+                title="Reward"
                 leftIcon={BackImg}
                 overlay
                 onLeftClick={() => window.history.back()}
