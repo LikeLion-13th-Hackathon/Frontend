@@ -7,7 +7,7 @@ import StoreLocation from './StoreLocation';
 const StoreInfo = ({ store }) => {
   if (!store) return null;
 
-  const { store_name, store_english, address, menus } = store;
+  const { store_name, store_english, road_address, menus } = store;
 
   return (
     <Wrapper>
@@ -25,7 +25,7 @@ const StoreInfo = ({ store }) => {
         <StoreSignatureMenu items={store.menus || store.menu_list || []} />
       </StoreContainer>
 
-      <StoreLocation roadAddress={store.road_address} />
+      <StoreLocation roadAddress={road_address} storeName={store_name} />
     </Wrapper>
   );
 };

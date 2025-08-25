@@ -74,7 +74,7 @@ const StoreReview = ({ storeId, store }) => {
       <Header>Reviews</Header>
       <Wrap>
         {loading ? (
-          <EmptyBox>리뷰 로딩중...</EmptyBox>
+          <EmptyBox>Loading...</EmptyBox>
         ) : reviews.length > 0 ? (
           reviews.map((r) => (
             <ReviewContent
@@ -92,8 +92,8 @@ const StoreReview = ({ storeId, store }) => {
           ))
         ) : (
           <EmptyBox>
-            <p>아직 작성된 리뷰가 없습니다.</p>
-            <span>첫 번째 리뷰를 남겨보세요 ✨</span>
+            <p>No reviews yet.</p>
+            <span>Be the first to review! ✨</span>
           </EmptyBox>
         )}
       </Wrap>
