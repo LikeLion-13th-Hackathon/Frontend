@@ -52,7 +52,7 @@ export default function SignUpProfile() {
             />
           </Field>
           {!isFullValid && fullName.length > 0 && (
-            <Help>이름을 올바르게 입력해 주세요.</Help>
+            <Help>Please enter a valid name.</Help>
           )}
 
           <Label htmlFor="username">Username (optional)</Label>
@@ -66,7 +66,7 @@ export default function SignUpProfile() {
               autoComplete="username"
             />
           </Field>
-          {!usernameOk && <Help>영문/숫자/._ 2–20자.</Help>}
+          {!usernameOk && <Help>Use 2–20 characters: letters, numbers, (.) or (_).</Help>}
 
           <Actions>
             <BackButton type="button" onClick={() => nav(-1)}>
