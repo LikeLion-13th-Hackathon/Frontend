@@ -98,13 +98,13 @@ export default function SignUp() {
             />
           </Field>
           {touched.email && !isValidEmail(email) && (
-            <Help>올바른 이메일 형식을 입력해 주세요.</Help>
+            <Help>Please enter a valid email address.</Help>
           )}
           {isValidEmail(email) && isChecking && (
-            <Help>이메일 확인 중…</Help>
+            <Help>Checking email…</Help>
           )}
           {isValidEmail(email) && emailInUse && (
-            <Help>이미 사용 중인 이메일입니다.</Help>
+            <Help>This email is already in use.</Help>
           )}
 
           {/* 비밀번호 */}
@@ -130,11 +130,19 @@ export default function SignUp() {
               <img src={showPw ? EyeCloseImg : EyeImg} alt="" />
             </IconRightBtn>
           </Field>
-          {touched.pw && !pwOk && <Help>비밀번호는 6자 이상 입력해 주세요.</Help>}
+          {touched.pw && !pwOk && <Help>Password must be at least 6 characters.</Help>}
 
-          <SignButton type="submit" disabled={disabled}>
+          {/* <SignButton type="submit" disabled={disabled}>
             Next
-          </SignButton>
+          </SignButton> */}
+          <Actions>
+            <BackButton type="button" onClick={() => navigate(-1)}>
+              Back
+            </BackButton>
+            <NextButton type="submit" disabled={disabled}>
+              Next
+            </NextButton>
+          </Actions>
 
         </Form>
       </Card>
@@ -262,6 +270,26 @@ const Help = styled.p`
 `;
 
 const SignButton = styled(CommonButton)`
+  background-color: ${({ disabled }) =>
+    disabled ? '#E5E7EB' : '#FF6900'};
+  color: ${({ disabled }) =>
+    disabled ? '#888' : '#fff'};
+`;
+
+const Actions = styled.div`
+  margin-top: 30px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+`;
+
+const BackButton = styled(CommonButton)`
+  background-color: #fff;
+  border: 1px solid var(--gray-200, #E5E7EB);
+  color: #111;
+`;
+
+const NextButton = styled(CommonButton)`
   background-color: ${({ disabled }) =>
     disabled ? '#E5E7EB' : '#FF6900'};
   color: ${({ disabled }) =>
